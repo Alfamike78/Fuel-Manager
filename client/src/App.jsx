@@ -9,6 +9,8 @@ import LandingPage from './pages/landing/LandingPage.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
 import SuperAdminDashboard from './pages/superadmin/DashboardPage.jsx';
+import SuperAdminCompanies from './pages/superadmin/CompaniesPage.jsx';
+import SuperAdminPlans from './pages/superadmin/PlansPage.jsx';
 import CompanyDashboard from './pages/company/DashboardPage.jsx';
 import TanksPage from './pages/company/tanks/TanksPage.jsx';
 import BasesPage from './pages/company/bases/BasesPage.jsx';
@@ -92,6 +94,30 @@ const AppRoutes = () => {
       />
 
       {/* SuperAdmin portal */}
+      <Route
+        path="/superadmin"
+        element={
+          <ProtectedRoute requiredRole="superadmin">
+            <SuperAdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/superadmin/companies"
+        element={
+          <ProtectedRoute requiredRole="superadmin">
+            <SuperAdminCompanies />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/superadmin/plans"
+        element={
+          <ProtectedRoute requiredRole="superadmin">
+            <SuperAdminPlans />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/superadmin/*"
         element={

@@ -1,89 +1,69 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
-  Building2, Users, TrendingUp, Clock, CheckCircle,
-  AlertCircle, MoreVertical, ArrowUpRight, Search, Filter
+  Building2, Users, TrendingUp, Clock, CheckCircle, AlertCircle,
+  Fuel, Gauge, Activity, EuroIcon
 } from 'lucide-react';
-import axios from 'axios';
 import SuperAdminLayout from '../../components/layout/SuperAdminLayout.jsx';
 import Card from '../../components/ui/Card.jsx';
-import Badge from '../../components/ui/Badge.jsx';
+import { getSuperAdminStats } from '../../api/superadmin.js';
+import clsx from 'clsx';
 
-const STATUS_COLORS = {
-  active: 'success',
-  trial: 'warning',
-  suspended: 'danger',
-  cancelled: 'default',
-};
-
-const StatCard = ({ icon: Icon, label, value, sub, color }) => (
+const StatCard = ({ icon: Icon, label, value, sub, color, trend }) => (
   <Card>
-    <div className="flex items-start justify-between">
-      <div>
-        <p className="text-sm font-medium text-gray-500 mb-1">{label}</p>
-        <p className="text-3xl font-bold text-gray-900">{value}</p>
-        {sub && <p className="text-sm text-gray-400 mt-1">{sub}</p>}
+    <div className="flex items-start justify-between mb-3">
+      <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${color}`}>
+        <Icon size={20} />
       </div>
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}>
-        <Icon size={22} />
-      </div>
+      {trend != null && (
+        <span className={clsx('text-xs font-semibold px-2 py-1 rounded-full', trend >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')}>
+          {trend >= 0 ? '+' : ''}{trend}%
+        </span>
+      )}
     </div>
+    <p className="text-3xl font-bold text-gray-900 mb-1">{value}</p>
+    <p className="text-sm font-medium text-gray-700">{label}</p>
+    {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
   </Card>
 );
 
+const PlanBar = ({ name, count, total, color }) => {
+  const pct = total > 0 ? (count / total) * 100 : 0;
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-sm font-medium text-gray-700">{name}</span>
+        <span className="text-sm text-gray-500">{count} aziende</span>
+      </div>
+      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+};
+
+const PLAN_COLORS = ['bg-yellow-400', 'bg-blue-400', 'bg-violet-500', 'bg-emerald-500'];
+
 const DashboardPage = () => {
-  const { t } = useTranslation();
-  const [companies, setCompanies] = useState([]);
-  const [stats, setStats] = useState({
-    total: 0,
-    active: 0,
-    trial: 0,
-    suspended: 0,
-    revenue: 0,
-  });
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get('/companies?limit=10');
-        const data = res.data;
-
-        setCompanies(data.companies || []);
-
-        const allCompanies = data.companies || [];
-        setStats({
-          total: data.total || 0,
-          active: allCompanies.filter((c) => c.status === 'active').length,
-          trial: allCompanies.filter((c) => c.status === 'trial').length,
-          suspended: allCompanies.filter((c) => c.status === 'suspended').length,
-          revenue: 0,
-        });
-      } catch {
-        // Use stub data when API unavailable
-        setCompanies([]);
-        setStats({ total: 0, active: 0, trial: 0, suspended: 0, revenue: 0 });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    getSuperAdminStats()
+      .then(setStats)
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
-  const filteredCompanies = companies.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const c = stats?.companies;
 
   return (
     <SuperAdminLayout>
       <div className="space-y-6">
-        {/* Page header */}
+        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Dashboard SuperAdmin</h1>
-            <p className="text-gray-500 text-sm mt-0.5">Panoramica di tutte le aziende</p>
+            <p className="text-gray-500 text-sm mt-0.5">Metriche globali della piattaforma</p>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
@@ -95,136 +75,103 @@ const DashboardPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
           <StatCard
             icon={Building2}
-            label={t('dashboard.total_companies')}
-            value={loading ? '—' : stats.total}
-            sub="Aziende registrate"
+            label="Aziende totali"
+            value={loading ? '—' : c?.total ?? 0}
+            sub={`${c?.active ?? 0} attive · ${c?.trial ?? 0} trial`}
             color="bg-blue-100 text-blue-600"
           />
           <StatCard
-            icon={CheckCircle}
-            label={t('dashboard.active_companies')}
-            value={loading ? '—' : stats.active}
-            sub="Con piano attivo"
-            color="bg-green-100 text-green-600"
+            icon={Users}
+            label="Utenti totali"
+            value={loading ? '—' : stats?.users_total ?? 0}
+            sub="Tutti i ruoli"
+            color="bg-indigo-100 text-indigo-600"
           />
           <StatCard
-            icon={Clock}
-            label={t('dashboard.trial_companies')}
-            value={loading ? '—' : stats.trial}
-            sub="In periodo di prova"
-            color="bg-yellow-100 text-yellow-600"
+            icon={Fuel}
+            label="Operazioni totali"
+            value={loading ? '—' : (stats?.operations_total ?? 0).toLocaleString()}
+            sub={`${loading ? '—' : Math.round((stats?.liters_total ?? 0) / 1000).toLocaleString()} kL erogati`}
+            color="bg-violet-100 text-violet-600"
           />
           <StatCard
             icon={TrendingUp}
-            label={t('dashboard.monthly_revenue')}
-            value={loading ? '—' : `€${stats.revenue.toLocaleString()}`}
-            sub="Questo mese"
-            color="bg-violet-100 text-violet-600"
+            label="MRR stimato"
+            value={loading ? '—' : `€${(stats?.mrr ?? 0).toLocaleString()}`}
+            sub="Ricavi mensili ricorrenti"
+            color="bg-emerald-100 text-emerald-600"
           />
         </div>
 
-        {/* Companies table */}
-        <Card padding={false}>
-          <div className="p-6 border-b border-gray-100 flex items-center gap-4">
-            <div className="flex-1 relative">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cerca aziende..."
-                className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">
-              <Filter size={14} />
-              Filtra
-            </button>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Company status breakdown */}
+          <Card>
+            <Card.Header><Card.Title>Stato aziende</Card.Title></Card.Header>
+            <Card.Body>
+              <div className="space-y-4">
+                {[
+                  { key: 'active', label: 'Attive', color: 'bg-green-500', text: 'text-green-700', bg: 'bg-green-100' },
+                  { key: 'trial', label: 'Trial', color: 'bg-yellow-400', text: 'text-yellow-700', bg: 'bg-yellow-100' },
+                  { key: 'suspended', label: 'Sospese', color: 'bg-red-400', text: 'text-red-700', bg: 'bg-red-100' },
+                  { key: 'cancelled', label: 'Cancellate', color: 'bg-gray-300', text: 'text-gray-600', bg: 'bg-gray-100' },
+                ].map(({ key, label, color, text, bg }) => {
+                  const count = c?.[key] ?? 0;
+                  const total = c?.total ?? 1;
+                  return (
+                    <div key={key} className="flex items-center gap-4">
+                      <span className={clsx('px-2.5 py-0.5 rounded-full text-xs font-semibold w-24 text-center', bg, text)}>{label}</span>
+                      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div className={`h-full rounded-full ${color}`} style={{ width: `${(count / total) * 100}%` }} />
+                      </div>
+                      <span className="text-sm font-bold text-gray-900 w-8 text-right">{count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card.Body>
+          </Card>
 
-          {loading ? (
-            <div className="flex items-center justify-center h-48">
-              <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : filteredCompanies.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-48 text-gray-400">
-              <Building2 size={40} className="mb-3 opacity-30" />
-              <p className="font-medium">Nessuna azienda trovata</p>
-              <p className="text-sm mt-1">Le aziende appariranno qui dopo la registrazione</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Azienda</th>
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Piano</th>
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Stato</th>
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Utenti</th>
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Registrata</th>
-                    <th className="px-6 py-3" />
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {filteredCompanies.map((company) => (
-                    <tr key={company.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                            style={{ backgroundColor: company.primary_color || '#1e40af' }}
-                          >
-                            {company.name[0].toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-900 text-sm">{company.name}</p>
-                            <p className="text-gray-400 text-xs">{company.slug}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm text-gray-700">{company.plan_name || '—'}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <Badge variant={STATUS_COLORS[company.status] || 'default'}>
-                          {company.status}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm text-gray-700">{company.user_count || 0}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm text-gray-500">
-                          {new Date(company.created_at).toLocaleDateString('it-IT')}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <button className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                          <MoreVertical size={15} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
+          {/* Plan distribution */}
+          <Card>
+            <Card.Header><Card.Title>Distribuzione piani</Card.Title></Card.Header>
+            <Card.Body>
+              <div className="space-y-4">
+                {(stats?.plans ?? []).map((plan, i) => (
+                  <PlanBar
+                    key={plan.id}
+                    name={`${plan.name}${plan.price_monthly > 0 ? ` (€${plan.price_monthly}/mo)` : ' (gratuito)'}`}
+                    count={plan.company_count}
+                    total={c?.total ?? 1}
+                    color={PLAN_COLORS[i % PLAN_COLORS.length]}
+                  />
+                ))}
+                {!loading && !stats?.plans?.length && (
+                  <p className="text-sm text-gray-400 text-center py-4">Nessun piano configurato</p>
+                )}
+              </div>
+            </Card.Body>
+          </Card>
+        </div>
 
-        {/* Quick actions */}
+        {/* Quick links */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { label: 'Aggiungi piano', icon: ArrowUpRight, color: 'text-blue-600 bg-blue-50 hover:bg-blue-100' },
-            { label: 'Esporta report', icon: TrendingUp, color: 'text-green-600 bg-green-50 hover:bg-green-100' },
-            { label: 'Segnalazioni', icon: AlertCircle, color: 'text-yellow-600 bg-yellow-50 hover:bg-yellow-100' },
-          ].map((action) => (
-            <button
-              key={action.label}
-              className={`flex items-center gap-3 p-4 rounded-xl font-medium text-sm transition-colors ${action.color}`}
+            { label: 'Gestisci aziende', icon: Building2, href: '/superadmin/companies', color: 'text-blue-600 bg-blue-50 hover:bg-blue-100 border-blue-100' },
+            { label: 'Gestisci piani', icon: TrendingUp, href: '/superadmin/plans', color: 'text-violet-600 bg-violet-50 hover:bg-violet-100 border-violet-100' },
+            { label: 'Alert sospese', icon: AlertCircle, badge: c?.suspended, color: 'text-red-600 bg-red-50 hover:bg-red-100 border-red-100' },
+          ].map((a) => (
+            <a
+              key={a.label}
+              href={a.href}
+              onClick={a.href ? undefined : (e) => e.preventDefault()}
+              className={clsx('flex items-center gap-3 p-4 rounded-xl border font-medium text-sm transition-colors', a.color)}
             >
-              <action.icon size={18} />
-              {action.label}
-            </button>
+              <a.icon size={18} />
+              {a.label}
+              {a.badge > 0 && (
+                <span className="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{a.badge}</span>
+              )}
+            </a>
           ))}
         </div>
       </div>
