@@ -4,7 +4,8 @@
     "features": "Funciones",
     "pricing": "Precios",
     "login": "Iniciar sesión",
-    "register": "Empezar gratis"
+    "register": "Empezar gratis",
+    "notifications": "Notificaciones"
   },
   "landing": {
     "hero": {
@@ -393,5 +394,25 @@
     "new_password": "Nueva contraseña",
     "update_password": "Actualizar contraseña",
     "password_saved": "Contraseña actualizada con éxito."
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "subtitle": "Alertas y avisos sobre depósitos",
+    "all_clear": "Todo en orden",
+    "all_clear_desc": "Sin alertas activas",
+    "unread": "No leídas",
+    "mark_all_read": "Marcar todas como leídas",
+    "mark_read": "Marcar como leída",
+    "clear_read": "Eliminar leídas",
+    "view_all": "Ver todas",
+    "go_to_tank": "Ir al depósito",
+    "severity_critical": "Crítico",
+    "severity_warning": "Aviso",
+    "severity_info": "Info",
+    "just_now": "ahora",
+    "minutes_ago": "min atrás",
+    "hours_ago": "horas atrás",
+    "days_ago": "días atrás",
+    "tip_threshold": "Las alertas se generan automáticamente cuando un depósito cae por debajo del umbral mínimo configurado. Puede establecer el umbral en la configuración del depósito."
   }
 }

@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 import {
   Fuel, Gauge, MapPin, BarChart3, Users, Settings,
   Menu, X, LogOut, ChevronDown, Plane, Truck,
-  ClipboardList, ChevronRight, UserCircle
+  ClipboardList, ChevronRight, UserCircle, Bell
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import LanguageSwitcher from '../LanguageSwitcher.jsx';
+import NotificationsDropdown from '../NotificationsDropdown.jsx';
 import clsx from 'clsx';
 
 const navItems = [
@@ -169,6 +170,8 @@ const AdminLayout = ({ children }) => {
 
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
+
+            <NotificationsDropdown />
 
             {/* User menu */}
             <div className="relative">

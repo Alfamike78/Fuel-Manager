@@ -4,7 +4,8 @@
     "features": "Funzionalità",
     "pricing": "Prezzi",
     "login": "Accedi",
-    "register": "Inizia gratis"
+    "register": "Inizia gratis",
+    "notifications": "Notifiche"
   },
   "landing": {
     "hero": {
@@ -393,5 +394,25 @@
     "new_password": "Nuova password",
     "update_password": "Aggiorna password",
     "password_saved": "Password aggiornata con successo."
+  },
+  "notifications": {
+    "title": "Notifiche",
+    "subtitle": "Alert e avvisi sulle cisterne",
+    "all_clear": "Tutto in ordine",
+    "all_clear_desc": "Nessun avviso attivo",
+    "unread": "Non lette",
+    "mark_all_read": "Segna tutte come lette",
+    "mark_read": "Segna come letta",
+    "clear_read": "Elimina lette",
+    "view_all": "Vedi tutte",
+    "go_to_tank": "Vai alla cisterna",
+    "severity_critical": "Critico",
+    "severity_warning": "Avviso",
+    "severity_info": "Info",
+    "just_now": "adesso",
+    "minutes_ago": "min fa",
+    "hours_ago": "ore fa",
+    "days_ago": "giorni fa",
+    "tip_threshold": "Gli alert vengono generati automaticamente quando una cisterna scende sotto la soglia minima configurata. Puoi impostare la soglia nelle impostazioni della cisterna."
   }
 }

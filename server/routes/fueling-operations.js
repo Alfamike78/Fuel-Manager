@@ -1,6 +1,7 @@
 import express from 'express';
 import { pool } from '../config/db.js';
 import { verifyToken, requireRole } from '../middleware/auth.js';
+import { checkTankThresholdAndNotify } from '../utils/tankAlerts.js';
 
 const router = express.Router();
 
@@ -338,6 +339,13 @@ router.post('/', async (req, res, next) => {
     }
 
     await client.query('COMMIT');
+
+    // Post-commit: check tank threshold and fire alert if needed (non-blocking)
+    if (source_type === 'tank' && source_tank_id && sourceTank) {
+      const levelBefore = parseFloat(sourceTank.current_liters);
+      const levelAfter = levelBefore - parseFloat(liters);
+      checkTankThresholdAndNotify(cid, source_tank_id, levelBefore, levelAfter);
+    }
 
     // Return full record with joined fields
     const { rows: full } = await pool.query(

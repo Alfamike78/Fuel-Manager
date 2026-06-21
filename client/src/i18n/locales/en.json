@@ -4,7 +4,8 @@
     "features": "Features",
     "pricing": "Pricing",
     "login": "Login",
-    "register": "Get started"
+    "register": "Get started",
+    "notifications": "Notifications"
   },
   "landing": {
     "hero": {
@@ -393,5 +394,25 @@
     "new_password": "New password",
     "update_password": "Update password",
     "password_saved": "Password updated successfully."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Alerts and warnings about tanks",
+    "all_clear": "All clear",
+    "all_clear_desc": "No active alerts",
+    "unread": "Unread",
+    "mark_all_read": "Mark all as read",
+    "mark_read": "Mark as read",
+    "clear_read": "Clear read",
+    "view_all": "View all",
+    "go_to_tank": "Go to tank",
+    "severity_critical": "Critical",
+    "severity_warning": "Warning",
+    "severity_info": "Info",
+    "just_now": "just now",
+    "minutes_ago": "min ago",
+    "hours_ago": "hours ago",
+    "days_ago": "days ago",
+    "tip_threshold": "Alerts are generated automatically when a tank falls below its configured minimum threshold. You can set the threshold in the tank settings."
   }
 }

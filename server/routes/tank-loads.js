@@ -1,6 +1,7 @@
 import express from 'express';
 import { pool } from '../config/db.js';
 import { verifyToken, requireRole } from '../middleware/auth.js';
+import { dismissTankAlertIfResolved } from '../utils/tankAlerts.js';
 
 const router = express.Router();
 
@@ -82,6 +83,10 @@ router.post('/', async (req, res, next) => {
     );
 
     await client.query('COMMIT');
+
+    // Auto-dismiss low-tank alerts when the tank is refilled above threshold (non-blocking)
+    dismissTankAlertIfResolved(req.user.company_id, tank_id, newLevel);
+
     res.status(201).json({ ...rows[0], tank_level_after: newLevel });
   } catch (err) {
     await client.query('ROLLBACK');

@@ -238,6 +238,27 @@ CREATE INDEX IF NOT EXISTS idx_invitation_tokens_company_id ON invitation_tokens
 CREATE INDEX IF NOT EXISTS idx_invitation_tokens_email ON invitation_tokens(email);
 
 -- ============================================================
+-- NOTIFICATIONS (Phase 6B)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
+  type VARCHAR(50) NOT NULL,              -- tank_low, tank_critical
+  title TEXT NOT NULL,
+  message TEXT NOT NULL,
+  reference_id UUID,                      -- e.g. tank_id
+  reference_type VARCHAR(50),             -- tank
+  severity VARCHAR(20) DEFAULT 'warning', -- info, warning, critical
+  is_read BOOLEAN DEFAULT false,
+  read_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_company_id ON notifications(company_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON notifications(company_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at DESC);
+
+-- ============================================================
 -- DEFAULT SUBSCRIPTION PLANS
 -- ============================================================
 INSERT INTO subscription_plans (name, max_tanks, max_vehicles, max_users, can_export_pdf, can_export_excel, can_import, price_monthly, price_yearly) VALUES
