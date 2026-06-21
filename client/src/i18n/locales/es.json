@@ -227,7 +227,9 @@
     "export": "Exportar",
     "import": "Importar",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "save_changes": "Guardar cambios",
+    "remove": "Eliminar"
   },
   "fuel": {
     "jet_a1": "Jet A-1",
@@ -285,7 +287,10 @@
     "title": "Bases",
     "add": "Agregar base",
     "location": "Ubicación",
-    "tanks_count": "Tanques"
+    "tanks_count": "Tanques",
+    "edit": "Editar base",
+    "empty": "No hay bases configuradas",
+    "delete_confirm": "¿Eliminar esta base?"
   },
   "aircraft": {
     "title": "Aeronaves",
@@ -414,5 +419,28 @@
     "hours_ago": "horas atrás",
     "days_ago": "días atrás",
     "tip_threshold": "Las alertas se generan automáticamente cuando un depósito cae por debajo del umbral mínimo configurado. Puede establecer el umbral en la configuración del depósito."
+  },
+  "settings": {
+    "title": "Configuración",
+    "tab_general": "General",
+    "tab_bases": "Bases",
+    "tab_plan": "Plan",
+    "company_info": "Información de empresa",
+    "company_name": "Nombre de empresa",
+    "logo": "Logo",
+    "logo_hint": "PNG, JPG, SVG o WebP — máx 2 MB",
+    "upload_logo": "Subir logo",
+    "will_save_on_submit": "Se guardará al hacer clic en Guardar",
+    "brand_colors": "Colores de marca",
+    "primary_color": "Color principal (barra lateral)",
+    "secondary_color": "Color secundario (acentos)",
+    "preview": "Vista previa de la barra lateral",
+    "preview_note": "Los cambios son visuales — recarga la página para aplicarlos.",
+    "saved_success": "¡Configuración guardada con éxito!",
+    "current_plan": "Plan actual",
+    "plan_desc": "Detalles de tu plan de suscripción",
+    "trial_expires": "El plan de prueba expira en {{days}} días",
+    "upgrade_hint": "¿Necesitas más recursos?",
+    "upgrade_plan": "Actualizar plan"
   }
 }

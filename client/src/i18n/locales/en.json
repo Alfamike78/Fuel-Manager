@@ -227,7 +227,9 @@
     "export": "Export",
     "import": "Import",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "save_changes": "Save changes",
+    "remove": "Remove"
   },
   "fuel": {
     "jet_a1": "Jet A-1",
@@ -285,7 +287,10 @@
     "title": "Bases",
     "add": "Add Base",
     "location": "Location",
-    "tanks_count": "Tanks"
+    "tanks_count": "Tanks",
+    "edit": "Edit base",
+    "empty": "No bases configured",
+    "delete_confirm": "Delete this base?"
   },
   "aircraft": {
     "title": "Aircraft",
@@ -414,5 +419,28 @@
     "hours_ago": "hours ago",
     "days_ago": "days ago",
     "tip_threshold": "Alerts are generated automatically when a tank falls below its configured minimum threshold. You can set the threshold in the tank settings."
+  },
+  "settings": {
+    "title": "Settings",
+    "tab_general": "General",
+    "tab_bases": "Bases",
+    "tab_plan": "Plan",
+    "company_info": "Company information",
+    "company_name": "Company name",
+    "logo": "Logo",
+    "logo_hint": "PNG, JPG, SVG or WebP — max 2 MB",
+    "upload_logo": "Upload logo",
+    "will_save_on_submit": "Will be saved when you click Save",
+    "brand_colors": "Brand colors",
+    "primary_color": "Primary color (sidebar)",
+    "secondary_color": "Secondary color (accents)",
+    "preview": "Sidebar preview",
+    "preview_note": "Changes are visual — reload the page to apply them.",
+    "saved_success": "Settings saved successfully!",
+    "current_plan": "Current plan",
+    "plan_desc": "Your subscription plan details",
+    "trial_expires": "Trial plan expires in {{days}} days",
+    "upgrade_hint": "Need more resources?",
+    "upgrade_plan": "Upgrade plan"
   }
 }

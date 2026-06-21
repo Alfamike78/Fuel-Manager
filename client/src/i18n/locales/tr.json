@@ -227,7 +227,9 @@
     "export": "Dışa aktar",
     "import": "İçe aktar",
     "yes": "Evet",
-    "no": "Hayır"
+    "no": "Hayır",
+    "save_changes": "Değişiklikleri kaydet",
+    "remove": "Kaldır"
   },
   "fuel": {
     "jet_a1": "Jet A-1",
@@ -285,7 +287,10 @@
     "title": "Üsler",
     "add": "Üs Ekle",
     "location": "Konum",
-    "tanks_count": "Tanklar"
+    "tanks_count": "Tanklar",
+    "edit": "Üssü düzenle",
+    "empty": "Yapılandırılmış üs yok",
+    "delete_confirm": "Bu üssü sil?"
   },
   "aircraft": {
     "title": "Hava Araçları",
@@ -414,5 +419,28 @@
     "hours_ago": "saat önce",
     "days_ago": "gün önce",
     "tip_threshold": "Bir tankın seviyesi yapılandırılmış minimum eşiğin altına düştüğünde uyarılar otomatik olarak oluşturulur. Eşiği tank ayarlarında ayarlayabilirsiniz."
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "tab_general": "Genel",
+    "tab_bases": "Üsler",
+    "tab_plan": "Plan",
+    "company_info": "Şirket bilgileri",
+    "company_name": "Şirket adı",
+    "logo": "Logo",
+    "logo_hint": "PNG, JPG, SVG veya WebP — maks 2 MB",
+    "upload_logo": "Logo yükle",
+    "will_save_on_submit": "Kaydet'e tıkladığınızda kaydedilecek",
+    "brand_colors": "Marka renkleri",
+    "primary_color": "Ana renk (kenar çubuğu)",
+    "secondary_color": "İkincil renk (vurgular)",
+    "preview": "Kenar çubuğu önizleme",
+    "preview_note": "Değişiklikler görseldir — uygulamak için sayfayı yenileyin.",
+    "saved_success": "Ayarlar başarıyla kaydedildi!",
+    "current_plan": "Mevcut plan",
+    "plan_desc": "Abonelik planı ayrıntıları",
+    "trial_expires": "Deneme planı {{days}} gün içinde sona eriyor",
+    "upgrade_hint": "Daha fazla kaynağa mı ihtiyacınız var?",
+    "upgrade_plan": "Planı yükselt"
   }
 }

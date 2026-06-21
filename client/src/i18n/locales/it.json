@@ -157,7 +157,9 @@
     "export": "Esporta",
     "import": "Importa",
     "yes": "Sì",
-    "no": "No"
+    "no": "No",
+    "save_changes": "Salva modifiche",
+    "remove": "Rimuovi"
   },
   "fuel": {
     "jet_a1": "Jet A-1",
@@ -215,7 +217,10 @@
     "title": "Basi",
     "add": "Aggiungi base",
     "location": "Posizione",
-    "tanks_count": "Cisterne"
+    "tanks_count": "Cisterne",
+    "edit": "Modifica base",
+    "empty": "Nessuna base configurata",
+    "delete_confirm": "Eliminare questa base?"
   },
   "dashboard": {
     "welcome": "Benvenuto",
@@ -414,5 +419,28 @@
     "hours_ago": "ore fa",
     "days_ago": "giorni fa",
     "tip_threshold": "Gli alert vengono generati automaticamente quando una cisterna scende sotto la soglia minima configurata. Puoi impostare la soglia nelle impostazioni della cisterna."
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "tab_general": "Generale",
+    "tab_bases": "Basi",
+    "tab_plan": "Piano",
+    "company_info": "Informazioni azienda",
+    "company_name": "Nome azienda",
+    "logo": "Logo",
+    "logo_hint": "PNG, JPG, SVG o WebP — max 2 MB",
+    "upload_logo": "Carica logo",
+    "will_save_on_submit": "Verrà salvato al click su \"Salva\"",
+    "brand_colors": "Colori brand",
+    "primary_color": "Colore principale (sidebar)",
+    "secondary_color": "Colore secondario (accenti)",
+    "preview": "Anteprima sidebar",
+    "preview_note": "Le modifiche sono visive — ricarica la pagina per applicarle.",
+    "saved_success": "Impostazioni salvate con successo!",
+    "current_plan": "Piano attuale",
+    "plan_desc": "Dettagli del tuo piano di abbonamento",
+    "trial_expires": "Il piano Trial scade tra {{days}} giorni",
+    "upgrade_hint": "Hai bisogno di più risorse?",
+    "upgrade_plan": "Aggiorna piano"
   }
 }
