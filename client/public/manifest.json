@@ -1,0 +1,40 @@
+{
+  "name": "Fuel Manager — PilotCraft Solutions",
+  "short_name": "Fuel Manager",
+  "description": "Aviation fuel management platform",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#1e40af",
+  "lang": "it",
+  "categories": ["business", "utilities"],
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nuova operazione",
+      "short_name": "Operazione",
+      "url": "/dashboard/operations",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Cisterne",
+      "short_name": "Cisterne",
+      "url": "/dashboard/tanks",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -458,5 +458,10 @@
     "col_details": "Detalles",
     "of": "de",
     "privacy_note": "El registro de auditoría registra todas las operaciones críticas: repostajes, cambios en depósitos y gestión de usuarios. Los datos se conservan por razones de seguridad y cumplimiento."
+  },
+  "pwa": {
+    "install_title": "Instalar Fuel Manager",
+    "install_desc": "Añadir a la pantalla de inicio para acceso rápido",
+    "install": "Instalar"
   }
 }

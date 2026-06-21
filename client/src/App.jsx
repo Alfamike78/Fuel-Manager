@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { NotificationsProvider } from './contexts/NotificationsContext.jsx';
 import { useAuth } from './hooks/useAuth.js';
+import PWAInstallBanner from './components/PWAInstallBanner.jsx';
 
 // Pages
 import LandingPage from './pages/landing/LandingPage.jsx';
@@ -256,6 +257,7 @@ const App = () => {
           <Suspense fallback={<LoadingScreen />}>
             <AppRoutes />
           </Suspense>
+          <PWAInstallBanner />
         </NotificationsProvider>
       </AuthProvider>
     </BrowserRouter>
