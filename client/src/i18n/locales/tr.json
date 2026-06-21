@@ -186,5 +186,52 @@
     "superadmin": "Süper Yönetici",
     "admin": "Yönetici",
     "operator": "Operatör"
+  },
+  "tanks": {
+    "title": "Tanklar",
+    "add": "Tank Ekle",
+    "edit": "Tankı Düzenle",
+    "delete": "Tankı Sil",
+    "code": "Tank Kodu",
+    "type": "Tank Türü",
+    "fixed": "Sabit",
+    "mobile": "Mobil",
+    "capacity": "Kapasite (L)",
+    "current_level": "Mevcut Seviye (L)",
+    "threshold": "Min. Eşik (L)",
+    "instructions": "Operasyonel Talimatlar",
+    "no_base": "Üs atanmadı",
+    "assign_base": "Üse Ata",
+    "history": "Geçmişi Görüntüle",
+    "add_load": "Yükleme Ekle",
+    "qc_check": "KK Kontrolü",
+    "below_threshold": "Minimum eşiğin altında",
+    "level": "Seviye",
+    "filter_all": "Tüm Türler",
+    "filter_fixed": "Yalnızca Sabit",
+    "filter_mobile": "Yalnızca Mobil"
+  },
+  "loads": {
+    "title": "Tank Yüklemesi",
+    "provider": "Tedarikçi Adı",
+    "liters": "Litre",
+    "delivery_note": "İrsaliye Ref.",
+    "date": "Yükleme Tarihi",
+    "after_load": "Yüklemeden sonraki seviye"
+  },
+  "qc": {
+    "title": "Kalite Kontrol / Dip Tahliyesi",
+    "date": "Kontrol Tarihi",
+    "liters_drained": "Tahliye Edilen Litre",
+    "compliant": "Uygun",
+    "not_compliant": "Uygun Değil",
+    "notes_required": "Uyumsuzluk durumunda notlar zorunludur",
+    "actions_taken": "Kirliliği ve alınan önlemleri açıklayın"
+  },
+  "bases": {
+    "title": "Üsler",
+    "add": "Üs Ekle",
+    "location": "Konum",
+    "tanks_count": "Tanklar"
   }
 }

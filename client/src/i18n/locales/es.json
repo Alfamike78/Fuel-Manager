@@ -186,5 +186,52 @@
     "superadmin": "Superadministrador",
     "admin": "Administrador",
     "operator": "Operador"
+  },
+  "tanks": {
+    "title": "Tanques",
+    "add": "Agregar Tanque",
+    "edit": "Editar Tanque",
+    "delete": "Eliminar Tanque",
+    "code": "Código de Tanque",
+    "type": "Tipo de Tanque",
+    "fixed": "Fijo",
+    "mobile": "Móvil",
+    "capacity": "Capacidad (L)",
+    "current_level": "Nivel actual (L)",
+    "threshold": "Umbral mínimo (L)",
+    "instructions": "Instrucciones operativas",
+    "no_base": "Sin base asignada",
+    "assign_base": "Asignar a base",
+    "history": "Ver historial",
+    "add_load": "Agregar carga",
+    "qc_check": "Control CC",
+    "below_threshold": "Por debajo del umbral mínimo",
+    "level": "Nivel",
+    "filter_all": "Todos los tipos",
+    "filter_fixed": "Solo fijos",
+    "filter_mobile": "Solo móviles"
+  },
+  "loads": {
+    "title": "Carga de tanque",
+    "provider": "Nombre del proveedor",
+    "liters": "Litros",
+    "delivery_note": "Ref. albarán de entrega",
+    "date": "Fecha de carga",
+    "after_load": "Nivel después de la carga"
+  },
+  "qc": {
+    "title": "Control de Calidad / Purga",
+    "date": "Fecha de control",
+    "liters_drained": "Litros purgados",
+    "compliant": "Conforme",
+    "not_compliant": "No conforme",
+    "notes_required": "Las notas son obligatorias cuando no es conforme",
+    "actions_taken": "Describa la contaminación y las acciones tomadas"
+  },
+  "bases": {
+    "title": "Bases",
+    "add": "Agregar base",
+    "location": "Ubicación",
+    "tanks_count": "Tanques"
   }
 }

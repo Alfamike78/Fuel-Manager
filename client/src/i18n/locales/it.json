@@ -186,5 +186,52 @@
     "superadmin": "Super Amministratore",
     "admin": "Amministratore",
     "operator": "Operatore"
+  },
+  "tanks": {
+    "title": "Cisterne",
+    "add": "Aggiungi Cisterna",
+    "edit": "Modifica Cisterna",
+    "delete": "Elimina Cisterna",
+    "code": "Codice Cisterna",
+    "type": "Tipo Cisterna",
+    "fixed": "Fissa",
+    "mobile": "Mobile",
+    "capacity": "Capacità (L)",
+    "current_level": "Livello attuale (L)",
+    "threshold": "Soglia minima (L)",
+    "instructions": "Istruzioni operative",
+    "no_base": "Nessuna base assegnata",
+    "assign_base": "Assegna a base",
+    "history": "Storico",
+    "add_load": "Aggiungi carico",
+    "qc_check": "Controllo QC",
+    "below_threshold": "Sotto la soglia minima",
+    "level": "Livello",
+    "filter_all": "Tutti i tipi",
+    "filter_fixed": "Solo fisse",
+    "filter_mobile": "Solo mobili"
+  },
+  "loads": {
+    "title": "Carico cisterna",
+    "provider": "Nome fornitore",
+    "liters": "Litri",
+    "delivery_note": "Rif. bolla di consegna",
+    "date": "Data carico",
+    "after_load": "Livello dopo il carico"
+  },
+  "qc": {
+    "title": "Controllo qualità / Spurgo",
+    "date": "Data controllo",
+    "liters_drained": "Litri scaricati",
+    "compliant": "Conforme",
+    "not_compliant": "Non conforme",
+    "notes_required": "Note obbligatorie in caso di non conformità",
+    "actions_taken": "Descrivi la contaminazione e le azioni intraprese"
+  },
+  "bases": {
+    "title": "Basi",
+    "add": "Aggiungi base",
+    "location": "Posizione",
+    "tanks_count": "Cisterne"
   }
 }
