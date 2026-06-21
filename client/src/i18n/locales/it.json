@@ -320,5 +320,33 @@
     "empty_filter": "Prova a modificare i filtri",
     "empty_admin": "Aggiungi il tuo primo veicolo per iniziare",
     "empty_operator": "Nessun veicolo configurato"
+  },
+  "reports": {
+    "title": "Report",
+    "subtitle": "Analisi e export dei dati operativi",
+    "tab_fueling": "Rifornimenti",
+    "tab_tanks": "Cisterne",
+    "tab_qc": "Controlli Qualità",
+    "export_excel": "Excel",
+    "export_pdf": "PDF",
+    "all_fuels": "Tutti i carburanti",
+    "all_operators": "Tutti gli operatori",
+    "total_ops": "Operazioni",
+    "total_liters": "Litri totali",
+    "aircraft_ops": "Operazioni aeromobili",
+    "vehicle_ops": "Operazioni veicoli",
+    "total_tanks": "Cisterne attive",
+    "total_capacity": "Capacità totale",
+    "total_stored": "In giacenza",
+    "total_dispensed": "Erogato totale",
+    "dispensed_total": "Erogato",
+    "fill_pct": "Livello",
+    "qc_total": "Controlli totali",
+    "qc_compliant": "Conformi",
+    "qc_non_compliant": "Non conformi",
+    "qc_drained": "Litri spurgo",
+    "total": "Totale",
+    "rows": "righe",
+    "notes": "Note"
   }
 }

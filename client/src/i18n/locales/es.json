@@ -320,5 +320,33 @@
     "empty_filter": "Intente ajustar los filtros",
     "empty_admin": "Agregue su primer vehículo para comenzar",
     "empty_operator": "No hay vehículos configurados"
+  },
+  "reports": {
+    "title": "Informes",
+    "subtitle": "Análisis y exportación de datos operativos",
+    "tab_fueling": "Repostajes",
+    "tab_tanks": "Depósitos",
+    "tab_qc": "Controles de Calidad",
+    "export_excel": "Excel",
+    "export_pdf": "PDF",
+    "all_fuels": "Todos los combustibles",
+    "all_operators": "Todos los operadores",
+    "total_ops": "Operaciones",
+    "total_liters": "Litros totales",
+    "aircraft_ops": "Ops. aeronaves",
+    "vehicle_ops": "Ops. vehículos",
+    "total_tanks": "Depósitos activos",
+    "total_capacity": "Capacidad total",
+    "total_stored": "En stock",
+    "total_dispensed": "Total dispensado",
+    "dispensed_total": "Dispensado",
+    "fill_pct": "Nivel",
+    "qc_total": "Controles totales",
+    "qc_compliant": "Conformes",
+    "qc_non_compliant": "No conformes",
+    "qc_drained": "Litros drenados",
+    "total": "Total",
+    "rows": "filas",
+    "notes": "Notas"
   }
 }
