@@ -233,5 +233,40 @@
     "add": "Add Base",
     "location": "Location",
     "tanks_count": "Tanks"
+  },
+  "aircraft": {
+    "title": "Aircraft",
+    "singular": "aircraft",
+    "add": "Add Aircraft",
+    "edit": "Edit Aircraft",
+    "delete": "Delete Aircraft",
+    "delete_confirm": "Are you sure you want to delete {{reg}}? This action cannot be undone.",
+    "registration": "Registration",
+    "model": "Model",
+    "fuel_type": "Fuel Type",
+    "flight_hours": "Total Flight Hours",
+    "hours_label": "total hours",
+    "filter_all": "All Fuel Types",
+    "empty": "No aircraft found",
+    "empty_filter": "Try adjusting your filters",
+    "empty_admin": "Add your first aircraft to get started",
+    "empty_operator": "No aircraft configured yet"
+  },
+  "vehicles": {
+    "title": "Ground Vehicles",
+    "singular": "vehicle",
+    "add": "Add Vehicle",
+    "edit": "Edit Vehicle",
+    "delete": "Delete Vehicle",
+    "delete_confirm": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+    "plate": "Plate",
+    "name": "Name / Description",
+    "total_km": "Total Km",
+    "km_label": "total km",
+    "filter_all": "All Fuel Types",
+    "empty": "No vehicles found",
+    "empty_filter": "Try adjusting your filters",
+    "empty_admin": "Add your first vehicle to get started",
+    "empty_operator": "No vehicles configured yet"
   }
 }

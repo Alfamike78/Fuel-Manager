@@ -233,5 +233,40 @@
     "add": "Üs Ekle",
     "location": "Konum",
     "tanks_count": "Tanklar"
+  },
+  "aircraft": {
+    "title": "Hava Araçları",
+    "singular": "hava aracı",
+    "add": "Hava Aracı Ekle",
+    "edit": "Hava Aracını Düzenle",
+    "delete": "Hava Aracını Sil",
+    "delete_confirm": "{{reg}} adlı hava aracını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "registration": "Tescil",
+    "model": "Model",
+    "fuel_type": "Yakıt Türü",
+    "flight_hours": "Toplam Uçuş Saati",
+    "hours_label": "toplam saat",
+    "filter_all": "Tüm Yakıt Türleri",
+    "empty": "Hava aracı bulunamadı",
+    "empty_filter": "Filtreleri ayarlamayı deneyin",
+    "empty_admin": "Başlamak için ilk hava aracınızı ekleyin",
+    "empty_operator": "Henüz hava aracı yapılandırılmadı"
+  },
+  "vehicles": {
+    "title": "Kara Araçları",
+    "singular": "araç",
+    "add": "Araç Ekle",
+    "edit": "Aracı Düzenle",
+    "delete": "Aracı Sil",
+    "delete_confirm": "{{name}} adlı aracı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "plate": "Plaka",
+    "name": "Ad / Açıklama",
+    "total_km": "Toplam Km",
+    "km_label": "toplam km",
+    "filter_all": "Tüm Yakıt Türleri",
+    "empty": "Araç bulunamadı",
+    "empty_filter": "Filtreleri ayarlamayı deneyin",
+    "empty_admin": "Başlamak için ilk aracınızı ekleyin",
+    "empty_operator": "Henüz araç yapılandırılmadı"
   }
 }

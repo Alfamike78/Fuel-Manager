@@ -233,5 +233,40 @@
     "add": "Agregar base",
     "location": "Ubicación",
     "tanks_count": "Tanques"
+  },
+  "aircraft": {
+    "title": "Aeronaves",
+    "singular": "aeronave",
+    "add": "Agregar aeronave",
+    "edit": "Editar aeronave",
+    "delete": "Eliminar aeronave",
+    "delete_confirm": "¿Está seguro de que desea eliminar {{reg}}? Esta acción no se puede deshacer.",
+    "registration": "Matrícula",
+    "model": "Modelo",
+    "fuel_type": "Tipo de combustible",
+    "flight_hours": "Horas de vuelo totales",
+    "hours_label": "horas totales",
+    "filter_all": "Todos los combustibles",
+    "empty": "No se encontraron aeronaves",
+    "empty_filter": "Intente ajustar los filtros",
+    "empty_admin": "Agregue su primera aeronave para comenzar",
+    "empty_operator": "No hay aeronaves configuradas"
+  },
+  "vehicles": {
+    "title": "Vehículos terrestres",
+    "singular": "vehículo",
+    "add": "Agregar vehículo",
+    "edit": "Editar vehículo",
+    "delete": "Eliminar vehículo",
+    "delete_confirm": "¿Está seguro de que desea eliminar {{name}}? Esta acción no se puede deshacer.",
+    "plate": "Matrícula",
+    "name": "Nombre / Descripción",
+    "total_km": "Km totales",
+    "km_label": "km totales",
+    "filter_all": "Todos los combustibles",
+    "empty": "No se encontraron vehículos",
+    "empty_filter": "Intente ajustar los filtros",
+    "empty_admin": "Agregue su primer vehículo para comenzar",
+    "empty_operator": "No hay vehículos configurados"
   }
 }
