@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Fuel, Gauge, MapPin, BarChart3, Users, Settings,
   Menu, X, LogOut, ChevronDown, Plane, Truck,
-  ClipboardList, ChevronRight
+  ClipboardList, ChevronRight, UserCircle
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import LanguageSwitcher from '../LanguageSwitcher.jsx';
@@ -42,9 +42,10 @@ const navItems = [
     path: '/dashboard/reports',
   },
   {
-    label: 'roles.admin',
+    label: 'users.title',
     icon: Users,
     path: '/dashboard/users',
+    adminOnly: true,
   },
 ];
 
@@ -83,31 +84,34 @@ const AdminLayout = ({ children }) => {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.end}
-            onClick={() => setSidebarOpen(false)}
-            className={({ isActive }) =>
-              clsx(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-blue-600 text-white'
-                  : 'text-blue-200 hover:bg-blue-800 hover:text-white'
-              )
-            }
-          >
-            <item.icon size={18} />
-            {t(item.label)}
-          </NavLink>
-        ))}
+        {navItems
+          .filter((item) => !item.adminOnly || user?.role === 'admin')
+          .map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.end}
+              onClick={() => setSidebarOpen(false)}
+              className={({ isActive }) =>
+                clsx(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-blue-600 text-white'
+                    : 'text-blue-200 hover:bg-blue-800 hover:text-white'
+                )
+              }
+            >
+              <item.icon size={18} />
+              {t(item.label)}
+            </NavLink>
+          ))}
       </nav>
 
       {/* Bottom section */}
       <div className="px-3 py-4 border-t border-blue-800 space-y-1">
         <NavLink
-          to="/dashboard/settings"
+          to="/dashboard/profile"
+          onClick={() => setSidebarOpen(false)}
           className={({ isActive }) =>
             clsx(
               'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
@@ -117,8 +121,8 @@ const AdminLayout = ({ children }) => {
             )
           }
         >
-          <Settings size={18} />
-          Impostazioni
+          <UserCircle size={18} />
+          {t('profile.title')}
         </NavLink>
       </div>
     </div>
@@ -189,6 +193,15 @@ const AdminLayout = ({ children }) => {
                     </p>
                     <p className="text-xs text-gray-500">{user?.email}</p>
                   </div>
+                  <NavLink
+                    to="/dashboard/profile"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <UserCircle size={15} />
+                    {t('profile.title')}
+                  </NavLink>
+                  <div className="border-t border-gray-100" />
                   <button
                     onClick={handleLogout}
                     className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
