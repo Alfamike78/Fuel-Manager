@@ -17,6 +17,7 @@ import reportsRouter from './routes/reports.js';
 import usersRouter from './routes/users.js';
 import notificationsRouter from './routes/notifications.js';
 import companySettingsRouter from './routes/company-settings.js';
+import auditLogRouter from './routes/audit-log.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -55,6 +56,7 @@ app.use('/api/reports', reportsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/company-settings', companySettingsRouter);
+app.use('/api/audit-log', auditLogRouter);
 
 // 404 handler
 app.use((_req, res) => {

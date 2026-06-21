@@ -1,6 +1,7 @@
 import express from 'express';
 import { pool } from '../config/db.js';
 import { verifyToken, requireRole } from '../middleware/auth.js';
+import { logAudit } from '../utils/auditLog.js';
 
 const router = express.Router();
 
@@ -107,6 +108,7 @@ router.post('/', requireRole(['admin', 'superadmin']), async (req, res, next) =>
         instructions || null,
       ]
     );
+    logAudit({ company_id: req.user.company_id, user_id: req.user.id, action: 'tank.create', entity_type: 'tank', entity_id: rows[0].id, metadata: { name, code, fuel_type }, ip: req.ip });
     res.status(201).json(rows[0]);
   } catch (err) {
     next(err);
@@ -167,6 +169,7 @@ router.put('/:id', requireRole(['admin', 'superadmin']), async (req, res, next) 
        RETURNING *`,
       [name, code, tank_type, base_id || null, capacity_liters, min_threshold_liters || null, instructions || null, id, req.user.company_id]
     );
+    logAudit({ company_id: req.user.company_id, user_id: req.user.id, action: 'tank.update', entity_type: 'tank', entity_id: id, metadata: { name, code }, ip: req.ip });
     res.json(rows[0]);
   } catch (err) {
     next(err);
@@ -185,6 +188,7 @@ router.delete('/:id', requireRole(['admin', 'superadmin']), async (req, res, nex
     if (!rows.length) {
       return res.status(404).json({ error: 'Tank not found' });
     }
+    logAudit({ company_id: req.user.company_id, user_id: req.user.id, action: 'tank.delete', entity_type: 'tank', entity_id: req.params.id, ip: req.ip });
     res.json({ success: true });
   } catch (err) {
     next(err);

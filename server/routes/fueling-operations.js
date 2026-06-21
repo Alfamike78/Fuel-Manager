@@ -2,6 +2,7 @@ import express from 'express';
 import { pool } from '../config/db.js';
 import { verifyToken, requireRole } from '../middleware/auth.js';
 import { checkTankThresholdAndNotify } from '../utils/tankAlerts.js';
+import { logAudit } from '../utils/auditLog.js';
 
 const router = express.Router();
 
@@ -340,6 +341,17 @@ router.post('/', async (req, res, next) => {
 
     await client.query('COMMIT');
 
+    // Audit log
+    logAudit({
+      company_id: cid,
+      user_id: req.user.id,
+      action: 'fueling_operation.create',
+      entity_type: 'fueling_operation',
+      entity_id: operation.id,
+      metadata: { liters: parseFloat(liters), fuel_type, dest_type, source_type },
+      ip: req.ip,
+    });
+
     // Post-commit: check tank threshold and fire alert if needed (non-blocking)
     if (source_type === 'tank' && source_tank_id && sourceTank) {
       const levelBefore = parseFloat(sourceTank.current_liters);
@@ -410,6 +422,16 @@ router.delete('/:id', requireRole(['admin', 'superadmin']), async (req, res, nex
 
     await client.query('DELETE FROM fueling_operations WHERE id = $1', [op.id]);
     await client.query('COMMIT');
+
+    logAudit({
+      company_id: req.user.company_id,
+      user_id: req.user.id,
+      action: 'fueling_operation.delete',
+      entity_type: 'fueling_operation',
+      entity_id: op.id,
+      metadata: { liters: parseFloat(op.liters), fuel_type: op.fuel_type },
+      ip: req.ip,
+    });
 
     res.json({ success: true });
   } catch (err) {
