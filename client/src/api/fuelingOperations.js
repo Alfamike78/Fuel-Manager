@@ -14,3 +14,6 @@ export const deleteOperation = (id) =>
 
 export const getOperationsStats = () =>
   api.get('/fueling-operations/stats').then((r) => r.data);
+
+export const getDashboardCharts = () =>
+  api.get('/dashboard/charts').then((r) => r.data);
