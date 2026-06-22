@@ -8,6 +8,8 @@ import basesRouter from './routes/bases.js';
 import tanksRouter from './routes/tanks.js';
 import tankLoadsRouter from './routes/tank-loads.js';
 import qualityChecksRouter from './routes/quality-checks.js';
+import aircraftRouter from './routes/aircraft.js';
+import groundVehiclesRouter from './routes/ground-vehicles.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -34,6 +36,8 @@ app.use('/api/bases', basesRouter);
 app.use('/api/tanks', tanksRouter);
 app.use('/api/tank-loads', tankLoadsRouter);
 app.use('/api/quality-checks', qualityChecksRouter);
+app.use('/api/aircraft', aircraftRouter);
+app.use('/api/ground-vehicles', groundVehiclesRouter);
 
 // 404 handler
 app.use((_req, res) => {

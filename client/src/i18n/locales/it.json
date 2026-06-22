@@ -233,5 +233,40 @@
     "add": "Aggiungi base",
     "location": "Posizione",
     "tanks_count": "Cisterne"
+  },
+  "aircraft": {
+    "title": "Aeromobili",
+    "singular": "aeromobile",
+    "add": "Aggiungi aeromobile",
+    "edit": "Modifica aeromobile",
+    "delete": "Elimina aeromobile",
+    "delete_confirm": "Sei sicuro di voler eliminare {{reg}}? L'azione non è reversibile.",
+    "registration": "Matricola",
+    "model": "Modello",
+    "fuel_type": "Tipo carburante",
+    "flight_hours": "Ore totali di volo",
+    "hours_label": "ore totali",
+    "filter_all": "Tutti i carburanti",
+    "empty": "Nessun aeromobile trovato",
+    "empty_filter": "Prova a modificare i filtri",
+    "empty_admin": "Aggiungi il tuo primo aeromobile per iniziare",
+    "empty_operator": "Nessun aeromobile configurato"
+  },
+  "vehicles": {
+    "title": "Veicoli terrestri",
+    "singular": "veicolo",
+    "add": "Aggiungi veicolo",
+    "edit": "Modifica veicolo",
+    "delete": "Elimina veicolo",
+    "delete_confirm": "Sei sicuro di voler eliminare {{name}}? L'azione non è reversibile.",
+    "plate": "Targa",
+    "name": "Nome / Descrizione",
+    "total_km": "Km totali",
+    "km_label": "km totali",
+    "filter_all": "Tutti i carburanti",
+    "empty": "Nessun veicolo trovato",
+    "empty_filter": "Prova a modificare i filtri",
+    "empty_admin": "Aggiungi il tuo primo veicolo per iniziare",
+    "empty_operator": "Nessun veicolo configurato"
   }
 }

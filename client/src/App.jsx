@@ -11,6 +11,8 @@ import SuperAdminDashboard from './pages/superadmin/DashboardPage.jsx';
 import CompanyDashboard from './pages/company/DashboardPage.jsx';
 import TanksPage from './pages/company/tanks/TanksPage.jsx';
 import BasesPage from './pages/company/bases/BasesPage.jsx';
+import AircraftPage from './pages/company/aircraft/AircraftPage.jsx';
+import VehiclesPage from './pages/company/vehicles/VehiclesPage.jsx';
 
 // Loading fallback
 const LoadingScreen = () => (
@@ -113,6 +115,22 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <BasesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/aircraft"
+        element={
+          <ProtectedRoute>
+            <AircraftPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/vehicles"
+        element={
+          <ProtectedRoute>
+            <VehiclesPage />
           </ProtectedRoute>
         }
       />
