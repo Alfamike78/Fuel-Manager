@@ -4,6 +4,10 @@ import cors from 'cors';
 import authRoutes from './routes/auth.js';
 import companiesRoutes from './routes/companies.js';
 import profileRoutes from './routes/profile.js';
+import basesRouter from './routes/bases.js';
+import tanksRouter from './routes/tanks.js';
+import tankLoadsRouter from './routes/tank-loads.js';
+import qualityChecksRouter from './routes/quality-checks.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -26,6 +30,10 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/companies', companiesRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/bases', basesRouter);
+app.use('/api/tanks', tanksRouter);
+app.use('/api/tank-loads', tankLoadsRouter);
+app.use('/api/quality-checks', qualityChecksRouter);
 
 // 404 handler
 app.use((_req, res) => {
