@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
 import { verifyToken, requireRole } from '../middleware/auth.js';
+import { logAudit } from '../utils/auditLog.js';
 
 const router = express.Router();
 
@@ -87,6 +88,8 @@ router.post('/invite', requireRole('admin'), async (req, res, next) => {
     const companyResult = await pool.query('SELECT name FROM companies WHERE id = $1', [req.user.company_id]);
     const companyName = companyResult.rows[0]?.name || '';
 
+    logAudit({ company_id: req.user.company_id, user_id: req.user.id, action: 'user.invite', entity_type: 'user', metadata: { email: normalizedEmail, role }, ip: req.ip });
+
     res.status(201).json({
       token,
       invite_link: `${process.env.CLIENT_URL || 'http://localhost:5173'}/invite/${token}`,
@@ -126,6 +129,7 @@ router.patch('/:id/role', requireRole('admin'), async (req, res, next) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    logAudit({ company_id: req.user.company_id, user_id: req.user.id, action: 'user.role_change', entity_type: 'user', entity_id: id, metadata: { new_role: role }, ip: req.ip });
     res.json(result.rows[0]);
   } catch (err) {
     next(err);

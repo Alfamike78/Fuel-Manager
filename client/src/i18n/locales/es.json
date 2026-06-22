@@ -229,7 +229,8 @@
     "yes": "Sí",
     "no": "No",
     "save_changes": "Guardar cambios",
-    "remove": "Eliminar"
+    "remove": "Eliminar",
+    "refresh": "Actualizar"
   },
   "fuel": {
     "jet_a1": "Jet A-1",
@@ -442,5 +443,20 @@
     "trial_expires": "El plan de prueba expira en {{days}} días",
     "upgrade_hint": "¿Necesitas más recursos?",
     "upgrade_plan": "Actualizar plan"
+  },
+  "audit": {
+    "title": "Registro de auditoría",
+    "subtitle": "Registro inmutable de todas las acciones del sistema",
+    "filter_action": "Buscar acción...",
+    "all_entities": "Todas las entidades",
+    "empty": "No hay eventos registrados",
+    "empty_desc": "Las acciones aparecerán aquí a medida que se realicen",
+    "col_when": "Cuándo",
+    "col_user": "Usuario",
+    "col_action": "Acción",
+    "col_entity": "Entidad",
+    "col_details": "Detalles",
+    "of": "de",
+    "privacy_note": "El registro de auditoría registra todas las operaciones críticas: repostajes, cambios en depósitos y gestión de usuarios. Los datos se conservan por razones de seguridad y cumplimiento."
   }
 }

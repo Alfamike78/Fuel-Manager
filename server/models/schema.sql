@@ -238,6 +238,26 @@ CREATE INDEX IF NOT EXISTS idx_invitation_tokens_company_id ON invitation_tokens
 CREATE INDEX IF NOT EXISTS idx_invitation_tokens_email ON invitation_tokens(email);
 
 -- ============================================================
+-- AUDIT LOG (Phase 6D)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS audit_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  action VARCHAR(100) NOT NULL,         -- e.g. fueling_operation.create
+  entity_type VARCHAR(50),              -- fueling_operation, tank, user, etc.
+  entity_id UUID,
+  metadata JSONB,
+  ip VARCHAR(45),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_logs_company_id ON audit_logs(company_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_entity_type ON audit_logs(company_id, entity_type);
+
+-- ============================================================
 -- NOTIFICATIONS (Phase 6B)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS notifications (

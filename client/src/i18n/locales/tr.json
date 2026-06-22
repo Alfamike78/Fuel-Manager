@@ -229,7 +229,8 @@
     "yes": "Evet",
     "no": "Hayır",
     "save_changes": "Değişiklikleri kaydet",
-    "remove": "Kaldır"
+    "remove": "Kaldır",
+    "refresh": "Yenile"
   },
   "fuel": {
     "jet_a1": "Jet A-1",
@@ -442,5 +443,20 @@
     "trial_expires": "Deneme planı {{days}} gün içinde sona eriyor",
     "upgrade_hint": "Daha fazla kaynağa mı ihtiyacınız var?",
     "upgrade_plan": "Planı yükselt"
+  },
+  "audit": {
+    "title": "Denetim Günlüğü",
+    "subtitle": "Tüm sistem eylemlerinin değiştirilemez kaydı",
+    "filter_action": "Eylem ara...",
+    "all_entities": "Tüm varlıklar",
+    "empty": "Kayıtlı olay yok",
+    "empty_desc": "Eylemler gerçekleştirildikçe burada görünecek",
+    "col_when": "Ne zaman",
+    "col_user": "Kullanıcı",
+    "col_action": "Eylem",
+    "col_entity": "Varlık",
+    "col_details": "Ayrıntılar",
+    "of": "/",
+    "privacy_note": "Denetim günlüğü tüm kritik işlemleri kaydeder: yakıt ikmali, tank değişiklikleri ve kullanıcı yönetimi. Veriler güvenlik ve uyumluluk amaçlarıyla saklanır."
   }
 }

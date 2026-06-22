@@ -229,7 +229,8 @@
     "yes": "Yes",
     "no": "No",
     "save_changes": "Save changes",
-    "remove": "Remove"
+    "remove": "Remove",
+    "refresh": "Refresh"
   },
   "fuel": {
     "jet_a1": "Jet A-1",
@@ -442,5 +443,20 @@
     "trial_expires": "Trial plan expires in {{days}} days",
     "upgrade_hint": "Need more resources?",
     "upgrade_plan": "Upgrade plan"
+  },
+  "audit": {
+    "title": "Audit Log",
+    "subtitle": "Immutable record of all system actions",
+    "filter_action": "Search action...",
+    "all_entities": "All entities",
+    "empty": "No events recorded",
+    "empty_desc": "Actions will appear here as they are performed",
+    "col_when": "When",
+    "col_user": "User",
+    "col_action": "Action",
+    "col_entity": "Entity",
+    "col_details": "Details",
+    "of": "of",
+    "privacy_note": "The audit log records all critical operations: fueling operations, tank changes, and user management. Data is kept for security and compliance purposes."
   }
 }
