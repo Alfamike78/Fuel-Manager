@@ -14,8 +14,7 @@ const navItems = [
   {
     label: 'dashboard.operations',
     icon: Fuel,
-    path: '/dashboard',
-    end: true,
+    path: '/dashboard/operations',
   },
   {
     label: 'dashboard.tanks',
