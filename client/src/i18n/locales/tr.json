@@ -320,5 +320,33 @@
     "empty_filter": "Filtreleri ayarlamayı deneyin",
     "empty_admin": "Başlamak için ilk aracınızı ekleyin",
     "empty_operator": "Henüz araç yapılandırılmadı"
+  },
+  "reports": {
+    "title": "Raporlar",
+    "subtitle": "Operasyonel verilerin analizi ve dışa aktarımı",
+    "tab_fueling": "Yakıt İkmalı",
+    "tab_tanks": "Tanklar",
+    "tab_qc": "Kalite Kontrolleri",
+    "export_excel": "Excel",
+    "export_pdf": "PDF",
+    "all_fuels": "Tüm yakıt türleri",
+    "all_operators": "Tüm operatörler",
+    "total_ops": "İşlemler",
+    "total_liters": "Toplam litre",
+    "aircraft_ops": "Uçak işlemleri",
+    "vehicle_ops": "Araç işlemleri",
+    "total_tanks": "Aktif tanklar",
+    "total_capacity": "Toplam kapasite",
+    "total_stored": "Stokta",
+    "total_dispensed": "Toplam dağıtılan",
+    "dispensed_total": "Dağıtılan",
+    "fill_pct": "Seviye",
+    "qc_total": "Toplam kontrol",
+    "qc_compliant": "Uygun",
+    "qc_non_compliant": "Uygun değil",
+    "qc_drained": "Boşaltılan litre",
+    "total": "Toplam",
+    "rows": "satır",
+    "notes": "Notlar"
   }
 }

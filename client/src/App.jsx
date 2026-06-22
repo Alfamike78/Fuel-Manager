@@ -14,6 +14,7 @@ import BasesPage from './pages/company/bases/BasesPage.jsx';
 import AircraftPage from './pages/company/aircraft/AircraftPage.jsx';
 import VehiclesPage from './pages/company/vehicles/VehiclesPage.jsx';
 import OperationsPage from './pages/company/operations/OperationsPage.jsx';
+import ReportsPage from './pages/company/reports/ReportsPage.jsx';
 
 // Loading fallback
 const LoadingScreen = () => (
@@ -140,6 +141,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <OperationsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/reports"
+        element={
+          <ProtectedRoute>
+            <ReportsPage />
           </ProtectedRoute>
         }
       />

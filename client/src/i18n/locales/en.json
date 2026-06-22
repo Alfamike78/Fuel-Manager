@@ -320,5 +320,33 @@
     "empty_filter": "Try adjusting your filters",
     "empty_admin": "Add your first vehicle to get started",
     "empty_operator": "No vehicles configured yet"
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Analytics and export of operational data",
+    "tab_fueling": "Fueling",
+    "tab_tanks": "Tanks",
+    "tab_qc": "Quality Checks",
+    "export_excel": "Excel",
+    "export_pdf": "PDF",
+    "all_fuels": "All fuel types",
+    "all_operators": "All operators",
+    "total_ops": "Operations",
+    "total_liters": "Total liters",
+    "aircraft_ops": "Aircraft ops",
+    "vehicle_ops": "Vehicle ops",
+    "total_tanks": "Active tanks",
+    "total_capacity": "Total capacity",
+    "total_stored": "In stock",
+    "total_dispensed": "Total dispensed",
+    "dispensed_total": "Dispensed",
+    "fill_pct": "Level",
+    "qc_total": "Total checks",
+    "qc_compliant": "Compliant",
+    "qc_non_compliant": "Non-compliant",
+    "qc_drained": "Liters drained",
+    "total": "Total",
+    "rows": "rows",
+    "notes": "Notes"
   }
 }
