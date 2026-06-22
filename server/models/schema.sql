@@ -219,6 +219,25 @@ CREATE INDEX IF NOT EXISTS idx_quality_checks_tank_id ON quality_checks(tank_id)
 CREATE INDEX IF NOT EXISTS idx_quality_checks_aircraft_id ON quality_checks(aircraft_id);
 
 -- ============================================================
+-- INVITATION TOKENS (Phase 5B)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS invitation_tokens (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
+  email VARCHAR(255) NOT NULL,
+  role VARCHAR(20) NOT NULL DEFAULT 'operator',
+  token VARCHAR(64) UNIQUE NOT NULL,
+  invited_by UUID REFERENCES users(id),
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_invitation_tokens_token ON invitation_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_invitation_tokens_company_id ON invitation_tokens(company_id);
+CREATE INDEX IF NOT EXISTS idx_invitation_tokens_email ON invitation_tokens(email);
+
+-- ============================================================
 -- DEFAULT SUBSCRIPTION PLANS
 -- ============================================================
 INSERT INTO subscription_plans (name, max_tanks, max_vehicles, max_users, can_export_pdf, can_export_excel, can_import, price_monthly, price_yearly) VALUES

@@ -91,6 +91,17 @@ export const AuthProvider = ({ children }) => {
     setAxiosAuth(null);
   }, [setAxiosAuth]);
 
+  const loginWithToken = useCallback((newToken, newUser) => {
+    localStorage.setItem(TOKEN_KEY, newToken);
+    localStorage.setItem(USER_KEY, JSON.stringify(newUser));
+    setToken(newToken);
+    setUser(newUser);
+    setAxiosAuth(newToken);
+    if (newUser.language) {
+      i18n.changeLanguage(newUser.language);
+    }
+  }, [setAxiosAuth]);
+
   const updateUser = useCallback((updatedUser) => {
     const merged = { ...user, ...updatedUser };
     setUser(merged);
@@ -109,6 +120,7 @@ export const AuthProvider = ({ children }) => {
     role: user?.role || null,
     companyId: user?.company_id || null,
     login,
+    loginWithToken,
     register,
     logout,
     updateUser,

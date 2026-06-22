@@ -15,6 +15,9 @@ import AircraftPage from './pages/company/aircraft/AircraftPage.jsx';
 import VehiclesPage from './pages/company/vehicles/VehiclesPage.jsx';
 import OperationsPage from './pages/company/operations/OperationsPage.jsx';
 import ReportsPage from './pages/company/reports/ReportsPage.jsx';
+import UsersPage from './pages/company/users/UsersPage.jsx';
+import ProfilePage from './pages/company/profile/ProfilePage.jsx';
+import InviteAcceptPage from './pages/invite/InviteAcceptPage.jsx';
 
 // Loading fallback
 const LoadingScreen = () => (
@@ -160,6 +163,27 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+
+      {/* User management */}
+      <Route
+        path="/dashboard/users"
+        element={
+          <ProtectedRoute>
+            <UsersPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* Profile */}
+      <Route
+        path="/dashboard/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+      {/* Invite accept (public) */}
+      <Route path="/invite/:token" element={<InviteAcceptPage />} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -12,6 +12,7 @@ import aircraftRouter from './routes/aircraft.js';
 import groundVehiclesRouter from './routes/ground-vehicles.js';
 import fuelingOperationsRouter from './routes/fueling-operations.js';
 import reportsRouter from './routes/reports.js';
+import usersRouter from './routes/users.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -42,6 +43,7 @@ app.use('/api/aircraft', aircraftRouter);
 app.use('/api/ground-vehicles', groundVehiclesRouter);
 app.use('/api/fueling-operations', fuelingOperationsRouter);
 app.use('/api/reports', reportsRouter);
+app.use('/api/users', usersRouter);
 
 // 404 handler
 app.use((_req, res) => {
