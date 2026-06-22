@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  Fuel, Gauge, MapPin, BarChart3, Users, Settings,
+  Fuel, Gauge, MapPin, BarChart3, Users, Settings as SettingsIcon,
   Menu, X, LogOut, ChevronDown, Plane, Truck,
   ClipboardList, ChevronRight, UserCircle, Bell
 } from 'lucide-react';
@@ -46,6 +46,12 @@ const navItems = [
     label: 'users.title',
     icon: Users,
     path: '/dashboard/users',
+    adminOnly: true,
+  },
+  {
+    label: 'settings.title',
+    icon: SettingsIcon,
+    path: '/dashboard/settings',
     adminOnly: true,
   },
 ];

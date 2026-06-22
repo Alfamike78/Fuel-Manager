@@ -19,6 +19,7 @@ import ReportsPage from './pages/company/reports/ReportsPage.jsx';
 import UsersPage from './pages/company/users/UsersPage.jsx';
 import ProfilePage from './pages/company/profile/ProfilePage.jsx';
 import NotificationsPage from './pages/company/notifications/NotificationsPage.jsx';
+import SettingsPage from './pages/company/settings/SettingsPage.jsx';
 import InviteAcceptPage from './pages/invite/InviteAcceptPage.jsx';
 
 // Loading fallback
@@ -181,6 +182,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+      {/* Settings */}
+      <Route
+        path="/dashboard/settings"
+        element={
+          <ProtectedRoute>
+            <SettingsPage />
           </ProtectedRoute>
         }
       />
