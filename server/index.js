@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { rateLimit } from 'express-rate-limit';
 import authRoutes from './routes/auth.js';
 import companiesRoutes from './routes/companies.js';
 import profileRoutes from './routes/profile.js';
@@ -41,8 +42,17 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'Fuel Manager API', version: '1.0.0' });
 });
 
+// Rate limiting — max 10 tentativi ogni 15 minuti per IP sulle route auth
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Troppi tentativi. Riprova tra 15 minuti.' },
+});
+
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/companies', companiesRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/bases', basesRouter);
