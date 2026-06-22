@@ -4,7 +4,8 @@
     "features": "Özellikler",
     "pricing": "Fiyatlar",
     "login": "Giriş Yap",
-    "register": "Başlayın"
+    "register": "Başlayın",
+    "notifications": "Bildirimler"
   },
   "landing": {
     "hero": {
@@ -393,5 +394,25 @@
     "new_password": "Yeni şifre",
     "update_password": "Şifreyi güncelle",
     "password_saved": "Şifre başarıyla güncellendi."
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "subtitle": "Tank uyarıları ve bildirimleri",
+    "all_clear": "Her şey yolunda",
+    "all_clear_desc": "Aktif uyarı yok",
+    "unread": "Okunmamış",
+    "mark_all_read": "Tümünü okundu işaretle",
+    "mark_read": "Okundu işaretle",
+    "clear_read": "Okunanları sil",
+    "view_all": "Tümünü gör",
+    "go_to_tank": "Tanka git",
+    "severity_critical": "Kritik",
+    "severity_warning": "Uyarı",
+    "severity_info": "Bilgi",
+    "just_now": "şimdi",
+    "minutes_ago": "dk önce",
+    "hours_ago": "saat önce",
+    "days_ago": "gün önce",
+    "tip_threshold": "Bir tankın seviyesi yapılandırılmış minimum eşiğin altına düştüğünde uyarılar otomatik olarak oluşturulur. Eşiği tank ayarlarında ayarlayabilirsiniz."
   }
 }

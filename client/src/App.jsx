@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext.jsx';
+import { NotificationsProvider } from './contexts/NotificationsContext.jsx';
 import { useAuth } from './hooks/useAuth.js';
 
 // Pages
@@ -17,6 +18,7 @@ import OperationsPage from './pages/company/operations/OperationsPage.jsx';
 import ReportsPage from './pages/company/reports/ReportsPage.jsx';
 import UsersPage from './pages/company/users/UsersPage.jsx';
 import ProfilePage from './pages/company/profile/ProfilePage.jsx';
+import NotificationsPage from './pages/company/notifications/NotificationsPage.jsx';
 import InviteAcceptPage from './pages/invite/InviteAcceptPage.jsx';
 
 // Loading fallback
@@ -182,6 +184,15 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      {/* Notifications */}
+      <Route
+        path="/dashboard/notifications"
+        element={
+          <ProtectedRoute>
+            <NotificationsPage />
+          </ProtectedRoute>
+        }
+      />
       {/* Invite accept (public) */}
       <Route path="/invite/:token" element={<InviteAcceptPage />} />
 
@@ -195,9 +206,11 @@ const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Suspense fallback={<LoadingScreen />}>
-          <AppRoutes />
-        </Suspense>
+        <NotificationsProvider>
+          <Suspense fallback={<LoadingScreen />}>
+            <AppRoutes />
+          </Suspense>
+        </NotificationsProvider>
       </AuthProvider>
     </BrowserRouter>
   );
