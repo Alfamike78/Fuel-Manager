@@ -1,4 +1,5 @@
 import { pool } from '../config/db.js';
+import { sendTankAlertEmail } from './email.js';
 
 /**
  * After a fueling operation deducts from a source tank, check if the tank
@@ -52,6 +53,31 @@ export async function checkTankThresholdAndNotify(companyId, tankId, levelBefore
         severity,
       ]
     );
+
+    // Email all active admins of this company
+    const { rows: companyRows } = await pool.query(
+      'SELECT name FROM companies WHERE id = $1',
+      [companyId]
+    );
+    const companyName = companyRows[0]?.name || '';
+
+    const { rows: adminRows } = await pool.query(
+      `SELECT email FROM users WHERE company_id = $1 AND role = 'admin' AND is_active = true`,
+      [companyId]
+    );
+
+    for (const admin of adminRows) {
+      sendTankAlertEmail({
+        to: admin.email,
+        companyName,
+        tankName: tank.name,
+        tankCode: tank.code,
+        levelLiters: levelAfter,
+        thresholdLiters: threshold,
+        capacityLiters: parseFloat(tank.capacity_liters),
+        severity,
+      }).catch((err) => console.error('[email] tank alert send failed:', err.message));
+    }
   } catch (_) {
     // Notifications are non-critical; never let a failure here break the main operation
   }

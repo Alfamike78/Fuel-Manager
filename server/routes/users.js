@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
 import { verifyToken, requireRole } from '../middleware/auth.js';
 import { logAudit } from '../utils/auditLog.js';
+import { sendInviteEmail } from '../utils/email.js';
 
 const router = express.Router();
 
@@ -90,9 +91,20 @@ router.post('/invite', requireRole('admin'), async (req, res, next) => {
 
     logAudit({ company_id: req.user.company_id, user_id: req.user.id, action: 'user.invite', entity_type: 'user', metadata: { email: normalizedEmail, role }, ip: req.ip });
 
+    const inviteLink = `${process.env.CLIENT_URL || 'http://localhost:5173'}/invite/${token}`;
+
+    // Send invite email (non-blocking — don't fail the request if email fails)
+    sendInviteEmail({
+      to: normalizedEmail,
+      inviterName: `${req.user.first_name} ${req.user.last_name}`.trim() || req.user.email,
+      companyName,
+      inviteLink,
+      role,
+    }).catch((err) => console.error('[email] invite send failed:', err.message));
+
     res.status(201).json({
       token,
-      invite_link: `${process.env.CLIENT_URL || 'http://localhost:5173'}/invite/${token}`,
+      invite_link: inviteLink,
       email: normalizedEmail,
       role,
       company_name: companyName,
