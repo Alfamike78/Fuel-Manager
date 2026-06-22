@@ -1,0 +1,190 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Funzionalità",
+    "pricing": "Prezzi",
+    "login": "Accedi",
+    "register": "Inizia gratis"
+  },
+  "landing": {
+    "hero": {
+      "title": "Gestione carburante per l'aviazione semplice e sicura",
+      "subtitle": "Traccia rifornimenti, gestisci cisterne e veicoli, genera report di conformità — tutto in un'unica piattaforma cloud progettata per operatori aeronautici.",
+      "cta": "Inizia la prova gratuita",
+      "cta_demo": "Guarda la demo"
+    },
+    "features": {
+      "title": "Tutto quello che ti serve per gestire il carburante in aviazione",
+      "subtitle": "Dalla cisterna all'aeromobile, ogni litro tracciato con precisione.",
+      "items": {
+        "fuel": {
+          "title": "Rifornimenti precisi",
+          "desc": "Registra ogni operazione di rifornimento con fotografie del contatore, firma digitale e dati del volo."
+        },
+        "tanks": {
+          "title": "Monitoraggio cisterne",
+          "desc": "Tieni d'occhio i livelli in tempo reale, imposta soglie minime e ricevi avvisi automatici."
+        },
+        "locations": {
+          "title": "Multi-base",
+          "desc": "Gestisci più basi operative in luoghi diversi da un'unica dashboard centralizzata."
+        },
+        "reports": {
+          "title": "Report e analisi",
+          "desc": "Esporta report PDF ed Excel per audit, conformità normativa e analisi dei consumi."
+        },
+        "security": {
+          "title": "Sicurezza e ruoli",
+          "desc": "Controllo degli accessi granulare con ruoli superadmin, amministratore e operatore."
+        },
+        "globe": {
+          "title": "Multilingua",
+          "desc": "Interfaccia disponibile in italiano, inglese, turco e spagnolo per team internazionali."
+        }
+      }
+    },
+    "how_it_works": {
+      "title": "Come funziona",
+      "subtitle": "Operativo in pochi minuti",
+      "steps": {
+        "1": {
+          "title": "Registra la tua azienda",
+          "desc": "Crea il tuo account in 60 secondi. Nessuna carta di credito richiesta per la prova gratuita."
+        },
+        "2": {
+          "title": "Configura basi e cisterne",
+          "desc": "Aggiungi le tue basi operative, cisterne, aeromobili e veicoli a terra."
+        },
+        "3": {
+          "title": "Inizia a tracciare",
+          "desc": "Gli operatori registrano ogni rifornimento in tempo reale. I report si generano automaticamente."
+        }
+      }
+    },
+    "pricing": {
+      "title": "Piani semplici e trasparenti",
+      "subtitle": "Scegli il piano adatto alla tua operazione. Cambia o annulla in qualsiasi momento.",
+      "monthly": "Mensile",
+      "yearly": "Annuale",
+      "yearly_save": "Risparmia 2 mesi",
+      "per_month": "/mese",
+      "per_year": "/anno",
+      "free": "Gratuito",
+      "cta_trial": "Inizia la prova",
+      "cta_start": "Inizia ora",
+      "cta_contact": "Contattaci",
+      "recommended": "Consigliato",
+      "features": {
+        "tanks": "cisterne",
+        "vehicles": "veicoli",
+        "users": "utenti",
+        "unlimited": "illimitati",
+        "pdf_export": "Esportazione PDF",
+        "excel_export": "Esportazione Excel",
+        "import": "Importazione dati",
+        "support_email": "Supporto email",
+        "support_priority": "Supporto prioritario",
+        "support_dedicated": "Account manager dedicato"
+      }
+    },
+    "cta_section": {
+      "title": "Pronto a ottimizzare la gestione del carburante?",
+      "subtitle": "Unisciti a centinaia di operatori aeronautici che si affidano a Fuel Manager.",
+      "button": "Inizia la prova gratuita di 14 giorni"
+    },
+    "footer": {
+      "tagline": "La piattaforma di gestione carburante per operatori aeronautici professionali.",
+      "product": "Prodotto",
+      "company": "Azienda",
+      "legal": "Legale",
+      "features": "Funzionalità",
+      "pricing": "Prezzi",
+      "about": "Chi siamo",
+      "contact": "Contatti",
+      "privacy": "Privacy Policy",
+      "terms": "Termini di servizio",
+      "rights": "Tutti i diritti riservati."
+    }
+  },
+  "plans": {
+    "trial": "Trial",
+    "basic": "Basic",
+    "pro": "Pro",
+    "enterprise": "Enterprise",
+    "trial_desc": "Perfetto per testare la piattaforma",
+    "basic_desc": "Per piccoli operatori e club aerei",
+    "pro_desc": "Per operatori di medie dimensioni",
+    "enterprise_desc": "Per grandi operazioni con esigenze personalizzate"
+  },
+  "auth": {
+    "login": "Accedi",
+    "register": "Registrati",
+    "email": "Email",
+    "password": "Password",
+    "company_name": "Nome azienda",
+    "first_name": "Nome",
+    "last_name": "Cognome",
+    "submit": "Invia",
+    "logout": "Esci",
+    "login_title": "Accedi al tuo account",
+    "login_subtitle": "Bentornato in Fuel Manager",
+    "register_title": "Crea il tuo account",
+    "register_subtitle": "Inizia la prova gratuita di 14 giorni",
+    "no_account": "Non hai un account?",
+    "have_account": "Hai già un account?",
+    "forgot_password": "Password dimenticata?",
+    "password_min": "Almeno 8 caratteri",
+    "login_error": "Email o password non corretti",
+    "register_error": "Errore durante la registrazione",
+    "email_placeholder": "nome@azienda.com",
+    "password_placeholder": "Almeno 8 caratteri"
+  },
+  "dashboard": {
+    "welcome": "Benvenuto",
+    "tanks": "Cisterne",
+    "aircraft": "Aeromobili",
+    "vehicles": "Veicoli",
+    "operations": "Operazioni oggi",
+    "reports": "Report",
+    "total_companies": "Aziende totali",
+    "active_companies": "Aziende attive",
+    "trial_companies": "In prova",
+    "monthly_revenue": "Ricavi mensili",
+    "recent_operations": "Operazioni recenti",
+    "quick_actions": "Azioni rapide",
+    "new_operation": "Nuova operazione",
+    "view_reports": "Visualizza report",
+    "manage_tanks": "Gestisci cisterne",
+    "manage_aircraft": "Gestisci aeromobili"
+  },
+  "common": {
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "add": "Aggiungi",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "success": "Successo",
+    "confirm": "Conferma",
+    "back": "Indietro",
+    "next": "Avanti",
+    "search": "Cerca",
+    "filter": "Filtra",
+    "export": "Esporta",
+    "import": "Importa",
+    "yes": "Sì",
+    "no": "No"
+  },
+  "fuel": {
+    "jet_a1": "Jet A-1",
+    "avgas": "Avgas 100LL",
+    "diesel": "Diesel",
+    "gasoline": "Benzina"
+  },
+  "roles": {
+    "superadmin": "Super Amministratore",
+    "admin": "Amministratore",
+    "operator": "Operatore"
+  }
+}

@@ -1,0 +1,190 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "pricing": "Pricing",
+    "login": "Login",
+    "register": "Get started"
+  },
+  "landing": {
+    "hero": {
+      "title": "Simple and safe aviation fuel management",
+      "subtitle": "Track refueling operations, manage tanks and vehicles, generate compliance reports — all in one cloud platform designed for aviation operators.",
+      "cta": "Start free trial",
+      "cta_demo": "Watch demo"
+    },
+    "features": {
+      "title": "Everything you need to manage aviation fuel",
+      "subtitle": "From tank to aircraft, every liter tracked with precision.",
+      "items": {
+        "fuel": {
+          "title": "Precise refueling",
+          "desc": "Log every fueling operation with meter photos, digital signature, and flight data."
+        },
+        "tanks": {
+          "title": "Tank monitoring",
+          "desc": "Monitor levels in real-time, set minimum thresholds, and receive automatic alerts."
+        },
+        "locations": {
+          "title": "Multi-base",
+          "desc": "Manage multiple operational bases in different locations from a single centralized dashboard."
+        },
+        "reports": {
+          "title": "Reports & analytics",
+          "desc": "Export PDF and Excel reports for audits, regulatory compliance, and consumption analysis."
+        },
+        "security": {
+          "title": "Security & roles",
+          "desc": "Granular access control with superadmin, administrator, and operator roles."
+        },
+        "globe": {
+          "title": "Multilingual",
+          "desc": "Interface available in Italian, English, Turkish, and Spanish for international teams."
+        }
+      }
+    },
+    "how_it_works": {
+      "title": "How it works",
+      "subtitle": "Up and running in minutes",
+      "steps": {
+        "1": {
+          "title": "Register your company",
+          "desc": "Create your account in 60 seconds. No credit card required for the free trial."
+        },
+        "2": {
+          "title": "Configure bases and tanks",
+          "desc": "Add your operational bases, tanks, aircraft, and ground vehicles."
+        },
+        "3": {
+          "title": "Start tracking",
+          "desc": "Operators log every refueling operation in real-time. Reports generate automatically."
+        }
+      }
+    },
+    "pricing": {
+      "title": "Simple, transparent pricing",
+      "subtitle": "Choose the plan that fits your operation. Change or cancel anytime.",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "yearly_save": "Save 2 months",
+      "per_month": "/month",
+      "per_year": "/year",
+      "free": "Free",
+      "cta_trial": "Start trial",
+      "cta_start": "Get started",
+      "cta_contact": "Contact us",
+      "recommended": "Recommended",
+      "features": {
+        "tanks": "tanks",
+        "vehicles": "vehicles",
+        "users": "users",
+        "unlimited": "unlimited",
+        "pdf_export": "PDF export",
+        "excel_export": "Excel export",
+        "import": "Data import",
+        "support_email": "Email support",
+        "support_priority": "Priority support",
+        "support_dedicated": "Dedicated account manager"
+      }
+    },
+    "cta_section": {
+      "title": "Ready to optimize your fuel management?",
+      "subtitle": "Join hundreds of aviation operators who trust Fuel Manager.",
+      "button": "Start your 14-day free trial"
+    },
+    "footer": {
+      "tagline": "The fuel management platform for professional aviation operators.",
+      "product": "Product",
+      "company": "Company",
+      "legal": "Legal",
+      "features": "Features",
+      "pricing": "Pricing",
+      "about": "About us",
+      "contact": "Contact",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "rights": "All rights reserved."
+    }
+  },
+  "plans": {
+    "trial": "Trial",
+    "basic": "Basic",
+    "pro": "Pro",
+    "enterprise": "Enterprise",
+    "trial_desc": "Perfect for testing the platform",
+    "basic_desc": "For small operators and flying clubs",
+    "pro_desc": "For medium-sized operators",
+    "enterprise_desc": "For large operations with custom needs"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "company_name": "Company name",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "submit": "Submit",
+    "logout": "Logout",
+    "login_title": "Sign in to your account",
+    "login_subtitle": "Welcome back to Fuel Manager",
+    "register_title": "Create your account",
+    "register_subtitle": "Start your 14-day free trial",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "forgot_password": "Forgot password?",
+    "password_min": "At least 8 characters",
+    "login_error": "Invalid email or password",
+    "register_error": "Registration failed",
+    "email_placeholder": "name@company.com",
+    "password_placeholder": "At least 8 characters"
+  },
+  "dashboard": {
+    "welcome": "Welcome",
+    "tanks": "Tanks",
+    "aircraft": "Aircraft",
+    "vehicles": "Vehicles",
+    "operations": "Operations today",
+    "reports": "Reports",
+    "total_companies": "Total companies",
+    "active_companies": "Active companies",
+    "trial_companies": "On trial",
+    "monthly_revenue": "Monthly revenue",
+    "recent_operations": "Recent operations",
+    "quick_actions": "Quick actions",
+    "new_operation": "New operation",
+    "view_reports": "View reports",
+    "manage_tanks": "Manage tanks",
+    "manage_aircraft": "Manage aircraft"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "fuel": {
+    "jet_a1": "Jet A-1",
+    "avgas": "Avgas 100LL",
+    "diesel": "Diesel",
+    "gasoline": "Gasoline"
+  },
+  "roles": {
+    "superadmin": "Super Administrator",
+    "admin": "Administrator",
+    "operator": "Operator"
+  }
+}

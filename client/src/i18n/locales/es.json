@@ -1,0 +1,190 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "features": "Funciones",
+    "pricing": "Precios",
+    "login": "Iniciar sesión",
+    "register": "Empezar gratis"
+  },
+  "landing": {
+    "hero": {
+      "title": "Gestión de combustible de aviación simple y segura",
+      "subtitle": "Registra operaciones de repostaje, gestiona tanques y vehículos, genera informes de cumplimiento — todo en una sola plataforma en la nube diseñada para operadores de aviación.",
+      "cta": "Empezar prueba gratuita",
+      "cta_demo": "Ver demo"
+    },
+    "features": {
+      "title": "Todo lo que necesitas para gestionar el combustible de aviación",
+      "subtitle": "Desde el tanque hasta la aeronave, cada litro rastreado con precisión.",
+      "items": {
+        "fuel": {
+          "title": "Repostaje preciso",
+          "desc": "Registra cada operación de repostaje con fotos del medidor, firma digital y datos del vuelo."
+        },
+        "tanks": {
+          "title": "Monitoreo de tanques",
+          "desc": "Controla los niveles en tiempo real, establece umbrales mínimos y recibe alertas automáticas."
+        },
+        "locations": {
+          "title": "Multi-base",
+          "desc": "Gestiona múltiples bases operativas en diferentes ubicaciones desde un panel centralizado."
+        },
+        "reports": {
+          "title": "Informes y análisis",
+          "desc": "Exporta informes en PDF y Excel para auditorías, cumplimiento normativo y análisis de consumo."
+        },
+        "security": {
+          "title": "Seguridad y roles",
+          "desc": "Control de acceso granular con roles de superadministrador, administrador y operador."
+        },
+        "globe": {
+          "title": "Multilingüe",
+          "desc": "Interfaz disponible en italiano, inglés, turco y español para equipos internacionales."
+        }
+      }
+    },
+    "how_it_works": {
+      "title": "Cómo funciona",
+      "subtitle": "Operativo en minutos",
+      "steps": {
+        "1": {
+          "title": "Registra tu empresa",
+          "desc": "Crea tu cuenta en 60 segundos. No se requiere tarjeta de crédito para la prueba gratuita."
+        },
+        "2": {
+          "title": "Configura bases y tanques",
+          "desc": "Agrega tus bases operativas, tanques, aeronaves y vehículos terrestres."
+        },
+        "3": {
+          "title": "Comienza a rastrear",
+          "desc": "Los operadores registran cada repostaje en tiempo real. Los informes se generan automáticamente."
+        }
+      }
+    },
+    "pricing": {
+      "title": "Precios simples y transparentes",
+      "subtitle": "Elige el plan que se adapte a tu operación. Cambia o cancela en cualquier momento.",
+      "monthly": "Mensual",
+      "yearly": "Anual",
+      "yearly_save": "Ahorra 2 meses",
+      "per_month": "/mes",
+      "per_year": "/año",
+      "free": "Gratis",
+      "cta_trial": "Iniciar prueba",
+      "cta_start": "Empezar ahora",
+      "cta_contact": "Contáctanos",
+      "recommended": "Recomendado",
+      "features": {
+        "tanks": "tanques",
+        "vehicles": "vehículos",
+        "users": "usuarios",
+        "unlimited": "ilimitados",
+        "pdf_export": "Exportación PDF",
+        "excel_export": "Exportación Excel",
+        "import": "Importación de datos",
+        "support_email": "Soporte por email",
+        "support_priority": "Soporte prioritario",
+        "support_dedicated": "Gestor de cuenta dedicado"
+      }
+    },
+    "cta_section": {
+      "title": "¿Listo para optimizar tu gestión de combustible?",
+      "subtitle": "Únete a cientos de operadores de aviación que confían en Fuel Manager.",
+      "button": "Comienza tu prueba gratuita de 14 días"
+    },
+    "footer": {
+      "tagline": "La plataforma de gestión de combustible para operadores de aviación profesionales.",
+      "product": "Producto",
+      "company": "Empresa",
+      "legal": "Legal",
+      "features": "Funciones",
+      "pricing": "Precios",
+      "about": "Sobre nosotros",
+      "contact": "Contacto",
+      "privacy": "Política de privacidad",
+      "terms": "Términos de servicio",
+      "rights": "Todos los derechos reservados."
+    }
+  },
+  "plans": {
+    "trial": "Prueba",
+    "basic": "Básico",
+    "pro": "Pro",
+    "enterprise": "Empresarial",
+    "trial_desc": "Perfecto para probar la plataforma",
+    "basic_desc": "Para pequeños operadores y clubes aéreos",
+    "pro_desc": "Para operadores de tamaño mediano",
+    "enterprise_desc": "Para grandes operaciones con necesidades personalizadas"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "company_name": "Nombre de la empresa",
+    "first_name": "Nombre",
+    "last_name": "Apellido",
+    "submit": "Enviar",
+    "logout": "Cerrar sesión",
+    "login_title": "Inicia sesión en tu cuenta",
+    "login_subtitle": "Bienvenido de nuevo a Fuel Manager",
+    "register_title": "Crea tu cuenta",
+    "register_subtitle": "Comienza tu prueba gratuita de 14 días",
+    "no_account": "¿No tienes una cuenta?",
+    "have_account": "¿Ya tienes una cuenta?",
+    "forgot_password": "¿Olvidaste tu contraseña?",
+    "password_min": "Mínimo 8 caracteres",
+    "login_error": "Email o contraseña incorrectos",
+    "register_error": "Error al registrarse",
+    "email_placeholder": "nombre@empresa.com",
+    "password_placeholder": "Mínimo 8 caracteres"
+  },
+  "dashboard": {
+    "welcome": "Bienvenido",
+    "tanks": "Tanques",
+    "aircraft": "Aeronaves",
+    "vehicles": "Vehículos",
+    "operations": "Operaciones hoy",
+    "reports": "Informes",
+    "total_companies": "Total de empresas",
+    "active_companies": "Empresas activas",
+    "trial_companies": "En prueba",
+    "monthly_revenue": "Ingresos mensuales",
+    "recent_operations": "Operaciones recientes",
+    "quick_actions": "Acciones rápidas",
+    "new_operation": "Nueva operación",
+    "view_reports": "Ver informes",
+    "manage_tanks": "Gestionar tanques",
+    "manage_aircraft": "Gestionar aeronaves"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "confirm": "Confirmar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "export": "Exportar",
+    "import": "Importar",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "fuel": {
+    "jet_a1": "Jet A-1",
+    "avgas": "Avgas 100LL",
+    "diesel": "Diésel",
+    "gasoline": "Gasolina"
+  },
+  "roles": {
+    "superadmin": "Superadministrador",
+    "admin": "Administrador",
+    "operator": "Operador"
+  }
+}

@@ -1,0 +1,190 @@
+{
+  "nav": {
+    "home": "Ana Sayfa",
+    "features": "Özellikler",
+    "pricing": "Fiyatlar",
+    "login": "Giriş Yap",
+    "register": "Başlayın"
+  },
+  "landing": {
+    "hero": {
+      "title": "Havacılık yakıt yönetimi artık kolay ve güvenli",
+      "subtitle": "Yakıt ikmali işlemlerini takip edin, tankları ve araçları yönetin, uyum raporları oluşturun — havacılık operatörleri için tasarlanmış tek bir bulut platformunda.",
+      "cta": "Ücretsiz denemeye başla",
+      "cta_demo": "Demoyu izle"
+    },
+    "features": {
+      "title": "Havacılık yakıtını yönetmek için ihtiyacınız olan her şey",
+      "subtitle": "Tanktan uçağa her litre hassas biçimde izlenir.",
+      "items": {
+        "fuel": {
+          "title": "Hassas ikmal",
+          "desc": "Her yakıt ikmali işlemini sayaç fotoğrafları, dijital imza ve uçuş verileriyle kaydedin."
+        },
+        "tanks": {
+          "title": "Tank izleme",
+          "desc": "Seviyeleri gerçek zamanlı izleyin, minimum eşikler belirleyin ve otomatik uyarılar alın."
+        },
+        "locations": {
+          "title": "Çoklu üs",
+          "desc": "Farklı konumlardaki birden fazla operasyonel üssü tek bir merkezi pano üzerinden yönetin."
+        },
+        "reports": {
+          "title": "Raporlar ve analizler",
+          "desc": "Denetimler, mevzuata uyumluluk ve tüketim analizi için PDF ve Excel raporları oluşturun."
+        },
+        "security": {
+          "title": "Güvenlik ve roller",
+          "desc": "Süper yönetici, yönetici ve operatör rolleriyle ayrıntılı erişim denetimi."
+        },
+        "globe": {
+          "title": "Çok dilli",
+          "desc": "Uluslararası ekipler için İtalyanca, İngilizce, Türkçe ve İspanyolca arayüz."
+        }
+      }
+    },
+    "how_it_works": {
+      "title": "Nasıl çalışır",
+      "subtitle": "Dakikalar içinde kullanıma hazır",
+      "steps": {
+        "1": {
+          "title": "Şirketinizi kaydedin",
+          "desc": "60 saniyede hesabınızı oluşturun. Ücretsiz deneme için kredi kartı gerekmez."
+        },
+        "2": {
+          "title": "Üsler ve tankları yapılandırın",
+          "desc": "Operasyonel üslerinizi, tanklarınızı, uçaklarınızı ve kara araçlarınızı ekleyin."
+        },
+        "3": {
+          "title": "Takibe başlayın",
+          "desc": "Operatörler her yakıt ikmalini gerçek zamanlı kaydeder. Raporlar otomatik oluşturulur."
+        }
+      }
+    },
+    "pricing": {
+      "title": "Basit ve şeffaf fiyatlandırma",
+      "subtitle": "Operasyonunuza uygun planı seçin. İstediğiniz zaman değiştirin veya iptal edin.",
+      "monthly": "Aylık",
+      "yearly": "Yıllık",
+      "yearly_save": "2 ay tasarruf edin",
+      "per_month": "/ay",
+      "per_year": "/yıl",
+      "free": "Ücretsiz",
+      "cta_trial": "Denemeye başla",
+      "cta_start": "Hemen başlayın",
+      "cta_contact": "Bize ulaşın",
+      "recommended": "Önerilen",
+      "features": {
+        "tanks": "tank",
+        "vehicles": "araç",
+        "users": "kullanıcı",
+        "unlimited": "sınırsız",
+        "pdf_export": "PDF dışa aktarma",
+        "excel_export": "Excel dışa aktarma",
+        "import": "Veri içe aktarma",
+        "support_email": "E-posta desteği",
+        "support_priority": "Öncelikli destek",
+        "support_dedicated": "Özel hesap yöneticisi"
+      }
+    },
+    "cta_section": {
+      "title": "Yakıt yönetiminizi optimize etmeye hazır mısınız?",
+      "subtitle": "Fuel Manager'a güvenen yüzlerce havacılık operatörüne katılın.",
+      "button": "14 günlük ücretsiz denemeye başlayın"
+    },
+    "footer": {
+      "tagline": "Profesyonel havacılık operatörleri için yakıt yönetim platformu.",
+      "product": "Ürün",
+      "company": "Şirket",
+      "legal": "Hukuki",
+      "features": "Özellikler",
+      "pricing": "Fiyatlar",
+      "about": "Hakkımızda",
+      "contact": "İletişim",
+      "privacy": "Gizlilik Politikası",
+      "terms": "Hizmet Şartları",
+      "rights": "Tüm hakları saklıdır."
+    }
+  },
+  "plans": {
+    "trial": "Deneme",
+    "basic": "Temel",
+    "pro": "Pro",
+    "enterprise": "Kurumsal",
+    "trial_desc": "Platformu test etmek için mükemmel",
+    "basic_desc": "Küçük operatörler ve uçuş kulüpleri için",
+    "pro_desc": "Orta ölçekli operatörler için",
+    "enterprise_desc": "Özel ihtiyaçları olan büyük operasyonlar için"
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "email": "E-posta",
+    "password": "Şifre",
+    "company_name": "Şirket adı",
+    "first_name": "Ad",
+    "last_name": "Soyad",
+    "submit": "Gönder",
+    "logout": "Çıkış Yap",
+    "login_title": "Hesabınıza giriş yapın",
+    "login_subtitle": "Fuel Manager'a hoş geldiniz",
+    "register_title": "Hesabınızı oluşturun",
+    "register_subtitle": "14 günlük ücretsiz denemeye başlayın",
+    "no_account": "Hesabınız yok mu?",
+    "have_account": "Zaten hesabınız var mı?",
+    "forgot_password": "Şifremi unuttum?",
+    "password_min": "En az 8 karakter",
+    "login_error": "Geçersiz e-posta veya şifre",
+    "register_error": "Kayıt başarısız",
+    "email_placeholder": "isim@sirket.com",
+    "password_placeholder": "En az 8 karakter"
+  },
+  "dashboard": {
+    "welcome": "Hoş geldiniz",
+    "tanks": "Tanklar",
+    "aircraft": "Uçaklar",
+    "vehicles": "Araçlar",
+    "operations": "Bugünkü işlemler",
+    "reports": "Raporlar",
+    "total_companies": "Toplam şirket",
+    "active_companies": "Aktif şirket",
+    "trial_companies": "Denemede",
+    "monthly_revenue": "Aylık gelir",
+    "recent_operations": "Son işlemler",
+    "quick_actions": "Hızlı işlemler",
+    "new_operation": "Yeni işlem",
+    "view_reports": "Raporları görüntüle",
+    "manage_tanks": "Tankları yönet",
+    "manage_aircraft": "Uçakları yönet"
+  },
+  "common": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarı",
+    "confirm": "Onayla",
+    "back": "Geri",
+    "next": "İleri",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "export": "Dışa aktar",
+    "import": "İçe aktar",
+    "yes": "Evet",
+    "no": "Hayır"
+  },
+  "fuel": {
+    "jet_a1": "Jet A-1",
+    "avgas": "Avgas 100LL",
+    "diesel": "Dizel",
+    "gasoline": "Benzin"
+  },
+  "roles": {
+    "superadmin": "Süper Yönetici",
+    "admin": "Yönetici",
+    "operator": "Operatör"
+  }
+}
