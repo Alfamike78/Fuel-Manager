@@ -9,6 +9,8 @@ import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
 import SuperAdminDashboard from './pages/superadmin/DashboardPage.jsx';
 import CompanyDashboard from './pages/company/DashboardPage.jsx';
+import TanksPage from './pages/company/tanks/TanksPage.jsx';
+import BasesPage from './pages/company/bases/BasesPage.jsx';
 
 // Loading fallback
 const LoadingScreen = () => (
@@ -90,6 +92,30 @@ const AppRoutes = () => {
       />
 
       {/* Company portal (admin + operator) */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <CompanyDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/tanks"
+        element={
+          <ProtectedRoute>
+            <TanksPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/bases"
+        element={
+          <ProtectedRoute>
+            <BasesPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/dashboard/*"
         element={

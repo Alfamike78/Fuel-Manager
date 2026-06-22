@@ -186,5 +186,52 @@
     "superadmin": "Super Administrator",
     "admin": "Administrator",
     "operator": "Operator"
+  },
+  "tanks": {
+    "title": "Tanks",
+    "add": "Add Tank",
+    "edit": "Edit Tank",
+    "delete": "Delete Tank",
+    "code": "Tank Code",
+    "type": "Tank Type",
+    "fixed": "Fixed",
+    "mobile": "Mobile",
+    "capacity": "Capacity (L)",
+    "current_level": "Current Level (L)",
+    "threshold": "Min. Threshold (L)",
+    "instructions": "Operational Instructions",
+    "no_base": "No base assigned",
+    "assign_base": "Assign to Base",
+    "history": "View History",
+    "add_load": "Add Load",
+    "qc_check": "QC Check",
+    "below_threshold": "Below minimum threshold",
+    "level": "Level",
+    "filter_all": "All Types",
+    "filter_fixed": "Fixed Only",
+    "filter_mobile": "Mobile Only"
+  },
+  "loads": {
+    "title": "Tank Load",
+    "provider": "Provider Name",
+    "liters": "Liters",
+    "delivery_note": "Delivery Note Ref.",
+    "date": "Load Date",
+    "after_load": "Level after load"
+  },
+  "qc": {
+    "title": "Quality Control / Sump Check",
+    "date": "Check Date",
+    "liters_drained": "Liters Drained",
+    "compliant": "Compliant",
+    "not_compliant": "Not Compliant",
+    "notes_required": "Notes required when not compliant",
+    "actions_taken": "Describe contamination and actions taken"
+  },
+  "bases": {
+    "title": "Bases",
+    "add": "Add Base",
+    "location": "Location",
+    "tanks_count": "Tanks"
   }
 }
