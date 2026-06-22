@@ -9,6 +9,7 @@ import {
 import { useAuth } from '../../hooks/useAuth.js';
 import LanguageSwitcher from '../LanguageSwitcher.jsx';
 import NotificationsDropdown from '../NotificationsDropdown.jsx';
+import MobileBottomNav from '../MobileBottomNav.jsx';
 import clsx from 'clsx';
 
 const navItems = [
@@ -231,10 +232,13 @@ const AdminLayout = ({ children }) => {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-20 lg:pb-6">
           {children}
         </main>
       </div>
+
+      {/* Mobile bottom navigation */}
+      <MobileBottomNav onMoreClick={() => setSidebarOpen(true)} />
     </div>
   );
 };

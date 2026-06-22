@@ -458,5 +458,10 @@
     "col_details": "Ayrıntılar",
     "of": "/",
     "privacy_note": "Denetim günlüğü tüm kritik işlemleri kaydeder: yakıt ikmali, tank değişiklikleri ve kullanıcı yönetimi. Veriler güvenlik ve uyumluluk amaçlarıyla saklanır."
+  },
+  "pwa": {
+    "install_title": "Fuel Manager'ı Yükle",
+    "install_desc": "Hızlı erişim için Ana Ekrana ekle",
+    "install": "Yükle"
   }
 }

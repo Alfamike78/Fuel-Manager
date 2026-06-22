@@ -458,5 +458,10 @@
     "col_details": "Details",
     "of": "of",
     "privacy_note": "The audit log records all critical operations: fueling operations, tank changes, and user management. Data is kept for security and compliance purposes."
+  },
+  "pwa": {
+    "install_title": "Install Fuel Manager",
+    "install_desc": "Add to Home Screen for quick access",
+    "install": "Install"
   }
 }

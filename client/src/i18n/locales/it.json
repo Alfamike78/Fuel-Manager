@@ -458,5 +458,10 @@
     "col_details": "Dettagli",
     "of": "di",
     "privacy_note": "Il log di audit registra tutte le operazioni critiche: rifornimenti, modifiche cisterne e gestione utenti. I dati sono conservati per finalità di sicurezza e conformità."
+  },
+  "pwa": {
+    "install_title": "Installa Fuel Manager",
+    "install_desc": "Aggiungi alla schermata Home per un accesso rapido",
+    "install": "Installa"
   }
 }
