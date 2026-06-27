@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Fuel, Plane, Truck, Gauge } from 'lucide-react';
+import { Fuel, Plane, Truck, Gauge, Camera, PenLine, X, Trash2 } from 'lucide-react';
 import Modal from '../../../components/ui/Modal.jsx';
 import Button from '../../../components/ui/Button.jsx';
 import Input from '../../../components/ui/Input.jsx';
@@ -8,10 +8,96 @@ import Alert from '../../../components/ui/Alert.jsx';
 import { getTanks } from '../../../api/tanks.js';
 import { getAircraft } from '../../../api/aircraft.js';
 import { getGroundVehicles } from '../../../api/groundVehicles.js';
-import { createOperation } from '../../../api/fuelingOperations.js';
+import { createOperation, uploadOperationAttachments } from '../../../api/fuelingOperations.js';
 
 const FUEL_LABELS = { jet_a1: 'Jet A-1', avgas: 'Avgas 100LL', diesel: 'Diesel', gasoline: 'Benzina' };
 
+// ── Signature pad ──────────────────────────────────────────────────────────────
+const SignaturePad = ({ onSave, onClear }) => {
+  const canvasRef = useRef(null);
+  const drawing = useRef(false);
+  const lastPos = useRef(null);
+  const [isEmpty, setIsEmpty] = useState(true);
+
+  const getPos = (e, canvas) => {
+    const rect = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return {
+      x: (src.clientX - rect.left) * (canvas.width / rect.width),
+      y: (src.clientY - rect.top) * (canvas.height / rect.height),
+    };
+  };
+
+  const startDraw = useCallback((e) => {
+    e.preventDefault();
+    drawing.current = true;
+    lastPos.current = getPos(e, canvasRef.current);
+  }, []);
+
+  const draw = useCallback((e) => {
+    if (!drawing.current) return;
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const pos = getPos(e, canvas);
+    ctx.beginPath();
+    ctx.moveTo(lastPos.current.x, lastPos.current.y);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    lastPos.current = pos;
+    setIsEmpty(false);
+  }, []);
+
+  const stopDraw = useCallback(() => {
+    if (!drawing.current) return;
+    drawing.current = false;
+    // Export canvas as blob
+    canvasRef.current.toBlob((blob) => onSave(blob), 'image/png');
+  }, [onSave]);
+
+  const clear = () => {
+    const canvas = canvasRef.current;
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    setIsEmpty(true);
+    onClear();
+  };
+
+  return (
+    <div className="space-y-1">
+      <canvas
+        ref={canvasRef}
+        width={560}
+        height={140}
+        className="w-full border-2 border-dashed border-gray-300 rounded-lg bg-white cursor-crosshair touch-none"
+        onMouseDown={startDraw}
+        onMouseMove={draw}
+        onMouseUp={stopDraw}
+        onMouseLeave={stopDraw}
+        onTouchStart={startDraw}
+        onTouchMove={draw}
+        onTouchEnd={stopDraw}
+      />
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-gray-400">Firma qui con il mouse o il dito</p>
+        {!isEmpty && (
+          <button
+            type="button"
+            onClick={clear}
+            className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+          >
+            <Trash2 size={12} /> Cancella
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ── Main modal ─────────────────────────────────────────────────────────────────
 const NewOperationModal = ({ isOpen, onClose, onSaved }) => {
   const { t } = useTranslation();
 
@@ -37,12 +123,19 @@ const NewOperationModal = ({ isOpen, onClose, onSaved }) => {
     notes: '',
   });
 
+  const [meterPhoto, setMeterPhoto] = useState(null);       // File
+  const [meterPreview, setMeterPreview] = useState(null);   // object URL
+  const [signatureBlob, setSignatureBlob] = useState(null); // Blob from canvas
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!isOpen) return;
     setError(null);
+    setMeterPhoto(null);
+    setMeterPreview(null);
+    setSignatureBlob(null);
     setForm({
       operation_date: new Date().toISOString().slice(0, 16),
       source_type: 'tank',
@@ -69,17 +162,24 @@ const NewOperationModal = ({ isOpen, onClose, onSaved }) => {
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
   const sourceTank = tanks.find((t) => t.id === form.source_tank_id);
-
-  // Filter dest options by fuel type compatibility
-  const filteredAircraft = sourceTank
-    ? aircraft.filter((a) => a.fuel_type === sourceTank.fuel_type)
-    : aircraft;
-  const filteredVehicles = sourceTank
-    ? vehicles.filter((v) => v.fuel_type === sourceTank.fuel_type)
-    : vehicles;
+  const filteredAircraft = sourceTank ? aircraft.filter((a) => a.fuel_type === sourceTank.fuel_type) : aircraft;
+  const filteredVehicles = sourceTank ? vehicles.filter((v) => v.fuel_type === sourceTank.fuel_type) : vehicles;
   const filteredDestTanks = sourceTank
     ? tanks.filter((t) => t.id !== sourceTank.id && t.fuel_type === sourceTank.fuel_type)
     : tanks;
+
+  const handleMeterPhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setMeterPhoto(file);
+    setMeterPreview(URL.createObjectURL(file));
+  };
+
+  const removeMeterPhoto = () => {
+    setMeterPhoto(null);
+    if (meterPreview) URL.revokeObjectURL(meterPreview);
+    setMeterPreview(null);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,7 +204,19 @@ const NewOperationModal = ({ isOpen, onClose, onSaved }) => {
           ? parseFloat(form.km_at_fueling) : null,
         notes: form.notes.trim() || null,
       };
-      await createOperation(payload);
+
+      const operation = await createOperation(payload);
+
+      // Upload attachments if any (non-blocking on error)
+      if (meterPhoto || signatureBlob) {
+        const fd = new FormData();
+        if (meterPhoto) fd.append('meter_photo', meterPhoto);
+        if (signatureBlob) fd.append('signature', signatureBlob, 'signature.png');
+        await uploadOperationAttachments(operation.id, fd).catch((err) =>
+          console.warn('[upload] attachment failed:', err.message)
+        );
+      }
+
       onSaved();
       onClose();
     } catch (err) {
@@ -342,6 +454,62 @@ const NewOperationModal = ({ isOpen, onClose, onSaved }) => {
               rows={2}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
+          </div>
+
+          {/* ── Attachments ── */}
+          <div className="p-4 bg-gray-50 rounded-xl space-y-4">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Allegati (opzionale)
+            </p>
+
+            {/* Meter photo */}
+            <div>
+              <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-2">
+                <Camera size={15} /> Foto contatore
+              </label>
+              {meterPreview ? (
+                <div className="relative inline-block">
+                  <img
+                    src={meterPreview}
+                    alt="Foto contatore"
+                    className="h-28 w-auto rounded-lg border border-gray-200 object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeMeterPhoto}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex items-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                  <Camera size={18} className="text-gray-400" />
+                  <span className="text-sm text-gray-500">Carica foto contatore</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="sr-only"
+                    onChange={handleMeterPhotoChange}
+                  />
+                </label>
+              )}
+            </div>
+
+            {/* Signature pad */}
+            <div>
+              <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-2">
+                <PenLine size={15} /> Firma digitale
+              </label>
+              <SignaturePad
+                onSave={(blob) => setSignatureBlob(blob)}
+                onClear={() => setSignatureBlob(null)}
+              />
+              {signatureBlob && (
+                <p className="text-xs text-green-600 mt-1">Firma acquisita</p>
+              )}
+            </div>
           </div>
 
           <div className="flex gap-3 justify-end pt-2 border-t border-gray-100">

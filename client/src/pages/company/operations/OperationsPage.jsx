@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Fuel, Plane, Truck, Gauge, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Fuel, Plane, Truck, Gauge, Trash2, ChevronLeft, ChevronRight, Camera, PenLine } from 'lucide-react';
 import AdminLayout from '../../../components/layout/AdminLayout.jsx';
 import Button from '../../../components/ui/Button.jsx';
 import Alert from '../../../components/ui/Alert.jsx';
@@ -169,6 +169,7 @@ const OperationsPage = () => {
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('operations.fuel')}</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('operations.liters')}</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('operations.operator')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">All.</th>
                     {isAdmin && <th className="px-4 py-3" />}
                   </tr>
                 </thead>
@@ -198,6 +199,32 @@ const OperationsPage = () => {
                       </td>
                       <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
                         {op.operator_first_name} {op.operator_last_name}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-1.5">
+                          {op.meter_photo_url && (
+                            <a
+                              href={op.meter_photo_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              title="Foto contatore"
+                              className="text-blue-400 hover:text-blue-600"
+                            >
+                              <Camera size={15} />
+                            </a>
+                          )}
+                          {op.signature_url && (
+                            <a
+                              href={op.signature_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              title="Firma digitale"
+                              className="text-violet-400 hover:text-violet-600"
+                            >
+                              <PenLine size={15} />
+                            </a>
+                          )}
+                        </div>
                       </td>
                       {isAdmin && (
                         <td className="px-4 py-3">

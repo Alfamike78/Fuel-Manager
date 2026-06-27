@@ -1,8 +1,31 @@
 import express from 'express';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import multer from 'multer';
 import { pool } from '../config/db.js';
 import { verifyToken, requireRole } from '../middleware/auth.js';
 import { checkTankThresholdAndNotify } from '../utils/tankAlerts.js';
 import { logAudit } from '../utils/auditLog.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const OPS_DIR = path.join(__dirname, '..', 'uploads', 'operations');
+if (!fs.existsSync(OPS_DIR)) fs.mkdirSync(OPS_DIR, { recursive: true });
+
+const opsUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, OPS_DIR),
+    filename: (_req, file, cb) => {
+      const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
+      cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) return cb(null, true);
+    cb(new Error('Solo immagini consentite'));
+  },
+});
 
 const router = express.Router();
 
@@ -385,6 +408,63 @@ router.post('/', async (req, res, next) => {
     client.release();
   }
 });
+
+// POST /api/fueling-operations/:id/attachments — upload meter photo and/or signature
+router.post(
+  '/:id/attachments',
+  opsUpload.fields([
+    { name: 'meter_photo', maxCount: 1 },
+    { name: 'signature', maxCount: 1 },
+  ]),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const cid = req.user.company_id;
+
+      const { rows } = await pool.query(
+        'SELECT id, meter_photo_url, signature_url FROM fueling_operations WHERE id = $1 AND company_id = $2',
+        [id, cid]
+      );
+      if (!rows.length) return res.status(404).json({ error: 'Operation not found' });
+
+      const op = rows[0];
+      const updates = {};
+
+      if (req.files?.meter_photo?.[0]) {
+        if (op.meter_photo_url?.startsWith('/uploads/')) {
+          const old = path.join(__dirname, '..', op.meter_photo_url);
+          if (fs.existsSync(old)) fs.unlinkSync(old);
+        }
+        updates.meter_photo_url = `/uploads/operations/${req.files.meter_photo[0].filename}`;
+      }
+
+      if (req.files?.signature?.[0]) {
+        if (op.signature_url?.startsWith('/uploads/')) {
+          const old = path.join(__dirname, '..', op.signature_url);
+          if (fs.existsSync(old)) fs.unlinkSync(old);
+        }
+        updates.signature_url = `/uploads/operations/${req.files.signature[0].filename}`;
+      }
+
+      if (!Object.keys(updates).length) {
+        return res.status(400).json({ error: 'Nessun file inviato' });
+      }
+
+      const fields = Object.keys(updates).map((k, i) => `${k} = $${i + 1}`).join(', ');
+      const values = [...Object.values(updates), id];
+
+      const { rows: updated } = await pool.query(
+        `UPDATE fueling_operations SET ${fields} WHERE id = $${values.length} RETURNING meter_photo_url, signature_url`,
+        values
+      );
+
+      res.json(updated[0]);
+    } catch (err) {
+      if (err.message?.includes('Solo immagini')) return res.status(400).json({ error: err.message });
+      next(err);
+    }
+  }
+);
 
 // DELETE /api/fueling-operations/:id — admin only, reverses tank changes
 router.delete('/:id', requireRole(['admin', 'superadmin']), async (req, res, next) => {

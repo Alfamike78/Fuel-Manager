@@ -17,3 +17,8 @@ export const getOperationsStats = () =>
 
 export const getDashboardCharts = () =>
   api.get('/dashboard/charts').then((r) => r.data);
+
+export const uploadOperationAttachments = (id, formData) =>
+  api.post(`/fueling-operations/${id}/attachments`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }).then((r) => r.data);

@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fuel Manager — Mockup & Brand Identity</title>
+<style>
+/* ============================================================
+   DESIGN SYSTEM — CSS VARIABLES
+   ============================================================ */
+:root {
+  --navy:    #0D1F3C;
+  --blue:    #1B4ED8;
+  --blue-h:  #1640B0;
+  --sky:     #0EA5E9;
+  --orange:  #F97316;
+  --green:   #10B981;
+  --amber:   #F59E0B;
+  --red:     #EF4444;
+  --gray-50: #F8FAFC;
+  --gray-100:#F1F5F9;
+  --gray-200:#E2E8F0;
+  --gray-300:#CBD5E1;
+  --gray-400:#94A3B8;
+  --gray-500:#64748B;
+  --gray-600:#475569;
+  --gray-700:#334155;
+  --gray-800:#1E293B;
+  --gray-900:#0F172A;
+  --white:   #FFFFFF;
+  --sidebar-w: 240px;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.05);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+       background: var(--gray-100); color: var(--gray-800); font-size: 14px; line-height: 1.5; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+input, select, textarea { font: inherit; }
+
+/* ============================================================
+   TOP NAV — SCREEN SWITCHER
+   ============================================================ */
+.top-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: var(--navy); color: var(--white);
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px; overflow-x: auto; white-space: nowrap;
+  box-shadow: var(--shadow-md);
+}
+.top-nav .nav-logo { font-weight: 700; font-size: 13px; color: var(--sky);
+                     margin-right: 8px; flex-shrink: 0; display: flex; align-items: center; gap: 6px; }
+.top-nav button {
+  padding: 5px 11px; border-radius: 5px; font-size: 12px; font-weight: 500;
+  color: var(--gray-300); transition: all .15s;
+}
+.top-nav button:hover  { background: rgba(255,255,255,.1); color: var(--white); }
+.top-nav button.active { background: var(--blue); color: var(--white); }
+.nav-divider { width: 1px; height: 20px; background: rgba(255,255,255,.2); flex-shrink:0; }
+
+/* ============================================================
+   SCREEN CONTAINER
+   ============================================================ */
+.screen { display: none; margin-top: 44px; min-height: calc(100vh - 44px); }
+.screen.active { display: block; }
+
+/* ============================================================
+   APP SHELL — sidebar layout
+   ============================================================ */
+.app-shell { display: flex; min-height: calc(100vh - 44px); }
+
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: var(--navy); color: var(--white);
+  display: flex; flex-direction: column;
+  position: sticky; top: 44px; height: calc(100vh - 44px); overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 20px 16px 16px; border-bottom: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-logo svg { flex-shrink: 0; }
+.sidebar-logo-text { line-height: 1.2; }
+.sidebar-logo-text .brand { font-size: 15px; font-weight: 700; color: var(--white); }
+.sidebar-logo-text .sub   { font-size: 11px; color: var(--gray-400); }
+
+.sidebar-section { padding: 12px 8px 4px; }
+.sidebar-section-label { font-size: 10px; font-weight: 600; color: var(--gray-500);
+                          text-transform: uppercase; letter-spacing: .08em; padding: 0 8px 6px; }
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 6px; color: var(--gray-300);
+  font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s;
+  margin-bottom: 2px;
+}
+.sidebar-item:hover   { background: rgba(255,255,255,.07); color: var(--white); }
+.sidebar-item.active  { background: var(--blue); color: var(--white); }
+.sidebar-item .icon   { width: 16px; text-align: center; font-size: 15px; }
+.sidebar-item .badge  { margin-left: auto; background: var(--red); color: var(--white);
+                         font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 99px; }
+.sidebar-footer {
+  margin-top: auto; padding: 12px 8px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--blue);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 12px; font-weight: 700; color: var(--white); flex-shrink: 0; }
+
+/* ============================================================
+   MAIN CONTENT AREA
+   ============================================================ */
+.main-content { flex: 1; overflow: auto; }
+.page-header {
+  padding: 24px 28px 0;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+}
+.page-title { font-size: 22px; font-weight: 700; color: var(--gray-900); }
+.page-sub   { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+.page-body  { padding: 20px 28px 32px; }
+
+/* ============================================================
+   COMPONENTS — BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 600;
+  transition: all .15s; cursor: pointer;
+}
+.btn-primary   { background: var(--blue); color: var(--white); }
+.btn-primary:hover { background: var(--blue-h); }
+.btn-secondary { background: var(--white); color: var(--gray-700); border: 1px solid var(--gray-200); box-shadow: var(--shadow); }
+.btn-secondary:hover { background: var(--gray-50); }
+.btn-danger    { background: var(--red); color: var(--white); }
+.btn-ghost     { color: var(--gray-600); }
+.btn-ghost:hover { background: var(--gray-100); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-icon { padding: 7px; border-radius: 6px; }
+
+/* ============================================================
+   COMPONENTS — CARDS
+   ============================================================ */
+.card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); border: 1px solid var(--gray-200);
+}
+.card-body { padding: 20px; }
+.card-header { padding: 16px 20px; border-bottom: 1px solid var(--gray-100);
+               display: flex; align-items: center; justify-content: space-between; }
+.card-title  { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+
+/* ============================================================
+   COMPONENTS — KPI STAT CARDS
+   ============================================================ */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.stat-card {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--gray-200); box-shadow: var(--shadow);
+  padding: 20px; display: flex; flex-direction: column; gap: 6px;
+}
+.stat-label  { font-size: 12px; font-weight: 500; color: var(--gray-500); text-transform: uppercase; letter-spacing:.04em; }
+.stat-value  { font-size: 28px; font-weight: 700; color: var(--gray-900); line-height: 1; }
+.stat-delta  { font-size: 12px; font-weight: 500; }
+.stat-delta.up   { color: var(--green); }
+.stat-delta.down { color: var(--red); }
+.stat-icon   { font-size: 20px; margin-bottom: 4px; }
+
+/* ============================================================
+   COMPONENTS — BADGES
+   ============================================================ */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600;
+}
+.badge-green  { background: #D1FAE5; color: #065F46; }
+.badge-red    { background: #FEE2E2; color: #991B1B; }
+.badge-amber  { background: #FEF3C7; color: #92400E; }
+.badge-blue   { background: #DBEAFE; color: #1E40AF; }
+.badge-gray   { background: var(--gray-100); color: var(--gray-600); }
+.badge-navy   { background: var(--navy); color: var(--white); }
+/* fuel type badges */
+.fuel-jeta1 { background: #1E293B; color: var(--white); }
+.fuel-avgas  { background: #FEE2E2; color: #991B1B; }
+.fuel-diesel { background: #D1FAE5; color: #065F46; }
+.fuel-gasoline{ background: #FEF3C7; color: #92400E; }
+
+/* ============================================================
+   COMPONENTS — TABLE
+   ============================================================ */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  text-align: left; padding: 10px 14px;
+  font-size: 11px; font-weight: 600; color: var(--gray-500);
+  text-transform: uppercase; letter-spacing: .05em;
+  background: var(--gray-50); border-bottom: 1px solid var(--gray-200);
+}
+tbody td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); font-size: 13px; vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--gray-50); }
+
+/* ============================================================
+   COMPONENTS — LEVEL BAR
+   ============================================================ */
+.level-bar-wrap { display: flex; align-items: center; gap: 10px; }
+.level-bar { flex: 1; height: 8px; background: var(--gray-200); border-radius: 99px; overflow: hidden; }
+.level-fill { height: 100%; border-radius: 99px; transition: width .3s; }
+.level-fill.green  { background: var(--green); }
+.level-fill.amber  { background: var(--amber); }
+.level-fill.red    { background: var(--red); }
+.level-pct { font-size: 12px; font-weight: 600; color: var(--gray-600); min-width: 34px; text-align: right; }
+
+/* ============================================================
+   COMPONENTS — FORM ELEMENTS
+   ============================================================ */
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--gray-700); }
+.form-input, .form-select {
+  padding: 9px 12px; border: 1px solid var(--gray-300); border-radius: var(--radius);
+  font-size: 13px; color: var(--gray-800); background: var(--white);
+  transition: border-color .15s, box-shadow .15s;
+}
+.form-input:focus, .form-select:focus {
+  outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(27,78,216,.1);
+}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.form-hint { font-size: 11px; color: var(--gray-400); }
+
+/* ============================================================
+   COMPONENTS — MODAL
+   ============================================================ */
+.modal-backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center; z-index: 50;
+  backdrop-filter: blur(2px);
+}
+.modal {
+  background: var(--white); border-radius: 12px; width: 560px; max-width: 95%;
+  box-shadow: var(--shadow-lg);
+}
+.modal-header {
+  padding: 20px 24px 16px; border-bottom: 1px solid var(--gray-100);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-size: 16px; font-weight: 700; color: var(--gray-900); }
+.modal-body  { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+.modal-footer{ padding: 16px 24px; border-top: 1px solid var(--gray-100);
+               display: flex; justify-content: flex-end; gap: 8px; }
+
+/* ============================================================
+   COMPONENTS — TABS
+   ============================================================ */
+.tabs { display: flex; border-bottom: 2px solid var(--gray-200); gap: 0; }
+.tab-item {
+  padding: 10px 18px; font-size: 13px; font-weight: 500; color: var(--gray-500);
+  cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: all .15s;
+}
+.tab-item.active  { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
+.tab-item:hover:not(.active) { color: var(--gray-700); }
+
+/* ============================================================
+   COMPONENTS — ALERT / NOTIFICATION
+   ============================================================ */
+.alert {
+  padding: 12px 16px; border-radius: var(--radius); font-size: 13px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.alert-warning { background: #FFFBEB; border: 1px solid #FCD34D; color: #92400E; }
+.alert-danger  { background: #FEF2F2; border: 1px solid #FCA5A5; color: #991B1B; }
+.alert-success { background: #ECFDF5; border: 1px solid #6EE7B7; color: #065F46; }
+.alert-info    { background: #EFF6FF; border: 1px solid #93C5FD; color: #1E40AF; }
+
+/* ============================================================
+   LANDING PAGE STYLES
+   ============================================================ */
+.landing { background: var(--white); min-height: 100%; }
+.landing-nav {
+  padding: 16px 48px; display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--gray-100); background: var(--white); position: sticky; top: 44px;
+}
+.landing-hero {
+  background: linear-gradient(135deg, var(--navy) 0%, #1a3666 60%, #1B4ED8 100%);
+  padding: 80px 48px 90px; text-align: center; color: var(--white);
+}
+.landing-hero h1 { font-size: 44px; font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+.landing-hero h1 span { color: var(--sky); }
+.landing-hero p { font-size: 18px; color: rgba(255,255,255,.75); max-width: 560px; margin: 0 auto 32px; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-hero-primary   { background: var(--blue); color: var(--white); padding: 13px 28px; font-size: 15px; border-radius: 8px; font-weight: 700; display:inline-flex; align-items:center; gap:8px; }
+.btn-hero-secondary { background: rgba(255,255,255,.12); color: var(--white); padding: 13px 28px; font-size: 15px; border-radius: 8px; font-weight: 600; border: 1px solid rgba(255,255,255,.25); display:inline-flex; align-items:center; gap:8px; }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 60px 48px; max-width: 1100px; margin: 0 auto; }
+.feature-card { padding: 24px; border: 1px solid var(--gray-200); border-radius: 10px; }
+.feature-icon { font-size: 28px; margin-bottom: 12px; }
+.feature-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; color: var(--gray-900); }
+.feature-desc  { font-size: 13px; color: var(--gray-500); line-height: 1.6; }
+.plans-section { background: var(--gray-50); padding: 60px 48px; text-align: center; }
+.section-title { font-size: 28px; font-weight: 800; color: var(--gray-900); margin-bottom: 8px; }
+.section-sub   { font-size: 15px; color: var(--gray-500); margin-bottom: 36px; }
+.plans-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 980px; margin: 0 auto; }
+.plan-card { background: var(--white); border: 2px solid var(--gray-200); border-radius: 12px; padding: 24px 20px; text-align: left; position: relative; }
+.plan-card.featured { border-color: var(--blue); }
+.plan-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+              background: var(--blue); color: var(--white); font-size: 10px; font-weight: 700;
+              padding: 3px 10px; border-radius: 99px; white-space: nowrap; }
+.plan-name  { font-size: 16px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
+.plan-price { font-size: 28px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+.plan-price span { font-size: 13px; font-weight: 400; color: var(--gray-500); }
+.plan-desc  { font-size: 12px; color: var(--gray-500); margin-bottom: 16px; }
+.plan-features { display: flex; flex-direction: column; gap: 6px; }
+.plan-feat  { font-size: 12px; color: var(--gray-600); display: flex; align-items: center; gap: 6px; }
+.plan-feat::before { content: "✓"; color: var(--green); font-weight: 700; }
+
+/* ============================================================
+   AUTH PAGES
+   ============================================================ */
+.auth-page {
+  min-height: calc(100vh - 44px);
+  background: linear-gradient(135deg, var(--navy) 0%, #1a3666 100%);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.auth-box {
+  background: var(--white); border-radius: 16px; padding: 36px;
+  width: 420px; max-width: 100%; box-shadow: var(--shadow-lg);
+}
+.auth-logo { text-align: center; margin-bottom: 24px; }
+.auth-title { font-size: 22px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
+.auth-sub   { font-size: 13px; color: var(--gray-500); margin-bottom: 24px; }
+.auth-form  { display: flex; flex-direction: column; gap: 14px; }
+.auth-divider { text-align: center; font-size: 12px; color: var(--gray-400); margin: 4px 0; }
+.auth-footer { text-align: center; font-size: 12px; color: var(--gray-500); margin-top: 16px; }
+.auth-footer a { color: var(--blue); font-weight: 600; }
+
+/* ============================================================
+   DASHBOARD CHARTS
+   ============================================================ */
+.chart-placeholder {
+  background: linear-gradient(180deg, #EFF6FF 0%, #DBEAFE 100%);
+  border-radius: 8px; display: flex; align-items: flex-end; justify-content: space-around;
+  padding: 16px 16px 0; gap: 8px; height: 140px;
+}
+.chart-bar {
+  flex: 1; background: var(--blue); border-radius: 4px 4px 0 0; opacity: .85;
+  min-width: 12px; max-width: 32px;
+}
+
+/* ============================================================
+   SUPERADMIN
+   ============================================================ */
+.super-shell { display: flex; min-height: calc(100vh - 44px); }
+.super-sidebar {
+  width: 220px; background: var(--gray-900); color: var(--white);
+  padding: 16px 8px; position: sticky; top: 44px; height: calc(100vh - 44px);
+}
+.super-logo { padding: 8px 10px 16px; font-size: 13px; font-weight: 700;
+              color: var(--orange); border-bottom: 1px solid rgba(255,255,255,.08); margin-bottom: 12px; }
+
+/* ============================================================
+   MOBILE PWA SCREEN
+   ============================================================ */
+.mobile-frame {
+  width: 375px; height: 720px; border: 8px solid var(--gray-800);
+  border-radius: 40px; overflow: hidden; margin: 0 auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3); background: var(--white);
+  display: flex; flex-direction: column; position: relative;
+}
+.mobile-status { background: var(--navy); height: 40px; display: flex;
+                  align-items: center; justify-content: space-between; padding: 0 20px;
+                  font-size: 12px; color: var(--white); font-weight: 600; }
+.mobile-content { flex: 1; overflow: hidden; }
+.mobile-bottom-nav {
+  display: flex; background: var(--white); border-top: 1px solid var(--gray-200);
+  padding: 8px 0 12px;
+}
+.mobile-nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: 10px; color: var(--gray-500); cursor: pointer;
+}
+.mobile-nav-item.active { color: var(--blue); }
+.mobile-nav-item .icon  { font-size: 20px; }
+
+/* ============================================================
+   BRAND IDENTITY PAGE
+   ============================================================ */
+.brand-page { background: var(--white); padding: 40px 48px; }
+.brand-section { margin-bottom: 48px; }
+.brand-section-title { font-size: 18px; font-weight: 700; color: var(--gray-900);
+                        margin-bottom: 4px; padding-bottom: 12px;
+                        border-bottom: 2px solid var(--gray-100); }
+.color-swatches { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.swatch { border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-md); }
+.swatch-color { width: 100px; height: 70px; }
+.swatch-info  { padding: 8px 10px; background: var(--white); border: 1px solid var(--gray-200);
+                border-top: none; }
+.swatch-name  { font-size: 12px; font-weight: 700; color: var(--gray-800); }
+.swatch-hex   { font-size: 11px; color: var(--gray-500); font-family: monospace; }
+.type-samples { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.type-sample  { display: flex; align-items: baseline; gap: 16px; }
+.type-label   { font-size: 11px; color: var(--gray-400); min-width: 140px; font-family: monospace; }
+.logo-showcase { display: flex; align-items: center; gap: 40px; flex-wrap: wrap; margin-top: 24px; }
+.logo-variant { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.logo-variant-label { font-size: 11px; color: var(--gray-400); }
+.logo-light { background: var(--navy); padding: 20px 28px; border-radius: 10px; }
+.logo-dark  { background: var(--gray-100); padding: 20px 28px; border-radius: 10px; }
+.logo-icon-only { background: var(--navy); padding: 16px; border-radius: 12px; }
+.component-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.spacing-demo  { display: flex; align-items: flex-end; gap: 8px; margin-top: 16px; }
+.spacing-box   { background: var(--blue); opacity: .7; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAVIGATION -->
+<nav class="top-nav">
+  <div class="nav-logo">
+    <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
+      <path d="M16 2C9.373 2 4 7.373 4 14c0 7.5 12 18 12 18s12-10.5 12-18C28 7.373 22.627 2 16 2z" fill="#0EA5E9"/>
+      <path d="M13 10l6 4-3 1 4 6-6-4 3-1-4-6z" fill="white"/>
+    </svg>
+    Fuel Manager
+  </div>
+  <div class="nav-divider"></div>
+  <button class="active" onclick="show(1)">🎨 Brand</button>
+  <button onclick="show(2)">🌐 Landing</button>
+  <button onclick="show(3)">🔐 Login</button>
+  <button onclick="show(4)">📝 Register</button>
+  <div class="nav-divider"></div>
+  <button onclick="show(5)">📊 Dashboard</button>
+  <button onclick="show(6)">🛢 Tanks</button>
+  <button onclick="show(7)">⛽ New Op</button>
+  <button onclick="show(8)">📋 Operations</button>
+  <button onclick="show(9)">📈 Reports</button>
+  <div class="nav-divider"></div>
+  <button onclick="show(10)">🔔 Notifiche</button>
+  <button onclick="show(11)">⚙️ Settings</button>
+  <button onclick="show(12)">👥 Utenti</button>
+  <button onclick="show(13)">🔍 Audit</button>
+  <button onclick="show(14)">👑 SuperAdmin</button>
+  <button onclick="show(15)">📱 Mobile</button>
+</nav>
+
+
+<!-- ============================================================
+     SCREEN 1 — BRAND IDENTITY
+     ============================================================ -->
+<div class="screen active" id="s1">
+<div class="brand-page">
+
+  <div style="margin-bottom:32px;">
+    <h1 style="font-size:32px;font-weight:800;color:var(--navy);margin-bottom:4px;">Fuel Manager</h1>
+    <p style="color:var(--gray-500);font-size:15px;">Brand Identity & Design System</p>
+  </div>
+
+  <!-- LOGO -->
+  <div class="brand-section">
+    <div class="brand-section-title">Logo</div>
+    <div class="logo-showcase">
+      <div class="logo-variant">
+        <div class="logo-light">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
+              <path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="url(#g1)"/>
+              <path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/>
+              <defs>
+                <linearGradient id="g1" x1="3" y1="1" x2="29" y2="33" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#0EA5E9"/>
+                  <stop offset="1" stop-color="#1B4ED8"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div>
+              <div style="font-size:18px;font-weight:800;color:white;line-height:1.1;">FuelManager</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.1em;text-transform:uppercase;">Aviation Fuel Management</div>
+            </div>
+          </div>
+        </div>
+        <span class="logo-variant-label">Su sfondo scuro</span>
+      </div>
+      <div class="logo-variant">
+        <div class="logo-dark">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
+              <path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="url(#g2)"/>
+              <path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/>
+              <defs>
+                <linearGradient id="g2" x1="3" y1="1" x2="29" y2="33" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#0EA5E9"/>
+                  <stop offset="1" stop-color="#1B4ED8"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div>
+              <div style="font-size:18px;font-weight:800;color:var(--navy);line-height:1.1;">FuelManager</div>
+              <div style="font-size:10px;color:var(--gray-400);letter-spacing:.1em;text-transform:uppercase;">Aviation Fuel Management</div>
+            </div>
+          </div>
+        </div>
+        <span class="logo-variant-label">Su sfondo chiaro</span>
+      </div>
+      <div class="logo-variant">
+        <div class="logo-icon-only">
+          <svg width="44" height="44" viewBox="0 0 32 32" fill="none">
+            <path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="url(#g3)"/>
+            <path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/>
+            <defs>
+              <linearGradient id="g3" x1="3" y1="1" x2="29" y2="33" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#0EA5E9"/>
+                <stop offset="1" stop-color="#1B4ED8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="logo-variant-label">Icon only (app/favicon)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PALETTE -->
+  <div class="brand-section">
+    <div class="brand-section-title">Color Palette</div>
+    <div class="color-swatches">
+      <div class="swatch"><div class="swatch-color" style="background:#0D1F3C;"></div><div class="swatch-info"><div class="swatch-name">Navy</div><div class="swatch-hex">#0D1F3C</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#1B4ED8;"></div><div class="swatch-info"><div class="swatch-name">Blue</div><div class="swatch-hex">#1B4ED8</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#0EA5E9;"></div><div class="swatch-info"><div class="swatch-name">Sky</div><div class="swatch-hex">#0EA5E9</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F97316;"></div><div class="swatch-info"><div class="swatch-name">Orange</div><div class="swatch-hex">#F97316</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#10B981;"></div><div class="swatch-info"><div class="swatch-name">Green</div><div class="swatch-hex">#10B981</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F59E0B;"></div><div class="swatch-info"><div class="swatch-name">Amber</div><div class="swatch-hex">#F59E0B</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#EF4444;"></div><div class="swatch-info"><div class="swatch-name">Red</div><div class="swatch-hex">#EF4444</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F8FAFC;border:1px solid #E2E8F0;"></div><div class="swatch-info"><div class="swatch-name">Gray 50</div><div class="swatch-hex">#F8FAFC</div></div></div>
+    </div>
+    <div style="margin-top:16px;padding:14px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200);">
+      <p style="font-size:12px;color:var(--gray-600);font-weight:600;margin-bottom:8px;">Carburanti — Color coding</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span class="badge fuel-jeta1">⬛ Jet A-1</span>
+        <span class="badge fuel-avgas">🔴 AvGas 100LL</span>
+        <span class="badge fuel-diesel">🟢 Diesel</span>
+        <span class="badge fuel-gasoline">🟡 Benzina</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TYPOGRAPHY -->
+  <div class="brand-section">
+    <div class="brand-section-title">Typography — Inter</div>
+    <div class="type-samples">
+      <div class="type-sample"><span class="type-label">H1 / 32px 800</span><span style="font-size:32px;font-weight:800;color:var(--gray-900);">FuelManager</span></div>
+      <div class="type-sample"><span class="type-label">H2 / 22px 700</span><span style="font-size:22px;font-weight:700;color:var(--gray-900);">Dashboard Carburanti</span></div>
+      <div class="type-sample"><span class="type-label">H3 / 16px 600</span><span style="font-size:16px;font-weight:600;color:var(--gray-800);">Gestione Serbatoi</span></div>
+      <div class="type-sample"><span class="type-label">Body / 14px 400</span><span style="font-size:14px;color:var(--gray-700);">Rifornimento registrato correttamente per I-ABCD.</span></div>
+      <div class="type-sample"><span class="type-label">Caption / 12px 500</span><span style="font-size:12px;font-weight:500;color:var(--gray-500);">Ultimo aggiornamento: 25/06/2026 — 14:32</span></div>
+      <div class="type-sample"><span class="type-label">Label / 11px 600 upper</span><span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-500);">Livello Carburante</span></div>
+    </div>
+  </div>
+
+  <!-- COMPONENTS PREVIEW -->
+  <div class="brand-section">
+    <div class="brand-section-title">Componenti UI</div>
+    <p style="font-size:12px;color:var(--gray-500);margin-bottom:12px;">Buttons</p>
+    <div class="component-row">
+      <button class="btn btn-primary">+ Nuovo rifornimento</button>
+      <button class="btn btn-secondary">Esporta PDF</button>
+      <button class="btn btn-danger">Elimina</button>
+      <button class="btn btn-ghost">Annulla</button>
+      <button class="btn btn-primary btn-sm">Salva</button>
+    </div>
+    <p style="font-size:12px;color:var(--gray-500);margin:16px 0 10px;">Badges</p>
+    <div class="component-row">
+      <span class="badge badge-green">✓ Attivo</span>
+      <span class="badge badge-amber">⚠ Soglia</span>
+      <span class="badge badge-red">✕ Critico</span>
+      <span class="badge badge-blue">ℹ Info</span>
+      <span class="badge badge-gray">Sospeso</span>
+      <span class="badge fuel-jeta1">Jet A-1</span>
+      <span class="badge fuel-avgas">AvGas</span>
+    </div>
+    <p style="font-size:12px;color:var(--gray-500);margin:16px 0 10px;">Level bars</p>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:400px;">
+      <div class="level-bar-wrap"><span style="font-size:12px;color:var(--gray-600);min-width:80px;">Serbatoio 1</span><div class="level-bar"><div class="level-fill green" style="width:72%;"></div></div><span class="level-pct">72%</span></div>
+      <div class="level-bar-wrap"><span style="font-size:12px;color:var(--gray-600);min-width:80px;">Serbatoio 2</span><div class="level-bar"><div class="level-fill amber" style="width:30%;"></div></div><span class="level-pct">30%</span></div>
+      <div class="level-bar-wrap"><span style="font-size:12px;color:var(--gray-600);min-width:80px;">Serbatoio 3</span><div class="level-bar"><div class="level-fill red" style="width:12%;"></div></div><span class="level-pct">12%</span></div>
+    </div>
+    <p style="font-size:12px;color:var(--gray-500);margin:16px 0 10px;">Alerts</p>
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:500px;">
+      <div class="alert alert-warning">⚠️ Serbatoio JET A-1 sotto soglia minima (28%)</div>
+      <div class="alert alert-danger">🚨 Tipo carburante non compatibile con aeromobile selezionato</div>
+      <div class="alert alert-success">✓ Rifornimento registrato — 450L detratti da Serbatoio 1</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 2 — LANDING PAGE
+     ============================================================ -->
+<div class="screen" id="s2">
+<div class="landing">
+
+  <nav class="landing-nav">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+        <path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="url(#gL)"/>
+        <path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/>
+        <defs><linearGradient id="gL" x1="3" y1="1" x2="29" y2="33" gradientUnits="userSpaceOnUse"><stop stop-color="#0EA5E9"/><stop offset="1" stop-color="#1B4ED8"/></linearGradient></defs>
+      </svg>
+      <span style="font-size:16px;font-weight:800;color:var(--navy);">FuelManager</span>
+    </div>
+    <div style="display:flex;gap:24px;align-items:center;">
+      <a style="font-size:13px;color:var(--gray-600);font-weight:500;">Funzionalità</a>
+      <a style="font-size:13px;color:var(--gray-600);font-weight:500;">Prezzi</a>
+      <a style="font-size:13px;color:var(--gray-600);font-weight:500;">Demo</a>
+      <button class="btn btn-secondary btn-sm">Accedi</button>
+      <button class="btn btn-primary btn-sm">Inizia gratis</button>
+    </div>
+  </nav>
+
+  <div class="landing-hero">
+    <div class="badge badge-blue" style="margin-bottom:16px;font-size:11px;">🚀 Nuovo: Export PDF/Excel & Alert soglia automatici</div>
+    <h1>Gestisci il <span>carburante</span><br>della tua flotta.<br>Senza errori.</h1>
+    <p>Software SaaS per aeroclub, scuole di volo e aerotaxi. Traccia ogni rifornimento, previeni errori di tipo carburante, monitora i serbatoi in tempo reale.</p>
+    <div class="hero-btns">
+      <a class="btn-hero-primary">✈️ Inizia gratis — Trial 14 giorni</a>
+      <a class="btn-hero-secondary">▶ Guarda la demo</a>
+    </div>
+    <p style="font-size:12px;color:rgba(255,255,255,.45);margin-top:20px;">Nessuna carta di credito richiesta • GDPR compliant • Hosting EU</p>
+  </div>
+
+  <!-- KPI strip -->
+  <div style="background:var(--navy);padding:24px 48px;display:flex;justify-content:center;gap:48px;flex-wrap:wrap;">
+    <div style="text-align:center;color:white;"><div style="font-size:28px;font-weight:800;color:var(--sky);">+200</div><div style="font-size:12px;color:rgba(255,255,255,.55);">Aeroclub attivi</div></div>
+    <div style="text-align:center;color:white;"><div style="font-size:28px;font-weight:800;color:var(--sky);">1.2M L</div><div style="font-size:12px;color:rgba(255,255,255,.55);">Carburante tracciato / mese</div></div>
+    <div style="text-align:center;color:white;"><div style="font-size:28px;font-weight:800;color:var(--sky);">99.9%</div><div style="font-size:12px;color:rgba(255,255,255,.55);">Uptime SLA</div></div>
+    <div style="text-align:center;color:white;"><div style="font-size:28px;font-weight:800;color:var(--sky);">0</div><div style="font-size:12px;color:rgba(255,255,255,.55);">Errori tipo carburante*</div></div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon">⛽</div><div class="feature-title">Rifornimenti in 30 secondi</div><div class="feature-desc">Seleziona aeromobile, serbatoio e quantità. Il sistema valida il tipo di carburante e aggiorna le scorte in tempo reale.</div></div>
+    <div class="feature-card"><div class="feature-icon">🚨</div><div class="feature-title">Alert soglia automatici</div><div class="feature-desc">Notifiche immediate quando un serbatoio scende sotto la soglia configurata. Email + notifica in-app.</div></div>
+    <div class="feature-card"><div class="feature-icon">📊</div><div class="feature-title">Report PDF ed Excel</div><div class="feature-desc">Genera report dettagliati per periodo, aeromobile o serbatoio. Pronti per compliance ENAC/EASA.</div></div>
+    <div class="feature-card"><div class="feature-icon">👥</div><div class="feature-title">Multi-utente con ruoli</div><div class="feature-desc">Admin, operatori e supervisori con permessi granulari. Log audit completo di ogni operazione.</div></div>
+    <div class="feature-card"><div class="feature-icon">📱</div><div class="feature-title">Mobile-first & PWA</div><div class="feature-desc">Funziona su qualsiasi dispositivo. Installabile come app nativa su iOS e Android.</div></div>
+    <div class="feature-card"><div class="feature-icon">🌍</div><div class="feature-title">Multilingua</div><div class="feature-desc">Interfaccia in Italiano, Inglese, Turco e Spagnolo. Perfetto per operatori internazionali.</div></div>
+  </div>
+
+  <div class="plans-section">
+    <div class="section-title">Piani e Prezzi</div>
+    <div class="section-sub">Inizia gratis, passa al piano che cresce con te</div>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Trial</div>
+        <div class="plan-price">€0 <span>/mese</span></div>
+        <div class="plan-desc">Per provare il sistema</div>
+        <div class="plan-features">
+          <div class="plan-feat">2 serbatoi</div>
+          <div class="plan-feat">2 utenti</div>
+          <div class="plan-feat">Operazioni base</div>
+          <div class="plan-feat">14 giorni</div>
+        </div>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Basic</div>
+        <div class="plan-price">€49 <span>/mese</span></div>
+        <div class="plan-desc">Piccoli aeroclub</div>
+        <div class="plan-features">
+          <div class="plan-feat">10 serbatoi</div>
+          <div class="plan-feat">5 utenti</div>
+          <div class="plan-feat">Export PDF/Excel</div>
+          <div class="plan-feat">Alert email</div>
+        </div>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-badge">Più scelto</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">€149 <span>/mese</span></div>
+        <div class="plan-desc">Scuole di volo e aerotaxi</div>
+        <div class="plan-features">
+          <div class="plan-feat">Serbatoi illimitati</div>
+          <div class="plan-feat">20 utenti</div>
+          <div class="plan-feat">Audit log completo</div>
+          <div class="plan-feat">Multi-base</div>
+        </div>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price">€399 <span>/mese</span></div>
+        <div class="plan-desc">Grandi operatori</div>
+        <div class="plan-features">
+          <div class="plan-feat">Tutto illimitato</div>
+          <div class="plan-feat">SLA 99.9%</div>
+          <div class="plan-feat">Supporto dedicato</div>
+          <div class="plan-feat">API access</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 3 — LOGIN
+     ============================================================ -->
+<div class="screen" id="s3">
+<div class="auth-page">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <svg width="44" height="44" viewBox="0 0 32 32" fill="none">
+        <path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="url(#gLogin)"/>
+        <path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/>
+        <defs><linearGradient id="gLogin" x1="3" y1="1" x2="29" y2="33" gradientUnits="userSpaceOnUse"><stop stop-color="#0EA5E9"/><stop offset="1" stop-color="#1B4ED8"/></linearGradient></defs>
+      </svg>
+    </div>
+    <div class="auth-title" style="text-align:center;">Accedi a FuelManager</div>
+    <div class="auth-sub" style="text-align:center;">Inserisci le tue credenziali per continuare</div>
+    <div class="auth-form">
+      <div class="form-group">
+        <label class="form-label">Email aziendale</label>
+        <input class="form-input" type="email" value="mario.rossi@aeroclub.it" placeholder="email@azienda.it">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" value="••••••••" placeholder="••••••••">
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;">
+        <label style="display:flex;align-items:center;gap:6px;color:var(--gray-600);cursor:pointer;">
+          <input type="checkbox" checked> Ricordami
+        </label>
+        <a href="#" style="color:var(--blue);font-weight:600;">Password dimenticata?</a>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;">Accedi</button>
+    </div>
+    <div class="auth-footer">
+      Non hai un account? <a href="#">Registra la tua azienda</a>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 4 — REGISTER
+     ============================================================ -->
+<div class="screen" id="s4">
+<div class="auth-page" style="align-items:flex-start;padding:32px;">
+  <div class="auth-box" style="width:520px;max-width:100%;">
+    <div class="auth-logo" style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:20px;">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="url(#gReg)"/>
+        <path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/>
+        <defs><linearGradient id="gReg" x1="3" y1="1" x2="29" y2="33" gradientUnits="userSpaceOnUse"><stop stop-color="#0EA5E9"/><stop offset="1" stop-color="#1B4ED8"/></linearGradient></defs>
+      </svg>
+      <span style="font-size:20px;font-weight:800;color:var(--navy);">FuelManager</span>
+    </div>
+    <div class="auth-title" style="text-align:center;margin-bottom:4px;">Registra la tua azienda</div>
+    <div class="auth-sub" style="text-align:center;margin-bottom:20px;">Trial gratuito 14 giorni, nessuna carta di credito</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="form-group">
+        <label class="form-label">Nome azienda / Aeroclub</label>
+        <input class="form-input" value="Aeroclub Milano Bresso" placeholder="es. Aeroclub Padova">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Nome</label>
+          <input class="form-input" value="Mario" placeholder="Mario">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cognome</label>
+          <input class="form-input" value="Rossi" placeholder="Rossi">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" value="mario.rossi@aeroclubmilano.it">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" type="password" value="••••••••">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Conferma Password</label>
+          <input class="form-input" type="password" value="••••••••">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Piano</label>
+        <select class="form-select">
+          <option selected>Trial (Gratuito — 14 giorni)</option>
+          <option>Basic — €49/mese</option>
+          <option>Pro — €149/mese</option>
+          <option>Enterprise — €399/mese</option>
+        </select>
+      </div>
+      <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--gray-600);cursor:pointer;">
+        <input type="checkbox" checked style="margin-top:2px;">
+        Accetto i <a href="#" style="color:var(--blue);font-weight:600;">Termini di servizio</a> e la <a href="#" style="color:var(--blue);font-weight:600;">Privacy Policy</a>
+      </label>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;">Crea account e inizia il Trial</button>
+    </div>
+    <div class="auth-footer">
+      Hai già un account? <a href="#">Accedi</a>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 5 — DASHBOARD
+     ============================================================ -->
+<div class="screen" id="s5">
+<div class="app-shell">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+        <path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="url(#gSB)"/>
+        <path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/>
+        <defs><linearGradient id="gSB" x1="3" y1="1" x2="29" y2="33" gradientUnits="userSpaceOnUse"><stop stop-color="#0EA5E9"/><stop offset="1" stop-color="#1B4ED8"/></linearGradient></defs>
+      </svg>
+      <div class="sidebar-logo-text">
+        <div class="brand">FuelManager</div>
+        <div class="sub">Aeroclub Milano</div>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-item active"><span class="icon">📊</span> Dashboard</div>
+      <div class="sidebar-item"><span class="icon">🛢</span> Serbatoi</div>
+      <div class="sidebar-item"><span class="icon">⛽</span> Operazioni</div>
+      <div class="sidebar-item"><span class="icon">✈️</span> Aeromobili</div>
+      <div class="sidebar-item"><span class="icon">🚗</span> Veicoli</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Gestione</div>
+      <div class="sidebar-item"><span class="icon">📈</span> Report</div>
+      <div class="sidebar-item"><span class="icon">👥</span> Utenti</div>
+      <div class="sidebar-item"><span class="icon">🔔</span> Notifiche <span class="badge">3</span></div>
+      <div class="sidebar-item"><span class="icon">🔍</span> Audit Log</div>
+      <div class="sidebar-item"><span class="icon">⚙️</span> Impostazioni</div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar">MR</div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--white);">Mario Rossi</div>
+          <div style="font-size:11px;color:var(--gray-500);">Admin · Pro</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Panoramica operazioni — Giugno 2026</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div class="alert alert-warning" style="padding:8px 12px;font-size:12px;">⚠ 1 serbatoio sotto soglia</div>
+        <button class="btn btn-primary">+ Nuovo Rifornimento</button>
+      </div>
+    </div>
+    <div class="page-body">
+
+      <!-- KPI -->
+      <div class="stat-grid" style="margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-icon">⛽</div><div class="stat-label">Litri erogati (mese)</div><div class="stat-value">12.840</div><div class="stat-delta up">▲ +8% vs mese scorso</div></div>
+        <div class="stat-card"><div class="stat-icon">🛢</div><div class="stat-label">Scorte totali</div><div class="stat-value">24.200 L</div><div class="stat-delta down">▼ -3% vs settimana scorsa</div></div>
+        <div class="stat-card"><div class="stat-icon">✈️</div><div class="stat-label">Aeromobili riforniti</div><div class="stat-value">47</div><div class="stat-delta up">▲ +12 questo mese</div></div>
+        <div class="stat-card"><div class="stat-icon">🚨</div><div class="stat-label">Alert attivi</div><div class="stat-value" style="color:var(--amber);">3</div><div class="stat-delta" style="color:var(--gray-400);">1 critico, 2 warning</div></div>
+      </div>
+
+      <!-- Charts + Levels -->
+      <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;margin-bottom:20px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Consumo mensile (Litri)</span><select class="form-select" style="font-size:12px;padding:4px 8px;"><option>Ultimi 6 mesi</option></select></div>
+          <div class="card-body">
+            <div class="chart-placeholder">
+              <div class="chart-bar" style="height:60%;"></div>
+              <div class="chart-bar" style="height:75%;"></div>
+              <div class="chart-bar" style="height:50%;"></div>
+              <div class="chart-bar" style="height:90%;"></div>
+              <div class="chart-bar" style="height:70%;"></div>
+              <div class="chart-bar" style="height:85%;background:var(--sky);"></div>
+            </div>
+            <div style="display:flex;justify-content:space-around;margin-top:6px;">
+              <span style="font-size:10px;color:var(--gray-400);">Gen</span>
+              <span style="font-size:10px;color:var(--gray-400);">Feb</span>
+              <span style="font-size:10px;color:var(--gray-400);">Mar</span>
+              <span style="font-size:10px;color:var(--gray-400);">Apr</span>
+              <span style="font-size:10px;color:var(--gray-400);">Mag</span>
+              <span style="font-size:10px;color:var(--blue);font-weight:600;">Giu</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Livelli Serbatoi</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:600;color:var(--gray-700);">Tank 01 — Jet A-1</span><span class="badge fuel-jeta1" style="font-size:10px;">Jet A-1</span></div>
+              <div class="level-bar-wrap"><div class="level-bar"><div class="level-fill green" style="width:72%;"></div></div><span class="level-pct">72%</span></div>
+              <div style="font-size:11px;color:var(--gray-400);margin-top:2px;">14.400 / 20.000 L</div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:600;color:var(--gray-700);">Tank 02 — AvGas</span><span class="badge fuel-avgas" style="font-size:10px;">AvGas</span></div>
+              <div class="level-bar-wrap"><div class="level-bar"><div class="level-fill amber" style="width:28%;"></div></div><span class="level-pct">28%</span></div>
+              <div style="font-size:11px;color:var(--amber);margin-top:2px;">⚠ 2.800 / 10.000 L — Soglia min: 30%</div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:600;color:var(--gray-700);">Tank 03 — Diesel</span><span class="badge fuel-diesel" style="font-size:10px;">Diesel</span></div>
+              <div class="level-bar-wrap"><div class="level-bar"><div class="level-fill green" style="width:55%;"></div></div><span class="level-pct">55%</span></div>
+              <div style="font-size:11px;color:var(--gray-400);margin-top:2px;">2.750 / 5.000 L</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent operations -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Ultime operazioni</span><a style="font-size:12px;color:var(--blue);font-weight:600;cursor:pointer;">Vedi tutte →</a></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Data/Ora</th><th>Aeromobile</th><th>Tipo</th><th>Quantità</th><th>Serbatoio</th><th>Operatore</th><th>Stato</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--gray-500);font-size:12px;">25/06 14:22</td><td><b>I-ABCD</b> <span style="font-size:11px;color:var(--gray-400);">C172</span></td><td><span class="badge fuel-avgas">AvGas</span></td><td><b>120 L</b></td><td>Tank 02</td><td>M. Rossi</td><td><span class="badge badge-green">✓ OK</span></td></tr>
+              <tr><td style="color:var(--gray-500);font-size:12px;">25/06 11:45</td><td><b>I-EFGH</b> <span style="font-size:11px;color:var(--gray-400);">PA-28</span></td><td><span class="badge fuel-avgas">AvGas</span></td><td><b>80 L</b></td><td>Tank 02</td><td>L. Bianchi</td><td><span class="badge badge-green">✓ OK</span></td></tr>
+              <tr><td style="color:var(--gray-500);font-size:12px;">24/06 16:30</td><td><b>I-IJKL</b> <span style="font-size:11px;color:var(--gray-400);">SR22</span></td><td><span class="badge fuel-jeta1">Jet A-1</span></td><td><b>450 L</b></td><td>Tank 01</td><td>M. Rossi</td><td><span class="badge badge-green">✓ OK</span></td></tr>
+              <tr><td style="color:var(--gray-500);font-size:12px;">24/06 09:10</td><td><b>I-MNOP</b> <span style="font-size:11px;color:var(--gray-400);">DA40</span></td><td><span class="badge fuel-jeta1">Jet A-1</span></td><td><b>200 L</b></td><td>Tank 01</td><td>G. Verdi</td><td><span class="badge badge-green">✓ OK</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 6 — TANKS
+     ============================================================ -->
+<div class="screen" id="s6">
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="sidebar-logo"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="#1B4ED8"/><path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/></svg><div class="sidebar-logo-text"><div class="brand">FuelManager</div><div class="sub">Aeroclub Milano</div></div></div>
+    <div class="sidebar-section">
+      <div class="sidebar-item"><span class="icon">📊</span> Dashboard</div>
+      <div class="sidebar-item active"><span class="icon">🛢</span> Serbatoi</div>
+      <div class="sidebar-item"><span class="icon">⛽</span> Operazioni</div>
+      <div class="sidebar-item"><span class="icon">✈️</span> Aeromobili</div>
+      <div class="sidebar-item"><span class="icon">🚗</span> Veicoli</div>
+    </div>
+    <div class="sidebar-section"><div class="sidebar-section-label">Gestione</div><div class="sidebar-item"><span class="icon">📈</span> Report</div><div class="sidebar-item"><span class="icon">👥</span> Utenti</div><div class="sidebar-item"><span class="icon">🔔</span> Notifiche <span class="badge">3</span></div><div class="sidebar-item"><span class="icon">🔍</span> Audit Log</div><div class="sidebar-item"><span class="icon">⚙️</span> Impostazioni</div></div>
+    <div class="sidebar-footer"><div class="sidebar-user"><div class="avatar">MR</div><div><div style="font-size:12px;font-weight:600;color:var(--white);">Mario Rossi</div><div style="font-size:11px;color:var(--gray-500);">Admin · Pro</div></div></div></div>
+  </div>
+  <div class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">Serbatoi</div><div class="page-sub">3 serbatoi attivi — Base Milano Bresso</div></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary">🔍 Filtra base</button>
+        <button class="btn btn-primary">+ Aggiungi serbatoio</button>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="alert alert-warning" style="margin-bottom:16px;">⚠️ Tank 02 (AvGas) sotto soglia minima — Scorte: 2.800 L (28%). Considerare rifornimento urgente.</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:20px;">
+
+        <!-- Tank 01 -->
+        <div class="card">
+          <div class="card-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:var(--green);"></div>
+              <span class="card-title">Tank 01 — Jet A-1</span>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <span class="badge fuel-jeta1">Jet A-1</span>
+              <span class="badge badge-green">Operativo</span>
+            </div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;font-weight:600;color:var(--gray-800);">14.400 / 20.000 L</span><span style="font-size:13px;font-weight:700;color:var(--green);">72%</span></div>
+              <div class="level-bar" style="height:12px;"><div class="level-fill green" style="width:72%;"></div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div><div style="font-size:11px;color:var(--gray-400);">Capacità max</div><div style="font-size:13px;font-weight:600;">20.000 L</div></div>
+              <div><div style="font-size:11px;color:var(--gray-400);">Soglia minima</div><div style="font-size:13px;font-weight:600;">20% (4.000 L)</div></div>
+              <div><div style="font-size:11px;color:var(--gray-400);">Ultima ricarica</div><div style="font-size:13px;font-weight:600;">20/06/2026</div></div>
+              <div><div style="font-size:11px;color:var(--gray-400);">Base</div><div style="font-size:13px;font-weight:600;">Milano Bresso</div></div>
+            </div>
+            <div style="display:flex;gap:8px;padding-top:4px;border-top:1px solid var(--gray-100);">
+              <button class="btn btn-primary btn-sm">+ Carica</button>
+              <button class="btn btn-secondary btn-sm">✓ Quality check</button>
+              <button class="btn btn-secondary btn-sm" style="margin-left:auto;">Dettagli</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tank 02 -->
+        <div class="card" style="border-color:var(--amber);">
+          <div class="card-header" style="background:#FFFBEB;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:var(--amber);"></div>
+              <span class="card-title">Tank 02 — AvGas 100LL</span>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <span class="badge fuel-avgas">AvGas</span>
+              <span class="badge badge-amber">⚠ Soglia</span>
+            </div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;font-weight:600;color:var(--gray-800);">2.800 / 10.000 L</span><span style="font-size:13px;font-weight:700;color:var(--amber);">28%</span></div>
+              <div class="level-bar" style="height:12px;"><div class="level-fill amber" style="width:28%;"></div></div>
+            </div>
+            <div class="alert alert-warning" style="font-size:12px;">⚠ Sotto soglia minima (30%). Ultimo alert: 25/06 ore 08:45</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div><div style="font-size:11px;color:var(--gray-400);">Capacità max</div><div style="font-size:13px;font-weight:600;">10.000 L</div></div>
+              <div><div style="font-size:11px;color:var(--gray-400);">Soglia minima</div><div style="font-size:13px;font-weight:600;">30% (3.000 L)</div></div>
+            </div>
+            <div style="display:flex;gap:8px;padding-top:4px;border-top:1px solid var(--gray-100);">
+              <button class="btn btn-primary btn-sm">+ Carica</button>
+              <button class="btn btn-secondary btn-sm">✓ Quality check</button>
+              <button class="btn btn-secondary btn-sm" style="margin-left:auto;">Dettagli</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tank 03 -->
+        <div class="card">
+          <div class="card-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:var(--green);"></div>
+              <span class="card-title">Tank 03 — Diesel</span>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <span class="badge fuel-diesel">Diesel</span>
+              <span class="badge badge-green">Operativo</span>
+            </div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;font-weight:600;color:var(--gray-800);">2.750 / 5.000 L</span><span style="font-size:13px;font-weight:700;color:var(--green);">55%</span></div>
+              <div class="level-bar" style="height:12px;"><div class="level-fill green" style="width:55%;"></div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div><div style="font-size:11px;color:var(--gray-400);">Capacità max</div><div style="font-size:13px;font-weight:600;">5.000 L</div></div>
+              <div><div style="font-size:11px;color:var(--gray-400);">Soglia minima</div><div style="font-size:13px;font-weight:600;">15% (750 L)</div></div>
+            </div>
+            <div style="display:flex;gap:8px;padding-top:4px;border-top:1px solid var(--gray-100);">
+              <button class="btn btn-primary btn-sm">+ Carica</button>
+              <button class="btn btn-secondary btn-sm">✓ Quality check</button>
+              <button class="btn btn-secondary btn-sm" style="margin-left:auto;">Dettagli</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 7 — NEW OPERATION MODAL
+     ============================================================ -->
+<div class="screen" id="s7">
+<div class="app-shell" style="position:relative;">
+  <div class="sidebar">
+    <div class="sidebar-logo"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="#1B4ED8"/><path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/></svg><div class="sidebar-logo-text"><div class="brand">FuelManager</div><div class="sub">Aeroclub Milano</div></div></div>
+    <div class="sidebar-section"><div class="sidebar-item active"><span class="icon">⛽</span> Operazioni</div></div>
+  </div>
+  <div class="main-content" style="filter:blur(1px);pointer-events:none;opacity:.5;">
+    <div class="page-header"><div class="page-title">Operazioni di Rifornimento</div></div>
+    <div class="page-body"><div class="stat-grid"><div class="stat-card"><div class="stat-label">Operazioni oggi</div><div class="stat-value">8</div></div><div class="stat-card"><div class="stat-label">Litri erogati oggi</div><div class="stat-value">1.240 L</div></div></div></div>
+  </div>
+
+  <!-- MODAL OVERLAY -->
+  <div class="modal-backdrop" style="position:fixed;top:44px;">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">⛽ Nuovo Rifornimento</div>
+          <div style="font-size:12px;color:var(--gray-400);margin-top:2px;">Compila i dati dell'operazione</div>
+        </div>
+        <button class="btn btn-ghost btn-icon" style="font-size:18px;">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Aeromobile</label>
+          <select class="form-select">
+            <option selected>I-ABCD — Cessna 172 (AvGas 100LL)</option>
+            <option>I-EFGH — Piper PA-28 (AvGas 100LL)</option>
+            <option>I-IJKL — Cirrus SR22 (Jet A-1)</option>
+          </select>
+        </div>
+        <div class="alert alert-info" style="font-size:12px;">✈️ I-ABCD richiede <strong>AvGas 100LL</strong> — Solo i serbatoi compatibili saranno disponibili</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Serbatoio</label>
+            <select class="form-select">
+              <option selected>Tank 02 — AvGas (2.800 L disp.)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Quantità (Litri)</label>
+            <input class="form-input" type="number" value="120" min="1">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Ore motore attuali</label>
+            <input class="form-input" type="number" value="1842.5" step="0.1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tipo operazione</label>
+            <select class="form-select">
+              <option selected>Rifornimento</option>
+              <option>Defueling</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Note (opzionale)</label>
+          <input class="form-input" placeholder="Volo scuola, istruttore Bianchi">
+        </div>
+        <div style="background:var(--gray-50);border-radius:8px;padding:12px;border:1px solid var(--gray-200);">
+          <div style="font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;margin-bottom:8px;">Riepilogo operazione</div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--gray-500);">Aeromobile</span><span style="font-weight:600;">I-ABCD / C172</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--gray-500);">Carburante</span><span class="badge fuel-avgas">AvGas 100LL</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--gray-500);">Quantità</span><span style="font-weight:600;color:var(--blue);">120 L</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray-500);">Tank dopo op.</span><span style="font-weight:600;color:var(--amber);">2.680 L (26.8%) ⚠</span></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary">Annulla</button>
+        <button class="btn btn-primary">⛽ Registra rifornimento</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 8 — OPERATIONS
+     ============================================================ -->
+<div class="screen" id="s8">
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="sidebar-logo"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="#1B4ED8"/><path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/></svg><div class="sidebar-logo-text"><div class="brand">FuelManager</div><div class="sub">Aeroclub Milano</div></div></div>
+    <div class="sidebar-section"><div class="sidebar-item"><span class="icon">📊</span> Dashboard</div><div class="sidebar-item"><span class="icon">🛢</span> Serbatoi</div><div class="sidebar-item active"><span class="icon">⛽</span> Operazioni</div><div class="sidebar-item"><span class="icon">✈️</span> Aeromobili</div><div class="sidebar-item"><span class="icon">🚗</span> Veicoli</div></div>
+    <div class="sidebar-section"><div class="sidebar-section-label">Gestione</div><div class="sidebar-item"><span class="icon">📈</span> Report</div><div class="sidebar-item"><span class="icon">👥</span> Utenti</div><div class="sidebar-item"><span class="icon">🔔</span> Notifiche <span class="badge">3</span></div><div class="sidebar-item"><span class="icon">🔍</span> Audit Log</div><div class="sidebar-item"><span class="icon">⚙️</span> Impostazioni</div></div>
+    <div class="sidebar-footer"><div class="sidebar-user"><div class="avatar">MR</div><div><div style="font-size:12px;font-weight:600;color:var(--white);">Mario Rossi</div><div style="font-size:11px;color:var(--gray-500);">Admin · Pro</div></div></div></div>
+  </div>
+  <div class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">Operazioni di Rifornimento</div><div class="page-sub">142 operazioni totali — Giugno 2026</div></div>
+      <button class="btn btn-primary">+ Nuovo Rifornimento</button>
+    </div>
+    <div class="page-body">
+      <!-- Filters -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-body" style="padding:14px 20px;">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <input class="form-input" style="max-width:200px;" placeholder="🔍 Cerca aeromobile...">
+            <select class="form-select" style="max-width:160px;"><option>Tutti i tipi</option><option>Jet A-1</option><option>AvGas</option><option>Diesel</option></select>
+            <input class="form-input" type="date" value="2026-06-01" style="max-width:150px;">
+            <span style="color:var(--gray-400);font-size:13px;">→</span>
+            <input class="form-input" type="date" value="2026-06-25" style="max-width:150px;">
+            <select class="form-select" style="max-width:160px;"><option>Tutti gli operatori</option><option selected>M. Rossi</option></select>
+            <button class="btn btn-secondary btn-sm">Reset filtri</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI row -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+        <div class="stat-card" style="padding:14px;"><div class="stat-label">Operazioni filtrate</div><div class="stat-value" style="font-size:22px;">38</div></div>
+        <div class="stat-card" style="padding:14px;"><div class="stat-label">Totale litri</div><div class="stat-value" style="font-size:22px;">4.820 L</div></div>
+        <div class="stat-card" style="padding:14px;"><div class="stat-label">Jet A-1</div><div class="stat-value" style="font-size:22px;color:var(--navy);">3.200 L</div></div>
+        <div class="stat-card" style="padding:14px;"><div class="stat-label">AvGas</div><div class="stat-value" style="font-size:22px;color:var(--red);">1.620 L</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Lista Operazioni</span><div style="display:flex;gap:8px;"><button class="btn btn-secondary btn-sm">📥 CSV</button><button class="btn btn-secondary btn-sm">📄 PDF</button></div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Data/Ora</th><th>Aeromobile</th><th>Tipo Carb.</th><th>Litri</th><th>Tank</th><th>Ore/Km</th><th>Operatore</th><th>Note</th><th></th></tr></thead>
+            <tbody>
+              <tr><td style="font-size:11px;color:var(--gray-400);">#142</td><td style="font-size:12px;color:var(--gray-500);">25/06 14:22</td><td><b>I-ABCD</b><div style="font-size:11px;color:var(--gray-400);">C172S</div></td><td><span class="badge fuel-avgas">AvGas</span></td><td><b>120 L</b></td><td style="font-size:12px;">Tank 02</td><td style="font-size:12px;color:var(--gray-500);">1842.5 h</td><td style="font-size:12px;">M. Rossi</td><td style="font-size:11px;color:var(--gray-400);">Volo scuola</td><td><button class="btn btn-ghost btn-sm btn-icon">⋯</button></td></tr>
+              <tr><td style="font-size:11px;color:var(--gray-400);">#141</td><td style="font-size:12px;color:var(--gray-500);">25/06 11:45</td><td><b>I-EFGH</b><div style="font-size:11px;color:var(--gray-400);">PA-28</div></td><td><span class="badge fuel-avgas">AvGas</span></td><td><b>80 L</b></td><td style="font-size:12px;">Tank 02</td><td style="font-size:12px;color:var(--gray-500);">956.0 h</td><td style="font-size:12px;">L. Bianchi</td><td style="font-size:11px;color:var(--gray-400);"></td><td><button class="btn btn-ghost btn-sm btn-icon">⋯</button></td></tr>
+              <tr><td style="font-size:11px;color:var(--gray-400);">#140</td><td style="font-size:12px;color:var(--gray-500);">24/06 16:30</td><td><b>I-IJKL</b><div style="font-size:11px;color:var(--gray-400);">SR22</div></td><td><span class="badge fuel-jeta1">Jet A-1</span></td><td><b>450 L</b></td><td style="font-size:12px;">Tank 01</td><td style="font-size:12px;color:var(--gray-500);">2210.0 h</td><td style="font-size:12px;">M. Rossi</td><td style="font-size:11px;color:var(--gray-400);">Cross-country</td><td><button class="btn btn-ghost btn-sm btn-icon">⋯</button></td></tr>
+              <tr><td style="font-size:11px;color:var(--gray-400);">#139</td><td style="font-size:12px;color:var(--gray-500);">24/06 09:10</td><td><b>I-MNOP</b><div style="font-size:11px;color:var(--gray-400);">DA40</div></td><td><span class="badge fuel-jeta1">Jet A-1</span></td><td><b>200 L</b></td><td style="font-size:12px;">Tank 01</td><td style="font-size:12px;color:var(--gray-500);">445.5 h</td><td style="font-size:12px;">G. Verdi</td><td></td><td><button class="btn btn-ghost btn-sm btn-icon">⋯</button></td></tr>
+              <tr><td style="font-size:11px;color:var(--gray-400);">#138</td><td style="font-size:12px;color:var(--gray-500);">23/06 17:00</td><td><b>Furgone 01</b><div style="font-size:11px;color:var(--gray-400);">VW Transporter</div></td><td><span class="badge fuel-diesel">Diesel</span></td><td><b>60 L</b></td><td style="font-size:12px;">Tank 03</td><td style="font-size:12px;color:var(--gray-500);">48.220 km</td><td style="font-size:12px;">M. Rossi</td><td></td><td><button class="btn btn-ghost btn-sm btn-icon">⋯</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 9 — REPORTS
+     ============================================================ -->
+<div class="screen" id="s9">
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="sidebar-logo"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="#1B4ED8"/><path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/></svg><div class="sidebar-logo-text"><div class="brand">FuelManager</div><div class="sub">Aeroclub Milano</div></div></div>
+    <div class="sidebar-section"><div class="sidebar-item"><span class="icon">📊</span> Dashboard</div><div class="sidebar-item"><span class="icon">🛢</span> Serbatoi</div><div class="sidebar-item"><span class="icon">⛽</span> Operazioni</div></div>
+    <div class="sidebar-section"><div class="sidebar-section-label">Gestione</div><div class="sidebar-item active"><span class="icon">📈</span> Report</div><div class="sidebar-item"><span class="icon">👥</span> Utenti</div><div class="sidebar-item"><span class="icon">🔔</span> Notifiche <span class="badge">3</span></div></div>
+    <div class="sidebar-footer"><div class="sidebar-user"><div class="avatar">MR</div><div><div style="font-size:12px;font-weight:600;color:var(--white);">Mario Rossi</div><div style="font-size:11px;color:var(--gray-500);">Admin · Pro</div></div></div></div>
+  </div>
+  <div class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">Report e Export</div><div class="page-sub">Genera report in PDF o Excel per periodo, aeromobile o serbatoio</div></div>
+    </div>
+    <div class="page-body">
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;">
+        <!-- Generator -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Configura Report</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+            <div class="form-group">
+              <label class="form-label">Tipo di report</label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div style="border:2px solid var(--blue);border-radius:8px;padding:12px;cursor:pointer;background:#EFF6FF;">
+                  <div style="font-size:14px;font-weight:700;color:var(--blue);margin-bottom:2px;">⛽ Operazioni</div>
+                  <div style="font-size:11px;color:var(--gray-500);">Tutti i rifornimenti nel periodo</div>
+                </div>
+                <div style="border:1px solid var(--gray-200);border-radius:8px;padding:12px;cursor:pointer;">
+                  <div style="font-size:14px;font-weight:700;color:var(--gray-700);margin-bottom:2px;">🛢 Serbatoi</div>
+                  <div style="font-size:11px;color:var(--gray-500);">Movimenti e livelli serbatoi</div>
+                </div>
+                <div style="border:1px solid var(--gray-200);border-radius:8px;padding:12px;cursor:pointer;">
+                  <div style="font-size:14px;font-weight:700;color:var(--gray-700);margin-bottom:2px;">✈️ Per aeromobile</div>
+                  <div style="font-size:11px;color:var(--gray-500);">Consumi per singolo aeromobile</div>
+                </div>
+                <div style="border:1px solid var(--gray-200);border-radius:8px;padding:12px;cursor:pointer;">
+                  <div style="font-size:14px;font-weight:700;color:var(--gray-700);margin-bottom:2px;">📊 Riepilogo mensile</div>
+                  <div style="font-size:11px;color:var(--gray-500);">Totali mensili per tipo carburante</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Data inizio</label>
+                <input class="form-input" type="date" value="2026-06-01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Data fine</label>
+                <input class="form-input" type="date" value="2026-06-25">
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Aeromobile (opzionale)</label>
+                <select class="form-select"><option value="">Tutti</option><option>I-ABCD</option><option>I-EFGH</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tipo carburante</label>
+                <select class="form-select"><option>Tutti</option><option>Jet A-1</option><option>AvGas</option></select>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;padding-top:8px;border-top:1px solid var(--gray-100);">
+              <button class="btn btn-primary" style="flex:1;justify-content:center;">📄 Genera PDF</button>
+              <button class="btn btn-secondary" style="flex:1;justify-content:center;">📊 Genera Excel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview + Recent -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Anteprima</span></div>
+            <div class="card-body" style="background:var(--gray-50);min-height:200px;display:flex;flex-direction:column;gap:6px;">
+              <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:6px;padding:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--navy);">
+                  <div style="width:20px;height:20px;background:var(--blue);border-radius:4px;"></div>
+                  <div><div style="font-size:11px;font-weight:700;color:var(--navy);">FUEL MANAGER</div><div style="font-size:9px;color:var(--gray-400);">Report Operazioni</div></div>
+                  <div style="margin-left:auto;font-size:9px;color:var(--gray-400);">01/06/2026 – 25/06/2026</div>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:10px;color:var(--gray-400);">Azienda</span><span style="font-size:10px;font-weight:600;">Aeroclub Milano</span></div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:10px;color:var(--gray-400);">Operazioni</span><span style="font-size:10px;font-weight:600;">38</span></div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:10px;color:var(--gray-400);">Totale litri</span><span style="font-size:10px;font-weight:600;">4.820 L</span></div>
+                <div style="border-top:1px solid var(--gray-100);margin-top:8px;padding-top:6px;">
+                  <div style="font-size:9px;color:var(--gray-300);text-align:center;">— Tabella dati sotto —</div>
+                  <div style="margin-top:4px;display:flex;flex-direction:column;gap:2px;">
+                    <div style="height:6px;background:var(--gray-100);border-radius:2px;"></div>
+                    <div style="height:6px;background:var(--gray-100);border-radius:2px;width:85%;"></div>
+                    <div style="height:6px;background:var(--gray-100);border-radius:2px;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Report Recenti</span></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px;padding:12px 16px;">
+              <div style="display:flex;align-items:center;gap:10px;font-size:12px;"><span style="font-size:16px;">📄</span><div><div style="font-weight:600;color:var(--gray-800);">Operazioni Maggio 2026</div><div style="color:var(--gray-400);font-size:11px;">PDF • 2.4 MB • 01/06/2026</div></div><a style="margin-left:auto;color:var(--blue);font-weight:600;cursor:pointer;">↓</a></div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:12px;"><span style="font-size:16px;">📊</span><div><div style="font-weight:600;color:var(--gray-800);">Riepilogo Q1 2026</div><div style="color:var(--gray-400);font-size:11px;">Excel • 890 KB • 01/04/2026</div></div><a style="margin-left:auto;color:var(--blue);font-weight:600;cursor:pointer;">↓</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 10 — NOTIFICATIONS
+     ============================================================ -->
+<div class="screen" id="s10">
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="sidebar-logo"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="#1B4ED8"/><path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/></svg><div class="sidebar-logo-text"><div class="brand">FuelManager</div><div class="sub">Aeroclub Milano</div></div></div>
+    <div class="sidebar-section"><div class="sidebar-item"><span class="icon">📊</span> Dashboard</div><div class="sidebar-item"><span class="icon">🛢</span> Serbatoi</div></div>
+    <div class="sidebar-section"><div class="sidebar-section-label">Gestione</div><div class="sidebar-item"><span class="icon">📈</span> Report</div><div class="sidebar-item"><span class="icon">👥</span> Utenti</div><div class="sidebar-item active"><span class="icon">🔔</span> Notifiche <span class="badge">3</span></div></div>
+    <div class="sidebar-footer"><div class="sidebar-user"><div class="avatar">MR</div><div><div style="font-size:12px;font-weight:600;color:var(--white);">Mario Rossi</div><div style="font-size:11px;color:var(--gray-500);">Admin · Pro</div></div></div></div>
+  </div>
+  <div class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">Notifiche</div><div class="page-sub">3 non lette</div></div>
+      <button class="btn btn-secondary">✓ Segna tutte come lette</button>
+    </div>
+    <div class="page-body">
+      <div class="tabs" style="margin-bottom:20px;">
+        <div class="tab-item active">Tutte (8)</div>
+        <div class="tab-item">Non lette (3)</div>
+        <div class="tab-item">Alert serbatoi (2)</div>
+        <div class="tab-item">Sistema (2)</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;flex-direction:column;">
+
+          <!-- Unread critical -->
+          <div style="display:flex;gap:14px;padding:16px 20px;border-bottom:1px solid var(--gray-100);background:#FEF2F2;border-left:3px solid var(--red);">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🚨</div>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+                <span style="font-size:13px;font-weight:700;color:var(--gray-900);">Tank 02 — Livello critico AvGas</span>
+                <span class="badge badge-red">Critico</span>
+                <span class="badge badge-red">Non letto</span>
+              </div>
+              <div style="font-size:12px;color:var(--gray-600);margin-bottom:4px;">Serbatoio AvGas sceso al 28% (2.800 L). Soglia minima configurata: 30%. Considerare rifornimento urgente prima delle prossime attività di volo.</div>
+              <div style="font-size:11px;color:var(--gray-400);">25 Giugno 2026 — 08:45 · Tank 02 · Base Milano Bresso</div>
+            </div>
+          </div>
+
+          <!-- Unread warning -->
+          <div style="display:flex;gap:14px;padding:16px 20px;border-bottom:1px solid var(--gray-100);background:#FFFBEB;border-left:3px solid var(--amber);">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">⚠️</div>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+                <span style="font-size:13px;font-weight:700;color:var(--gray-900);">Tank 02 — Soglia minima raggiunta</span>
+                <span class="badge badge-amber">Warning</span>
+                <span class="badge badge-red">Non letto</span>
+              </div>
+              <div style="font-size:12px;color:var(--gray-600);margin-bottom:4px;">Serbatoio AvGas ha raggiunto il livello di soglia (30%). Livello attuale: 3.000 L.</div>
+              <div style="font-size:11px;color:var(--gray-400);">24 Giugno 2026 — 16:30 · Tank 02</div>
+            </div>
+          </div>
+
+          <!-- Unread invite -->
+          <div style="display:flex;gap:14px;padding:16px 20px;border-bottom:1px solid var(--gray-100);background:#EFF6FF;border-left:3px solid var(--blue);">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">👤</div>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+                <span style="font-size:13px;font-weight:700;color:var(--gray-900);">Nuovo utente: Luigi Bianchi ha accettato l'invito</span>
+                <span class="badge badge-blue">Sistema</span>
+                <span class="badge badge-red">Non letto</span>
+              </div>
+              <div style="font-size:12px;color:var(--gray-600);margin-bottom:4px;">Luigi Bianchi (luigi.bianchi@aeroclubmilano.it) ha completato la registrazione con ruolo Operatore.</div>
+              <div style="font-size:11px;color:var(--gray-400);">23 Giugno 2026 — 14:12</div>
+            </div>
+          </div>
+
+          <!-- Read -->
+          <div style="display:flex;gap:14px;padding:16px 20px;border-bottom:1px solid var(--gray-100);opacity:.65;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✅</div>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:2px;">Tank 01 rifornito — 8.000 L aggiunti</div>
+              <div style="font-size:12px;color:var(--gray-500);">Tank 01 Jet A-1 rifornito da 6.400 L a 14.400 L. Caricamento effettuato da M. Rossi.</div>
+              <div style="font-size:11px;color:var(--gray-400);">20 Giugno 2026 — 10:00 · Letto</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:14px;padding:16px 20px;opacity:.65;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--gray-400);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">ℹ️</div>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:2px;">Piano aggiornato a Pro</div>
+              <div style="font-size:12px;color:var(--gray-500);">Il tuo piano è stato aggiornato a Pro — €149/mese. Rinnovo: 01/07/2026.</div>
+              <div style="font-size:11px;color:var(--gray-400);">01 Giugno 2026 · Letto</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 11 — SETTINGS
+     ============================================================ -->
+<div class="screen" id="s11">
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="sidebar-logo"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="#1B4ED8"/><path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/></svg><div class="sidebar-logo-text"><div class="brand">FuelManager</div><div class="sub">Aeroclub Milano</div></div></div>
+    <div class="sidebar-section"><div class="sidebar-item"><span class="icon">📊</span> Dashboard</div><div class="sidebar-item"><span class="icon">🛢</span> Serbatoi</div><div class="sidebar-item"><span class="icon">⛽</span> Operazioni</div></div>
+    <div class="sidebar-section"><div class="sidebar-section-label">Gestione</div><div class="sidebar-item"><span class="icon">📈</span> Report</div><div class="sidebar-item"><span class="icon">👥</span> Utenti</div><div class="sidebar-item"><span class="icon">🔔</span> Notifiche <span class="badge">3</span></div><div class="sidebar-item"><span class="icon">🔍</span> Audit Log</div><div class="sidebar-item active"><span class="icon">⚙️</span> Impostazioni</div></div>
+    <div class="sidebar-footer"><div class="sidebar-user"><div class="avatar">MR</div><div><div style="font-size:12px;font-weight:600;color:var(--white);">Mario Rossi</div><div style="font-size:11px;color:var(--gray-500);">Admin · Pro</div></div></div></div>
+  </div>
+  <div class="main-content">
+    <div class="page-header"><div><div class="page-title">Impostazioni Azienda</div><div class="page-sub">Configura il tuo account e le preferenze</div></div></div>
+    <div class="page-body">
+      <div style="display:grid;grid-template-columns:200px 1fr;gap:20px;">
+        <!-- Settings nav -->
+        <div class="card" style="align-self:start;">
+          <div class="card-body" style="padding:8px;">
+            <div style="display:flex;flex-direction:column;gap:1px;">
+              <div style="padding:9px 12px;border-radius:6px;font-size:13px;font-weight:600;color:var(--blue);background:#EFF6FF;cursor:pointer;">🏢 Profilo azienda</div>
+              <div style="padding:9px 12px;border-radius:6px;font-size:13px;color:var(--gray-600);cursor:pointer;">🎨 Branding</div>
+              <div style="padding:9px 12px;border-radius:6px;font-size:13px;color:var(--gray-600);cursor:pointer;">🔔 Notifiche</div>
+              <div style="padding:9px 12px;border-radius:6px;font-size:13px;color:var(--gray-600);cursor:pointer;">🌍 Lingua</div>
+              <div style="padding:9px 12px;border-radius:6px;font-size:13px;color:var(--gray-600);cursor:pointer;">💳 Piano</div>
+              <div style="padding:9px 12px;border-radius:6px;font-size:13px;color:var(--gray-600);cursor:pointer;">🔐 Sicurezza</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings content -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Profilo Azienda</span></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;align-items:center;gap:16px;padding:12px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200);">
+                <div style="width:64px;height:64px;border-radius:12px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:white;">AM</div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;">Logo aziendale</div>
+                  <div style="font-size:12px;color:var(--gray-500);margin-bottom:6px;">PNG/JPG, max 2MB, ratio 1:1 consigliato</div>
+                  <button class="btn btn-secondary btn-sm">📤 Carica logo</button>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group"><label class="form-label">Nome azienda</label><input class="form-input" value="Aeroclub Milano Bresso"></div>
+                <div class="form-group"><label class="form-label">Codice fiscale / P.IVA</label><input class="form-input" value="IT02345678901"></div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group"><label class="form-label">Telefono</label><input class="form-input" value="+39 02 1234567"></div>
+                <div class="form-group"><label class="form-label">Email di contatto</label><input class="form-input" value="info@aeroclubmilano.it"></div>
+              </div>
+              <div class="form-group"><label class="form-label">Indirizzo</label><input class="form-input" value="Via dell'Aviazione 1, 20090 Bresso (MI)"></div>
+              <div style="display:flex;justify-content:flex-end;"><button class="btn btn-primary">Salva modifiche</button></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">🎨 Branding personalizzato</span><span class="badge badge-blue">Pro</span></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label">Colore primario</label>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="color" value="#1B4ED8" style="width:40px;height:36px;padding:2px;border:1px solid var(--gray-300);border-radius:6px;cursor:pointer;">
+                    <input class="form-input" value="#1B4ED8" style="font-family:monospace;">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Colore secondario</label>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="color" value="#0D1F3C" style="width:40px;height:36px;padding:2px;border:1px solid var(--gray-300);border-radius:6px;cursor:pointer;">
+                    <input class="form-input" value="#0D1F3C" style="font-family:monospace;">
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;"><button class="btn btn-primary">Salva branding</button></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">💳 Piano attivo</span></div>
+            <div class="card-body">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;background:linear-gradient(135deg,var(--navy),var(--blue));border-radius:10px;color:white;">
+                <div><div style="font-size:18px;font-weight:800;">Piano Pro</div><div style="font-size:13px;opacity:.75;">€149/mese · Rinnovo: 01/07/2026</div><div style="font-size:12px;opacity:.6;margin-top:4px;">Serbatoi illimitati · 20 utenti · Audit log · Multi-base</div></div>
+                <button class="btn btn-secondary btn-sm">Gestisci</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 12 — USERS
+     ============================================================ -->
+<div class="screen" id="s12">
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="sidebar-logo"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="#1B4ED8"/><path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/></svg><div class="sidebar-logo-text"><div class="brand">FuelManager</div><div class="sub">Aeroclub Milano</div></div></div>
+    <div class="sidebar-section"><div class="sidebar-item"><span class="icon">📊</span> Dashboard</div></div>
+    <div class="sidebar-section"><div class="sidebar-section-label">Gestione</div><div class="sidebar-item"><span class="icon">📈</span> Report</div><div class="sidebar-item active"><span class="icon">👥</span> Utenti</div><div class="sidebar-item"><span class="icon">🔔</span> Notifiche <span class="badge">3</span></div></div>
+    <div class="sidebar-footer"><div class="sidebar-user"><div class="avatar">MR</div><div><div style="font-size:12px;font-weight:600;color:var(--white);">Mario Rossi</div><div style="font-size:11px;color:var(--gray-500);">Admin · Pro</div></div></div></div>
+  </div>
+  <div class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">Gestione Utenti</div><div class="page-sub">4 utenti attivi — Piano Pro (max 20)</div></div>
+      <button class="btn btn-primary">+ Invita utente</button>
+    </div>
+    <div class="page-body">
+      <div class="card" style="margin-bottom:16px;"><div class="card-body" style="padding:12px 16px;"><div style="display:flex;gap:10px;"><input class="form-input" placeholder="🔍 Cerca per nome o email..." style="max-width:280px;"><select class="form-select" style="max-width:140px;"><option>Tutti i ruoli</option><option>Admin</option><option>Operatore</option></select><select class="form-select" style="max-width:140px;"><option>Tutti gli stati</option><option>Attivi</option><option>Sospesi</option></select></div></div></div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Utente</th><th>Email</th><th>Ruolo</th><th>Ultimo accesso</th><th>Stato</th><th>Azioni</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar">MR</div><div><div style="font-weight:600;font-size:13px;">Mario Rossi</div><div style="font-size:11px;color:var(--gray-400);">Account proprietario</div></div></div></td>
+                <td style="font-size:12px;color:var(--gray-600);">mario.rossi@aeroclubmilano.it</td>
+                <td><span class="badge badge-navy">Admin</span></td>
+                <td style="font-size:12px;color:var(--gray-500);">Adesso</td>
+                <td><span class="badge badge-green">Attivo</span></td>
+                <td><span style="font-size:12px;color:var(--gray-300);">—</span></td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="background:var(--sky);">LB</div><div><div style="font-weight:600;font-size:13px;">Luigi Bianchi</div><div style="font-size:11px;color:var(--gray-400);">Operatore</div></div></div></td>
+                <td style="font-size:12px;color:var(--gray-600);">luigi.bianchi@aeroclubmilano.it</td>
+                <td><span class="badge badge-blue">Operatore</span></td>
+                <td style="font-size:12px;color:var(--gray-500);">25/06 10:30</td>
+                <td><span class="badge badge-green">Attivo</span></td>
+                <td><div style="display:flex;gap:4px;"><button class="btn btn-ghost btn-sm">Modifica</button><button class="btn btn-ghost btn-sm" style="color:var(--amber);">Sospendi</button></div></td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="background:var(--green);">GV</div><div><div style="font-weight:600;font-size:13px;">Giuseppe Verdi</div><div style="font-size:11px;color:var(--gray-400);">Operatore</div></div></div></td>
+                <td style="font-size:12px;color:var(--gray-600);">g.verdi@aeroclubmilano.it</td>
+                <td><span class="badge badge-blue">Operatore</span></td>
+                <td style="font-size:12px;color:var(--gray-500);">24/06 17:15</td>
+                <td><span class="badge badge-green">Attivo</span></td>
+                <td><div style="display:flex;gap:4px;"><button class="btn btn-ghost btn-sm">Modifica</button><button class="btn btn-ghost btn-sm" style="color:var(--amber);">Sospendi</button></div></td>
+              </tr>
+              <tr style="opacity:.6;">
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="background:var(--gray-400);">AC</div><div><div style="font-weight:600;font-size:13px;">Anna Colombo</div><div style="font-size:11px;color:var(--gray-400);">Invito in attesa</div></div></div></td>
+                <td style="font-size:12px;color:var(--gray-600);">a.colombo@gmail.com</td>
+                <td><span class="badge badge-blue">Operatore</span></td>
+                <td style="font-size:12px;color:var(--gray-400);">—</td>
+                <td><span class="badge badge-amber">⏳ Invitata</span></td>
+                <td><div style="display:flex;gap:4px;"><button class="btn btn-ghost btn-sm" style="color:var(--blue);">Reinvia</button><button class="btn btn-ghost btn-sm" style="color:var(--red);">Revoca</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 13 — AUDIT LOG
+     ============================================================ -->
+<div class="screen" id="s13">
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="sidebar-logo"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="#1B4ED8"/><path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/></svg><div class="sidebar-logo-text"><div class="brand">FuelManager</div><div class="sub">Aeroclub Milano</div></div></div>
+    <div class="sidebar-section"><div class="sidebar-item"><span class="icon">📊</span> Dashboard</div></div>
+    <div class="sidebar-section"><div class="sidebar-section-label">Gestione</div><div class="sidebar-item"><span class="icon">📈</span> Report</div><div class="sidebar-item"><span class="icon">👥</span> Utenti</div><div class="sidebar-item"><span class="icon">🔔</span> Notifiche</div><div class="sidebar-item active"><span class="icon">🔍</span> Audit Log</div></div>
+    <div class="sidebar-footer"><div class="sidebar-user"><div class="avatar">MR</div><div><div style="font-size:12px;font-weight:600;color:var(--white);">Mario Rossi</div><div style="font-size:11px;color:var(--gray-500);">Admin · Pro</div></div></div></div>
+  </div>
+  <div class="main-content">
+    <div class="page-header">
+      <div><div class="page-title">Audit Log</div><div class="page-sub">Registro completo di tutte le azioni — immutabile</div></div>
+      <button class="btn btn-secondary">📥 Esporta log</button>
+    </div>
+    <div class="page-body">
+      <div class="card" style="margin-bottom:16px;"><div class="card-body" style="padding:12px 16px;"><div style="display:flex;gap:10px;flex-wrap:wrap;"><input class="form-input" placeholder="🔍 Cerca azione, utente, entità..." style="flex:1;min-width:200px;"><select class="form-select" style="max-width:160px;"><option>Tutte le azioni</option><option>CREATE</option><option>UPDATE</option><option>DELETE</option><option>LOGIN</option></select><select class="form-select" style="max-width:160px;"><option>Tutti gli utenti</option><option>Mario Rossi</option><option>Luigi Bianchi</option></select><input class="form-input" type="date" value="2026-06-25" style="max-width:150px;"></div></div></div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Timestamp</th><th>Utente</th><th>Azione</th><th>Entità</th><th>Dettaglio</th><th>IP</th></tr></thead>
+            <tbody>
+              <tr><td style="font-size:11px;color:var(--gray-500);font-family:monospace;">2026-06-25 14:22:07</td><td style="font-size:12px;font-weight:600;">M. Rossi</td><td><span class="badge badge-blue">CREATE</span></td><td style="font-size:12px;">fueling_operation</td><td style="font-size:12px;color:var(--gray-600);">I-ABCD · 120L AvGas · Tank 02</td><td style="font-size:11px;color:var(--gray-400);font-family:monospace;">192.168.1.10</td></tr>
+              <tr><td style="font-size:11px;color:var(--gray-500);font-family:monospace;">2026-06-25 10:15:32</td><td style="font-size:12px;font-weight:600;">M. Rossi</td><td><span class="badge badge-green">LOGIN</span></td><td style="font-size:12px;">user</td><td style="font-size:12px;color:var(--gray-600);">Login riuscito</td><td style="font-size:11px;color:var(--gray-400);font-family:monospace;">192.168.1.10</td></tr>
+              <tr><td style="font-size:11px;color:var(--gray-500);font-family:monospace;">2026-06-24 16:30:12</td><td style="font-size:12px;font-weight:600;">M. Rossi</td><td><span class="badge badge-blue">CREATE</span></td><td style="font-size:12px;">fueling_operation</td><td style="font-size:12px;color:var(--gray-600);">I-IJKL · 450L Jet A-1 · Tank 01</td><td style="font-size:11px;color:var(--gray-400);font-family:monospace;">192.168.1.10</td></tr>
+              <tr><td style="font-size:11px;color:var(--gray-500);font-family:monospace;">2026-06-23 14:12:05</td><td style="font-size:12px;font-weight:600;">Sistema</td><td><span class="badge badge-gray">INVITE_ACCEPTED</span></td><td style="font-size:12px;">user</td><td style="font-size:12px;color:var(--gray-600);">luigi.bianchi@aeroclubmilano.it</td><td style="font-size:11px;color:var(--gray-400);font-family:monospace;">—</td></tr>
+              <tr><td style="font-size:11px;color:var(--gray-500);font-family:monospace;">2026-06-22 09:45:00</td><td style="font-size:12px;font-weight:600;">M. Rossi</td><td><span class="badge badge-amber">UPDATE</span></td><td style="font-size:12px;">tank</td><td style="font-size:12px;color:var(--gray-600);">Tank 02 — soglia min: 25% → 30%</td><td style="font-size:11px;color:var(--gray-400);font-family:monospace;">192.168.1.10</td></tr>
+              <tr><td style="font-size:11px;color:var(--gray-500);font-family:monospace;">2026-06-20 10:02:44</td><td style="font-size:12px;font-weight:600;">M. Rossi</td><td><span class="badge badge-blue">CREATE</span></td><td style="font-size:12px;">tank_load</td><td style="font-size:12px;color:var(--gray-600);">Tank 01 — +8.000L Jet A-1</td><td style="font-size:11px;color:var(--gray-400);font-family:monospace;">192.168.1.10</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 14 — SUPERADMIN
+     ============================================================ -->
+<div class="screen" id="s14">
+<div class="super-shell">
+  <div class="super-sidebar">
+    <div class="super-logo">👑 SuperAdmin</div>
+    <div style="display:flex;flex-direction:column;gap:1px;">
+      <div style="padding:8px 10px;border-radius:6px;font-size:12px;font-weight:600;color:var(--orange);background:rgba(249,115,22,.12);cursor:pointer;">📊 Panoramica</div>
+      <div style="padding:8px 10px;border-radius:6px;font-size:12px;color:var(--gray-400);cursor:pointer;">🏢 Aziende</div>
+      <div style="padding:8px 10px;border-radius:6px;font-size:12px;color:var(--gray-400);cursor:pointer;">💳 Piani</div>
+      <div style="padding:8px 10px;border-radius:6px;font-size:12px;color:var(--gray-400);cursor:pointer;">👥 Utenti globali</div>
+      <div style="padding:8px 10px;border-radius:6px;font-size:12px;color:var(--gray-400);cursor:pointer;">📋 Audit globale</div>
+    </div>
+  </div>
+  <div class="main-content" style="background:var(--gray-100);">
+    <div class="page-header" style="background:var(--white);border-bottom:1px solid var(--gray-200);padding:16px 28px;margin-bottom:0;">
+      <div><div class="page-title" style="font-size:18px;">Panoramica Piattaforma</div><div class="page-sub">Dati globali — aggiornato 25/06/2026</div></div>
+      <span class="badge badge-red" style="font-size:12px;">👑 SuperAdmin</span>
+    </div>
+    <div class="page-body" style="padding:20px 28px;">
+
+      <!-- Global KPIs -->
+      <div class="stat-grid" style="margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-label">Aziende totali</div><div class="stat-value">47</div><div class="stat-delta up">▲ +3 questo mese</div></div>
+        <div class="stat-card"><div class="stat-label">Utenti totali</div><div class="stat-value">284</div><div class="stat-delta up">▲ +18 questo mese</div></div>
+        <div class="stat-card"><div class="stat-label">Operazioni (mese)</div><div class="stat-value">6.842</div><div class="stat-delta up">▲ +12%</div></div>
+        <div class="stat-card"><div class="stat-label">MRR</div><div class="stat-value" style="color:var(--green);">€4.180</div><div class="stat-delta up">▲ +€320 vs mese scorso</div></div>
+      </div>
+
+      <!-- Piano distribution -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Distribuzione Piani</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--gray-600);">Trial</span><span style="font-size:12px;font-weight:700;">12</span></div><div class="level-bar"><div class="level-fill" style="width:26%;background:var(--gray-400);"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--gray-600);">Basic</span><span style="font-size:12px;font-weight:700;">18</span></div><div class="level-bar"><div class="level-fill" style="width:38%;background:var(--sky);"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--gray-600);">Pro</span><span style="font-size:12px;font-weight:700;">14</span></div><div class="level-bar"><div class="level-fill" style="width:30%;background:var(--blue);"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--gray-600);">Enterprise</span><span style="font-size:12px;font-weight:700;">3</span></div><div class="level-bar"><div class="level-fill" style="width:6%;background:var(--orange);"></div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">MRR per piano</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;"><div style="display:flex;align-items:center;gap:8px;"><div style="width:8px;height:8px;border-radius:50%;background:var(--gray-400);"></div><span style="font-size:12px;">Trial</span></div><span style="font-size:12px;font-weight:700;">€0</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><div style="display:flex;align-items:center;gap:8px;"><div style="width:8px;height:8px;border-radius:50%;background:var(--sky);"></div><span style="font-size:12px;">Basic (18×€49)</span></div><span style="font-size:12px;font-weight:700;">€882</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><div style="display:flex;align-items:center;gap:8px;"><div style="width:8px;height:8px;border-radius:50%;background:var(--blue);"></div><span style="font-size:12px;">Pro (14×€149)</span></div><span style="font-size:12px;font-weight:700;">€2.086</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><div style="display:flex;align-items:center;gap:8px;"><div style="width:8px;height:8px;border-radius:50%;background:var(--orange);"></div><span style="font-size:12px;">Enterprise (3×€399)</span></div><span style="font-size:12px;font-weight:700;">€1.197</span></div>
+            <div style="border-top:2px solid var(--gray-100);padding-top:8px;display:flex;justify-content:space-between;"><span style="font-size:13px;font-weight:700;">Totale MRR</span><span style="font-size:13px;font-weight:800;color:var(--green);">€4.165</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent companies -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Aziende recenti</span><a style="font-size:12px;color:var(--blue);font-weight:600;cursor:pointer;">Tutte →</a></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Azienda</th><th>Piano</th><th>Utenti</th><th>Op. mese</th><th>Registrata</th><th>Stato</th><th></th></tr></thead>
+            <tbody>
+              <tr><td style="font-size:13px;font-weight:600;">Aeroclub Milano Bresso</td><td><span class="badge badge-blue">Pro</span></td><td style="font-size:12px;">4</td><td style="font-size:12px;">142</td><td style="font-size:12px;color:var(--gray-500);">01/06/2026</td><td><span class="badge badge-green">Attiva</span></td><td><button class="btn btn-ghost btn-sm">Dettagli</button></td></tr>
+              <tr><td style="font-size:13px;font-weight:600;">Sky School Venezia</td><td><span class="badge badge-navy">Enterprise</span></td><td style="font-size:12px;">12</td><td style="font-size:12px;">380</td><td style="font-size:12px;color:var(--gray-500);">15/03/2026</td><td><span class="badge badge-green">Attiva</span></td><td><button class="btn btn-ghost btn-sm">Dettagli</button></td></tr>
+              <tr><td style="font-size:13px;font-weight:600;">Elicotteri Sud SRL</td><td><span class="badge badge-gray">Basic</span></td><td style="font-size:12px;">2</td><td style="font-size:12px;">28</td><td style="font-size:12px;color:var(--gray-500);">20/06/2026</td><td><span class="badge badge-amber">Trial</span></td><td><button class="btn btn-ghost btn-sm">Dettagli</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 15 — MOBILE PWA
+     ============================================================ -->
+<div class="screen" id="s15">
+<div style="background:var(--gray-200);min-height:calc(100vh - 44px);display:flex;flex-direction:column;align-items:center;padding:32px 16px;">
+  <div style="text-align:center;margin-bottom:24px;">
+    <div style="font-size:20px;font-weight:700;color:var(--gray-800);">Mobile PWA — iPhone view</div>
+    <div style="font-size:13px;color:var(--gray-500);">Bottom navigation · Installabile · Offline-first</div>
+  </div>
+
+  <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;">
+
+    <!-- Phone 1: Dashboard mobile -->
+    <div>
+      <div style="font-size:12px;text-align:center;color:var(--gray-500);margin-bottom:8px;font-weight:600;">Dashboard</div>
+      <div class="mobile-frame">
+        <div class="mobile-status"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="mobile-content" style="overflow-y:auto;padding:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div><div style="font-size:15px;font-weight:700;color:var(--gray-900);">Buongiorno, Mario</div><div style="font-size:11px;color:var(--gray-500);">25 Giugno 2026</div></div>
+            <div style="position:relative;"><div style="font-size:22px;">🔔</div><div style="position:absolute;top:-2px;right:-2px;width:14px;height:14px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;">3</div></div>
+          </div>
+          <div class="alert alert-warning" style="font-size:11px;margin-bottom:12px;padding:8px 10px;">⚠️ Tank 02 AvGas sotto soglia (28%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+            <div style="background:var(--navy);border-radius:10px;padding:12px;color:white;"><div style="font-size:10px;opacity:.6;margin-bottom:4px;">Litri oggi</div><div style="font-size:20px;font-weight:800;">480 L</div></div>
+            <div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:12px;"><div style="font-size:10px;color:var(--gray-400);margin-bottom:4px;">Op. oggi</div><div style="font-size:20px;font-weight:800;color:var(--blue);">8</div></div>
+          </div>
+          <div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:12px;margin-bottom:12px;">
+            <div style="font-size:12px;font-weight:700;margin-bottom:10px;">Serbatoi</div>
+            <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span>Tank 01 · Jet A-1</span><span style="color:var(--green);font-weight:700;">72%</span></div><div class="level-bar"><div class="level-fill green" style="width:72%;"></div></div></div>
+            <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span>Tank 02 · AvGas</span><span style="color:var(--amber);font-weight:700;">28%</span></div><div class="level-bar"><div class="level-fill amber" style="width:28%;"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span>Tank 03 · Diesel</span><span style="color:var(--green);font-weight:700;">55%</span></div><div class="level-bar"><div class="level-fill green" style="width:55%;"></div></div></div>
+          </div>
+        </div>
+        <div class="mobile-bottom-nav">
+          <div class="mobile-nav-item active"><div class="icon">📊</div><span>Dashboard</span></div>
+          <div class="mobile-nav-item"><div class="icon">⛽</div><span>Rifornimento</span></div>
+          <div class="mobile-nav-item"><div class="icon">📋</div><span>Operazioni</span></div>
+          <div class="mobile-nav-item"><div class="icon">🛢</div><span>Serbatoi</span></div>
+          <div class="mobile-nav-item"><div class="icon">⚙️</div><span>Altro</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phone 2: New operation form -->
+    <div>
+      <div style="font-size:12px;text-align:center;color:var(--gray-500);margin-bottom:8px;font-weight:600;">Nuovo Rifornimento</div>
+      <div class="mobile-frame">
+        <div class="mobile-status"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="mobile-content" style="overflow-y:auto;background:var(--gray-50);">
+          <div style="background:var(--white);padding:12px 14px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:8px;">
+            <span style="font-size:16px;">←</span>
+            <span style="font-size:15px;font-weight:700;">⛽ Nuovo Rifornimento</span>
+          </div>
+          <div style="padding:14px;display:flex;flex-direction:column;gap:12px;">
+            <div class="form-group"><label class="form-label">Aeromobile</label><select class="form-select" style="font-size:13px;"><option>I-ABCD — C172S (AvGas)</option></select></div>
+            <div class="form-group"><label class="form-label">Serbatoio</label><select class="form-select" style="font-size:13px;"><option>Tank 02 — AvGas (2.800 L)</option></select></div>
+            <div class="alert alert-info" style="font-size:11px;padding:8px 10px;">✈️ I-ABCD → AvGas 100LL obbligatorio</div>
+            <div class="form-group"><label class="form-label">Quantità (L)</label><input class="form-input" type="number" value="120" style="font-size:18px;font-weight:700;text-align:center;"></div>
+            <div class="form-group"><label class="form-label">Ore motore</label><input class="form-input" value="1842.5" style="font-size:13px;"></div>
+            <div class="form-group"><label class="form-label">Note</label><input class="form-input" placeholder="Opzionale..." style="font-size:13px;"></div>
+            <div style="background:white;border:1px solid var(--gray-200);border-radius:8px;padding:10px;font-size:11px;">
+              <div style="font-weight:700;margin-bottom:6px;color:var(--gray-700);">Riepilogo</div>
+              <div style="display:flex;justify-content:space-between;"><span style="color:var(--gray-500);">Tank dopo:</span><span style="font-weight:700;color:var(--amber);">2.680 L (26.8%) ⚠</span></div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:14px;">⛽ Registra rifornimento</button>
+          </div>
+        </div>
+        <div class="mobile-bottom-nav">
+          <div class="mobile-nav-item"><div class="icon">📊</div><span>Dashboard</span></div>
+          <div class="mobile-nav-item active"><div class="icon">⛽</div><span>Rifornimento</span></div>
+          <div class="mobile-nav-item"><div class="icon">📋</div><span>Operazioni</span></div>
+          <div class="mobile-nav-item"><div class="icon">🛢</div><span>Serbatoi</span></div>
+          <div class="mobile-nav-item"><div class="icon">⚙️</div><span>Altro</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phone 3: PWA install -->
+    <div>
+      <div style="font-size:12px;text-align:center;color:var(--gray-500);margin-bottom:8px;font-weight:600;">Install Banner</div>
+      <div class="mobile-frame">
+        <div class="mobile-status"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="mobile-content" style="overflow-y:auto;background:var(--gray-50);">
+          <div style="background:var(--white);padding:12px 14px;border-bottom:1px solid var(--gray-200);">
+            <div style="font-size:15px;font-weight:700;">📊 Dashboard</div>
+          </div>
+          <!-- PWA Install Banner -->
+          <div style="margin:12px;background:linear-gradient(135deg,var(--navy),var(--blue));border-radius:12px;padding:14px;color:white;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <div style="width:40px;height:40px;background:white;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><path d="M16 1C8.82 1 3 6.82 3 14c0 8.5 13 19 13 19s13-10.5 13-19C29 6.82 23.18 1 16 1z" fill="#1B4ED8"/><path d="M13.5 9.5l7 4.5-3.5 1 4.5 7-7-4.5 3.5-1-4.5-7z" fill="white"/></svg>
+              </div>
+              <div><div style="font-size:13px;font-weight:700;">Installa FuelManager</div><div style="font-size:11px;opacity:.7;">Come app nativa sul tuo dispositivo</div></div>
+              <button style="margin-left:auto;background:none;border:none;color:white;font-size:16px;cursor:pointer;opacity:.7;">✕</button>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button style="flex:1;background:white;color:var(--blue);border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;">📲 Installa app</button>
+              <button style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;">Dopo</button>
+            </div>
+          </div>
+          <div style="padding:0 12px;display:flex;flex-direction:column;gap:8px;">
+            <div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:12px;">
+              <div style="font-size:11px;font-weight:700;color:var(--gray-700);margin-bottom:6px;">Oggi</div>
+              <div style="font-size:11px;color:var(--gray-500);">Nessun rifornimento ancora oggi</div>
+            </div>
+            <div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:12px;">
+              <div style="font-size:11px;font-weight:700;color:var(--gray-700);margin-bottom:8px;">Ultimi rifornimenti</div>
+              <div style="font-size:11px;display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--gray-100);"><span style="color:var(--gray-600);">I-ABCD</span><span class="badge fuel-avgas" style="font-size:10px;">120L</span></div>
+              <div style="font-size:11px;display:flex;justify-content:space-between;padding:4px 0;"><span style="color:var(--gray-600);">I-EFGH</span><span class="badge fuel-avgas" style="font-size:10px;">80L</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="mobile-bottom-nav">
+          <div class="mobile-nav-item active"><div class="icon">📊</div><span>Dashboard</span></div>
+          <div class="mobile-nav-item"><div class="icon">⛽</div><span>Rifornimento</span></div>
+          <div class="mobile-nav-item"><div class="icon">📋</div><span>Operazioni</span></div>
+          <div class="mobile-nav-item"><div class="icon">🛢</div><span>Serbatoi</span></div>
+          <div class="mobile-nav-item"><div class="icon">⚙️</div><span>Altro</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT — NAVIGATION
+     ============================================================ -->
+<script>
+  const TOTAL = 15;
+  let current = 1;
+
+  function show(n) {
+    if (n < 1 || n > TOTAL) return;
+    document.getElementById('s' + current)?.classList.remove('active');
+    document.querySelectorAll('.top-nav button').forEach((b, i) => b.classList.toggle('active', i === n - 1));
+    current = n;
+    document.getElementById('s' + current)?.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+</script>
+
+</body>
+</html>
+
+
+
