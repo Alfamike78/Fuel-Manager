@@ -48,13 +48,14 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md', className }) => 
         className={clsx(
           'relative w-full bg-white rounded-2xl shadow-xl',
           'animate-in fade-in zoom-in-95 duration-200',
+          'max-h-[90vh] flex flex-col',
           sizes[size],
           className
         )}
       >
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between p-6 border-b border-gray-100">
+          <div className="flex items-center justify-between p-6 border-b border-gray-100 flex-shrink-0">
             <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
             <button
               onClick={onClose}
@@ -66,7 +67,7 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md', className }) => 
         )}
 
         {/* Body */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1">
           {children}
         </div>
       </div>

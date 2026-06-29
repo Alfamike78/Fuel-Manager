@@ -115,7 +115,7 @@ const LoginPage = () => {
             <form onSubmit={handleSubmit} className="space-y-5">
               <Input
                 label={t('auth.email')}
-                type="email"
+                type="text"
                 name="email"
                 value={form.email}
                 onChange={handleChange}

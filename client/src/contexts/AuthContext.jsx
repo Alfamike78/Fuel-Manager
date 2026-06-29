@@ -6,6 +6,8 @@ export const AuthContext = createContext(null);
 
 const TOKEN_KEY = 'fuel_manager_token';
 const USER_KEY = 'fuel_manager_user';
+const SA_TOKEN_KEY = 'fuel_manager_sa_token';
+const SA_USER_KEY = 'fuel_manager_sa_user';
 
 // Configure axios defaults
 axios.defaults.baseURL = '/api';
@@ -102,6 +104,45 @@ export const AuthProvider = ({ children }) => {
     }
   }, [setAxiosAuth]);
 
+  const impersonate = useCallback(async (companyId, companyName) => {
+    const response = await axios.post(`/companies/${companyId}/impersonate`);
+    const { token: newToken } = response.data;
+
+    // Salva token superadmin originale
+    localStorage.setItem(SA_TOKEN_KEY, token);
+    localStorage.setItem(SA_USER_KEY, JSON.stringify(user));
+
+    const impersonatedUser = {
+      ...user,
+      role: 'admin',
+      company_id: companyId,
+      company_name: companyName,
+      is_impersonating: true,
+    };
+
+    localStorage.setItem(TOKEN_KEY, newToken);
+    localStorage.setItem(USER_KEY, JSON.stringify(impersonatedUser));
+    setToken(newToken);
+    setUser(impersonatedUser);
+    setAxiosAuth(newToken);
+  }, [token, user, setAxiosAuth]);
+
+  const exitImpersonation = useCallback(() => {
+    const savedToken = localStorage.getItem(SA_TOKEN_KEY);
+    const savedUser = localStorage.getItem(SA_USER_KEY);
+    if (!savedToken || !savedUser) return;
+
+    localStorage.removeItem(SA_TOKEN_KEY);
+    localStorage.removeItem(SA_USER_KEY);
+
+    const parsedUser = JSON.parse(savedUser);
+    localStorage.setItem(TOKEN_KEY, savedToken);
+    localStorage.setItem(USER_KEY, savedUser);
+    setToken(savedToken);
+    setUser(parsedUser);
+    setAxiosAuth(savedToken);
+  }, [setAxiosAuth]);
+
   const updateUser = useCallback((updatedUser) => {
     const merged = { ...user, ...updatedUser };
     setUser(merged);
@@ -119,11 +160,14 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!token && !!user,
     role: user?.role || null,
     companyId: user?.company_id || null,
+    isImpersonating: !!user?.is_impersonating,
     login,
     loginWithToken,
     register,
     logout,
     updateUser,
+    impersonate,
+    exitImpersonation,
   };
 
   return (

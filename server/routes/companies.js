@@ -1,4 +1,5 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
 import { verifyToken, requireRole } from '../middleware/auth.js';
 
@@ -208,6 +209,38 @@ router.patch('/:id/plan', async (req, res, next) => {
     }
 
     res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/companies/:id/impersonate — superadmin entra nel contesto di un'azienda
+router.post('/:id/impersonate', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const company = await pool.query(
+      'SELECT id, name, slug, primary_color FROM companies WHERE id = $1',
+      [id]
+    );
+    if (!company.rows.length) return res.status(404).json({ error: 'Company not found' });
+    const c = company.rows[0];
+
+    const impersonateToken = jwt.sign(
+      {
+        id: req.user.id,
+        email: req.user.email,
+        role: 'admin',
+        company_id: c.id,
+        company_name: c.name,
+        first_name: req.user.first_name,
+        last_name: req.user.last_name,
+        is_impersonating: true,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+
+    res.json({ token: impersonateToken, company: c });
   } catch (err) {
     next(err);
   }

@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { NotificationsProvider } from './contexts/NotificationsContext.jsx';
 import { useAuth } from './hooks/useAuth.js';
@@ -25,6 +25,33 @@ import NotificationsPage from './pages/company/notifications/NotificationsPage.j
 import SettingsPage from './pages/company/settings/SettingsPage.jsx';
 import AuditLogPage from './pages/company/audit/AuditLogPage.jsx';
 import InviteAcceptPage from './pages/invite/InviteAcceptPage.jsx';
+
+// Banner visibile quando il superadmin sta operando dentro un'azienda
+const ImpersonationBanner = () => {
+  const { isImpersonating, user, exitImpersonation } = useAuth();
+  const navigate = useNavigate();
+
+  if (!isImpersonating) return null;
+
+  const handleExit = () => {
+    exitImpersonation();
+    navigate('/superadmin/companies');
+  };
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-[9999] bg-amber-500 text-white text-sm font-semibold flex items-center justify-between px-4 py-2 shadow-lg">
+      <span>
+        👑 SuperAdmin — Stai operando come <strong>{user?.company_name}</strong>. Tutte le modifiche sono reali.
+      </span>
+      <button
+        onClick={handleExit}
+        className="ml-4 px-3 py-1 bg-white text-amber-600 rounded-lg text-xs font-bold hover:bg-amber-50 transition-colors"
+      >
+        ← Esci dall'azienda
+      </button>
+    </div>
+  );
+};
 
 // Loading fallback
 const LoadingScreen = () => (
@@ -254,6 +281,7 @@ const App = () => {
     <BrowserRouter>
       <AuthProvider>
         <NotificationsProvider>
+          <ImpersonationBanner />
           <Suspense fallback={<LoadingScreen />}>
             <AppRoutes />
           </Suspense>

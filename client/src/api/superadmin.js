@@ -17,3 +17,6 @@ export const changeCompanyPlan = (id, plan_id) =>
 
 export const changeCompanyStatus = (id, status) =>
   api.patch(`/companies/${id}/status`, { status }).then((r) => r.data);
+
+export const impersonateCompany = (id) =>
+  api.post(`/companies/${id}/impersonate`).then((r) => r.data);

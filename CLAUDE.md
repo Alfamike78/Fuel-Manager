@@ -2,6 +2,47 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Come lavoriamo insieme
+
+### Prima di toccare codice
+Leggi sempre i file interessati per capire struttura, stile e convenzioni esistenti. Adattati allo stile già presente.
+
+### Dichiara le assunzioni
+Se qualcosa non è chiaro, scrivi esplicitamente le assunzioni prima di procedere. Preferibile un'assunzione dichiarata a una decisione nascosta nel codice.
+
+### Definisci il successo prima di scrivere codice
+Per ogni task descrivi: comportamento atteso, output previsto, criterio che dimostra che il lavoro è corretto. Poi procedi in autonomia senza chiedere conferma a ogni passo.
+
+### Flusso per ogni task
+1. Riassumi il problema
+2. Elenca eventuali assunzioni
+3. Definisci il criterio di successo
+4. Implementa
+5. Verifica
+6. Mostra il diff minimo
+7. Riassumi cosa è stato fatto
+
+### Modifiche chirurgiche
+Tocca solo ciò che serve. Niente riformattazioni, rinominazioni o riordini non collegati al task. Il diff deve essere il più piccolo possibile.
+
+### Niente refactoring non richiesti
+Se individui codice migliorabile ma non è parte del task: segnalalo e spiega brevemente, ma non modificarlo senza richiesta esplicita.
+
+### Se il cambiamento cresce
+Se servono più di 3 file o cambiamenti strutturali importanti, fermati e spiega il motivo prima di procedere.
+
+### Verifica prima di concludere
+- Il codice continua a funzionare
+- Nessun warning evitabile introdotto
+- Nessuna variabile o funzione inutilizzata
+- Nessun TODO non richiesto
+- Diff minimo
+
+### Convenzioni
+- Commenti in italiano solo quando migliorano realmente la comprensione
+- Messaggi di errore chiari e utilizzabili, non semplici stack trace
+- Nessuna nuova dipendenza senza motivazione concreta
+
 ## Development Commands
 
 ### Start servers (run in separate terminals)

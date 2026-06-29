@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  Building2, Search, Filter, MoreVertical, CheckCircle, Clock,
-  AlertCircle, XCircle, ChevronLeft, ChevronRight, X,
-  Users, Gauge, Fuel, CreditCard, ArrowUpDown
+  Building2, Search, MoreVertical, CheckCircle, Clock,
+  AlertCircle, XCircle, ChevronLeft, ChevronRight,
+  Users, Gauge, Fuel, LogIn
 } from 'lucide-react';
 import SuperAdminLayout from '../../components/layout/SuperAdminLayout.jsx';
 import Card from '../../components/ui/Card.jsx';
@@ -13,6 +14,7 @@ import {
   getCompanies, getCompany, getCompanyStats,
   changeCompanyPlan, changeCompanyStatus,
 } from '../../api/superadmin.js';
+import { useAuth } from '../../hooks/useAuth.js';
 import axios from 'axios';
 import clsx from 'clsx';
 
@@ -179,6 +181,8 @@ const CompanyDetailModal = ({ company, onClose, onUpdated }) => {
 const PAGE_SIZE = 15;
 
 const CompaniesPage = () => {
+  const { impersonate } = useAuth();
+  const navigate = useNavigate();
   const [companies, setCompanies] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -187,6 +191,17 @@ const CompaniesPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [actionMenuId, setActionMenuId] = useState(null);
+  const [impersonating, setImpersonating] = useState(null);
+
+  const handleImpersonate = async (company) => {
+    setImpersonating(company.id);
+    try {
+      await impersonate(company.id, company.name);
+      navigate('/dashboard');
+    } catch {
+      setImpersonating(null);
+    }
+  };
 
   const fetchCompanies = useCallback(async () => {
     setLoading(true);
@@ -306,23 +321,33 @@ const CompaniesPage = () => {
                         </span>
                       </td>
                       <td className="px-5 py-3.5">
-                        <div className="relative">
+                        <div className="flex items-center gap-2">
                           <button
-                            onClick={() => setActionMenuId(actionMenuId === company.id ? null : company.id)}
-                            className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                            onClick={() => handleImpersonate(company)}
+                            disabled={impersonating === company.id}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-60"
                           >
-                            <MoreVertical size={15} />
+                            <LogIn size={13} />
+                            {impersonating === company.id ? '...' : 'Entra'}
                           </button>
-                          {actionMenuId === company.id && (
-                            <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl border border-gray-200 shadow-lg z-20 py-1">
-                              <button
-                                onClick={() => { setSelectedCompany(company); setActionMenuId(null); }}
-                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                              >
-                                Gestisci azienda
-                              </button>
-                            </div>
-                          )}
+                          <div className="relative">
+                            <button
+                              onClick={() => setActionMenuId(actionMenuId === company.id ? null : company.id)}
+                              className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                              <MoreVertical size={15} />
+                            </button>
+                            {actionMenuId === company.id && (
+                              <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl border border-gray-200 shadow-lg z-20 py-1">
+                                <button
+                                  onClick={() => { setSelectedCompany(company); setActionMenuId(null); }}
+                                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                >
+                                  Gestisci azienda
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </td>
                     </tr>
