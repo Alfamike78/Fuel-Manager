@@ -24,4 +24,10 @@ storico movimenti, drain check log, profilo/logout. Riusa lo stesso backend Hono
 ## Note tecniche
 - Non implementato: notifiche push native, offline mode, foto upload drain check su mobile (da fase 4 se richiesto)
 - baseUrl mobile letto da app.json expo.extra.apiUrl (preview URL)
-- superadmin panel NON portato su mobile (resta solo web, per ora)
+- Super Admin CRM PORTATO su mobile [date: 2026-07-03]: app/(superadmin)/index.tsx + _layout.tsx.
+  Route gate in app/_layout.tsx: se role=superadmin e non impersonating -> forza su (superadmin);
+  altrimenti (operator/admin o superadmin impersonando) -> (tabs). Pulsante ESCI in (tabs)/index.tsx
+  banner impersonation ora fa clearImpersonation + redirect a (superadmin).
+  Feature complete: lista aziende (attive/archivio), ricerca, crea azienda, modifica azienda,
+  gestione abbonamento (piano/stato/estendi trial), sospendi/riattiva, archivia/elimina definitivamente
+  con conferma password. Stesso backend /api/superadmin/* del web, nessuna modifica lato server necessaria.
