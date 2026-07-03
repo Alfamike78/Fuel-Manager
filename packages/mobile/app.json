@@ -2,7 +2,7 @@
   "expo": {
     "icon": "./assets/icon.png",
     "android": {
-      "package": "com.appId.runable",
+      "package": "com.pilotcraft_fk3x.runable",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
@@ -14,7 +14,7 @@
       "applicationId": "pilotcr-04xat3t"
     },
     "ios": {
-      "bundleIdentifier": "com.appId.runable",
+      "bundleIdentifier": "com.pilotcraft_fk3x.runable",
       "supportsTablet": true
     },
     "splash": {
@@ -22,12 +22,12 @@
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "PilotCraft Fuel Manager",
+    "slug": "pilotcraft-fuel-manager",
     "version": "1.0.0",
-    "scheme": "mobile",
+    "scheme": "pilotcraft",
     "orientation": "portrait",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "web": {
       "favicon": "./assets/favicon.png",

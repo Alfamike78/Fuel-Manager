@@ -1,25 +1,27 @@
-# PilotCraft SaaS — Fase 2
+# PilotCraft SaaS — Fase 3: App Mobile Expo
 
 ## Obiettivo
-1. Notifiche/alert in-app (bell dropdown + toast) per livello basso e drain check anomalo
-2. Export PDF (report movimenti + drain check log)
-3. Analytics avanzate (grafici con recharts): consumi nel tempo, refuel vs consumo per cisterna, breakdown per tipo movimento
+Mirror mobile della web app: login/registrazione, dashboard (cisterne+flotta+alert),
+storico movimenti, drain check log, profilo/logout. Riusa lo stesso backend Hono.
 
-## Stato progetto (verificato)
-- Core già completo e funzionante: auth, tanks, fleet, movements, drain-check, bases, i18n 6 lingue, superadmin CRM
-- TS clean, server online porta 4200, pm2 "web-app"
-- Librerie installate: recharts, jspdf, jspdf-autotable
-- GitHub: Alfamike78/Fuel-Manager (già pushato, sync)
-
-## Piano implementazione
-- [ ] lib/pdf.ts — helper generatePDF report movimenti + drain checks
-- [ ] components/NotificationBell.tsx — dropdown con alert attivi + toast per nuovi alert (localStorage per dedup)
-- [ ] Nuovo tab "analytics" in dashboard.tsx con 3 grafici recharts
-- [ ] Bottoni "Scarica PDF" in ReportView e Drain Check Log tab
-- [ ] tsc clean + test manuale + push GitHub
+## Stato: COMPLETATO
+- [x] Auth: better-auth bearer() + expo() plugin lato server (web/src/api/auth.ts)
+- [x] mobile/lib/auth.ts — authClient con SecureStore/localStorage fallback, captureToken, impersonation helpers
+- [x] mobile/lib/api.ts — typed hc client + get/post/patch/del helpers con bearer + X-Company-Id
+- [x] mobile/lib/theme.ts — palette navy/sabbia condivisa
+- [x] app/_layout.tsx — AuthGate con redirect automatico (auth)/(tabs)
+- [x] app/(auth)/sign-in.tsx — login + registrazione (company create->signup->link)
+- [x] app/(tabs)/_layout.tsx — tab bar Dashboard/Storico/Drain Check/Profilo
+- [x] app/(tabs)/index.tsx — dashboard con cisterne, flotta, alert, nuovo movimento modal, drain check modal
+- [x] app/(tabs)/history.tsx — storico movimenti + stats
+- [x] app/(tabs)/drainlog.tsx — drain check log
+- [x] app/(tabs)/profile.tsx — profilo utente + logout
+- [x] app.json aggiornato (nome, bundle id, scheme, dark mode)
+- [x] TS clean per file mobile (app/lib/components) — errori residui sono cross-package drizzle-orm
+      duplicate instance quirk pre-esistente in web/src/api/routes/*.ts, non bloccante runtime
+- [x] Web app rebuilt + pm2 riavviato, verificato 200 OK + login funzionante
 
 ## Note tecniche
-- Dashboard.tsx: 1235 righe, tab type = "dashboard"|"history"|"config"|"drainlog"
-- lowTanks/alertTanks già calcolati in Dashboard() per banner esistenti — riusare per bell
-- movements schema: type refuel|consumption|transfer|drain_check, liters, date, tankId, helicopterId
-- brand colors: --pc-primary #1b3a5c, --pc-sand #d6c4a0, --pc-dark #0f1e2e
+- Non implementato: notifiche push native, offline mode, foto upload drain check su mobile (da fase 4 se richiesto)
+- baseUrl mobile letto da app.json expo.extra.apiUrl (preview URL)
+- superadmin panel NON portato su mobile (resta solo web, per ora)

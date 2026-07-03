@@ -1,0 +1,15 @@
+export const theme = {
+  primary: "#1b3a5c",
+  primaryLight: "#244d7a",
+  sand: "#d6c4a0",
+  dark: "#0f1e2e",
+  card: "#162030",
+  border: "#1e3040",
+  text: "#e8dcc8",
+  muted: "#8a9ab0",
+  green: "#22c55e",
+  orange: "#f59e0b",
+  red: "#ef4444",
+  blue: "#3b82f6",
+  purple: "#8b5cf6",
+};

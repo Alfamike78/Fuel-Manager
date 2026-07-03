@@ -18,11 +18,12 @@
     "db:studio": "bun --env-file=../../.env drizzle-kit studio"
   },
   "dependencies": {
+    "@better-auth/expo": "1.6.23",
     "@libsql/client": "^0.17.2",
     "@radix-ui/react-slot": "^1.2.4",
     "@runablehq/website-runtime": "^0.10.0",
     "@tanstack/react-query": "^5.100.6",
-    "better-auth": "^1.6.23",
+    "better-auth": "1.6.23",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
