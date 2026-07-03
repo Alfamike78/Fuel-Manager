@@ -1,17 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMe, useAuth, getImpersonatedCompanyId, getImpersonatedCompanyName, clearImpersonation, authHeaders } from "../hooks/useAuth";
 import { useLang } from "../hooks/useLang";
 import { Lang } from "../i18n/translations";
 import { FUEL_TYPES, getFuelColor, AVIATION_TYPES, GROUND_TYPES } from "../lib/fuel-types";
 import { useLocation } from "wouter";
+import { NotificationBell, NotificationItem } from "../components/NotificationBell";
+import { exportMovementsPDF, exportDrainChecksPDF } from "../lib/pdf";
+import {
+  ResponsiveContainer, LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, Legend,
+} from "recharts";
 
 const LANGS: { code: Lang; flag: string }[] = [
   { code: "it", flag: "🇮🇹" }, { code: "en", flag: "🇬🇧" }, { code: "fr", flag: "🇫🇷" },
   { code: "de", flag: "🇩🇪" }, { code: "es", flag: "🇪🇸" }, { code: "tr", flag: "🇹🇷" },
 ];
 
-type Tab = "dashboard" | "history" | "config" | "drainlog";
+type Tab = "dashboard" | "history" | "config" | "drainlog" | "analytics";
 
 // ── API helpers ────────────────────────────────────────────────────────────
 const ah = () => authHeaders();
@@ -542,6 +548,20 @@ export default function Dashboard() {
   const lowTanks = (tanks as any[]).filter((tk: any) => (tk.currentLevel ?? 0) <= (tk.alertThreshold ?? 1500));
   const alertTanks = (tanks as any[]).filter((tk: any) => tk.lastDrainCheckQuality && tk.lastDrainCheckQuality !== "ok");
 
+  // Notification bell items
+  const notifItems: NotificationItem[] = useMemo(() => {
+    const items: NotificationItem[] = [];
+    lowTanks.forEach((tk: any) => items.push({
+      id: `low-${tk.id}`, severity: "warning",
+      message: `Livello basso: ${tk.name} (${tk.currentLevel?.toLocaleString()} L)`,
+    }));
+    alertTanks.forEach((tk: any) => items.push({
+      id: `drain-${tk.id}-${tk.lastDrainCheckDate}`, severity: "danger",
+      message: `Anomalia carburante: ${tk.name} — ${tk.lastDrainCheckQuality === "water" ? "acqua presente" : "impurità"}`,
+    }));
+    return items;
+  }, [lowTanks, alertTanks]);
+
   if (meLoading) {
     return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", color: "var(--pc-muted)" }}>Caricamento...</div>;
   }
@@ -648,7 +668,9 @@ export default function Dashboard() {
 
         {/* Tabs */}
         <nav style={{ display: "flex", gap: "0.25rem" }}>
-          {(["dashboard", "history", "config", "drainlog"] as Tab[]).map((tb) => (
+          {(["dashboard", "history", "analytics", "config", "drainlog"] as Tab[]).map((tb) => {
+            if (tb === "config" && !isAdmin) return null;
+            return (
             <button key={tb} onClick={() => setTab(tb)}
               style={{
                 padding: "0.4rem 0.75rem", borderRadius: 6, fontSize: "0.8rem", cursor: "pointer",
@@ -660,13 +682,16 @@ export default function Dashboard() {
             >
               {tb === "dashboard" ? "📊 " + t("dashboard") :
                tb === "history" ? "📋 " + t("history") :
+               tb === "analytics" ? "📈 Analytics" :
                tb === "config" ? "⚙️ " + t("config") : "🔍 Drain Log"}
             </button>
-          ))}
+            );
+          })}
         </nav>
 
-        {/* Lang + user */}
+        {/* Lang + notifications + user */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <NotificationBell items={notifItems} />
           <select
             value={lang}
             onChange={(e) => changeLang(e.target.value as Lang)}
@@ -845,10 +870,21 @@ export default function Dashboard() {
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <h1 style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--pc-sand)" }}>{t("history")}</h1>
-              <button onClick={() => exportMovementsCSV(movements as any[], tanks as any[], helicopters as any[])}
-                className="btn btn-ghost btn-sm">
-                ⬇️ Export CSV
-              </button>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button onClick={() => exportMovementsCSV(movements as any[], tanks as any[], helicopters as any[])}
+                  className="btn btn-ghost btn-sm">
+                  ⬇️ CSV
+                </button>
+                <button onClick={() => exportMovementsPDF(
+                    movements as any[],
+                    Object.fromEntries((tanks as any[]).map((tk: any) => [tk.id, tk])),
+                    Object.fromEntries((helicopters as any[]).map((h: any) => [h.id, h])),
+                    company?.brandName ?? company?.name ?? "PilotCraft"
+                  )}
+                  className="btn btn-ghost btn-sm">
+                  📄 PDF
+                </button>
+              </div>
             </div>
             {/* Report accordion */}
             <Accordion title="📊 Report Consumi" defaultOpen={false}>
@@ -860,6 +896,14 @@ export default function Dashboard() {
                 qc.invalidateQueries({ queryKey: ["movements"] });
               }}
             />
+          </div>
+        )}
+
+        {/* ── ANALYTICS TAB ── */}
+        {tab === "analytics" && (
+          <div>
+            <h1 style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--pc-sand)", marginBottom: "1.5rem" }}>📈 Analytics</h1>
+            <AnalyticsView movements={movements as any[]} tanks={tanks as any[]} />
           </div>
         )}
 
@@ -895,10 +939,21 @@ export default function Dashboard() {
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <h1 style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--pc-sand)" }}>🔍 Drain Check Log</h1>
-              <button onClick={() => exportDrainCSV(drainChecks as any[], tanks as any[])}
-                className="btn btn-ghost btn-sm">
-                ⬇️ Export CSV
-              </button>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button onClick={() => exportDrainCSV(drainChecks as any[], tanks as any[])}
+                  className="btn btn-ghost btn-sm">
+                  ⬇️ CSV
+                </button>
+                <button onClick={() => exportDrainChecksPDF(
+                    drainChecks as any[],
+                    Object.fromEntries((tanks as any[]).map((tk: any) => [tk.id, tk])),
+                    Object.fromEntries((helicopters as any[]).map((h: any) => [h.id, h])),
+                    company?.brandName ?? company?.name ?? "PilotCraft"
+                  )}
+                  className="btn btn-ghost btn-sm">
+                  📄 PDF
+                </button>
+              </div>
             </div>
             <DrainLogTable drainChecks={drainChecks as any[]} tanks={tanks as any[]} helicopters={helicopters as any[]} t={t} isAdmin={isAdmin}
               onDelete={async (id: string) => {
@@ -1003,6 +1058,103 @@ function DrainLogTable({ drainChecks, tanks, helicopters, t, isAdmin, onDelete }
           )}
         </div>
       ))}
+    </div>
+  );
+}
+
+const PIE_COLORS = ["#22c55e", "#f59e0b", "#3b82f6", "#8b5cf6"];
+
+function AnalyticsView({ movements, tanks }: { movements: any[]; tanks: any[] }) {
+  // 1) Consumption/refuel trend over last 14 days
+  const trendData = useMemo(() => {
+    const days: { date: string; refuel: number; consumption: number }[] = [];
+    const today = new Date();
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().split("T")[0];
+      days.push({ date: key.slice(5), refuel: 0, consumption: 0 });
+    }
+    const dayMap = Object.fromEntries(days.map((d, i) => [d.date, i]));
+    movements.forEach((m) => {
+      const key = (m.date ?? "").slice(5);
+      const idx = dayMap[key];
+      if (idx === undefined) return;
+      if (m.type === "refuel") days[idx].refuel += m.liters;
+      else if (m.type === "consumption") days[idx].consumption += m.liters;
+    });
+    return days;
+  }, [movements]);
+
+  // 2) Refuel vs consumption per tank
+  const perTankData = useMemo(() => {
+    const map = new Map<string, { name: string; refuel: number; consumption: number }>();
+    tanks.forEach((tk) => map.set(tk.id, { name: tk.name, refuel: 0, consumption: 0 }));
+    movements.forEach((m) => {
+      if (!m.tankId || !map.has(m.tankId)) return;
+      const row = map.get(m.tankId)!;
+      if (m.type === "refuel") row.refuel += m.liters;
+      else if (m.type === "consumption") row.consumption += m.liters;
+    });
+    return [...map.values()];
+  }, [movements, tanks]);
+
+  // 3) Breakdown by movement type
+  const typeBreakdown = useMemo(() => {
+    const totals: Record<string, number> = { refuel: 0, consumption: 0, transfer: 0, drain_check: 0 };
+    movements.forEach((m) => { totals[m.type] = (totals[m.type] ?? 0) + m.liters; });
+    const labels: Record<string, string> = { refuel: "Rifornimento", consumption: "Consumo", transfer: "Trasferimento", drain_check: "Drain Check" };
+    return Object.entries(totals).filter(([, v]) => v > 0).map(([k, v]) => ({ name: labels[k] ?? k, value: v }));
+  }, [movements]);
+
+  if (!movements.length) {
+    return <div className="card" style={{ textAlign: "center", padding: "2rem", color: "var(--pc-muted)" }}>Nessun dato ancora disponibile per le analytics.</div>;
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      <div className="card">
+        <h3 style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--pc-sand)", marginBottom: "1rem" }}>Andamento ultimi 14 giorni (L)</h3>
+        <ResponsiveContainer width="100%" height={260}>
+          <LineChart data={trendData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--pc-border)" />
+            <XAxis dataKey="date" tick={{ fill: "#8a9ab0", fontSize: 11 }} />
+            <YAxis tick={{ fill: "#8a9ab0", fontSize: 11 }} />
+            <RTooltip contentStyle={{ background: "#162030", border: "1px solid #1e3040", borderRadius: 8, color: "#e8dcc8" }} />
+            <Legend wrapperStyle={{ fontSize: 12 }} />
+            <Line type="monotone" dataKey="refuel" name="Rifornimenti" stroke="#22c55e" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="consumption" name="Consumi" stroke="#f59e0b" strokeWidth={2} dot={false} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="card">
+        <h3 style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--pc-sand)", marginBottom: "1rem" }}>Rifornimenti vs Consumi per Cisterna (L)</h3>
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={perTankData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--pc-border)" />
+            <XAxis dataKey="name" tick={{ fill: "#8a9ab0", fontSize: 11 }} />
+            <YAxis tick={{ fill: "#8a9ab0", fontSize: 11 }} />
+            <RTooltip contentStyle={{ background: "#162030", border: "1px solid #1e3040", borderRadius: 8, color: "#e8dcc8" }} />
+            <Legend wrapperStyle={{ fontSize: 12 }} />
+            <Bar dataKey="refuel" name="Rifornimenti" fill="#22c55e" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="consumption" name="Consumi" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="card">
+        <h3 style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--pc-sand)", marginBottom: "1rem" }}>Ripartizione per Tipo Movimento</h3>
+        <ResponsiveContainer width="100%" height={280}>
+          <PieChart>
+            <Pie data={typeBreakdown} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label>
+              {typeBreakdown.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+            </Pie>
+            <RTooltip contentStyle={{ background: "#162030", border: "1px solid #1e3040", borderRadius: 8, color: "#e8dcc8" }} />
+            <Legend wrapperStyle={{ fontSize: 12 }} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
