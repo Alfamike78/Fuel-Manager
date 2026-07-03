@@ -59,7 +59,7 @@ export default function Dashboard() {
         {impCompanyId && (
           <View style={[styles.banner, { backgroundColor: "rgba(245,158,11,0.15)", borderColor: theme.orange }]}>
             <Text style={{ color: theme.orange, fontSize: 12, flex: 1 }}>🔐 Operi come {impCompanyName}</Text>
-            <TouchableOpacity onPress={() => { clearImpersonation(); qc.clear(); }}>
+            <TouchableOpacity onPress={() => { clearImpersonation(); qc.clear(); router.replace("/(superadmin)"); }}>
               <Text style={{ color: theme.orange, fontWeight: "700", fontSize: 12 }}>ESCI</Text>
             </TouchableOpacity>
           </View>
