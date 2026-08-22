@@ -7,6 +7,8 @@ const baseUrl = String(
   Constants.expoConfig?.extra?.apiUrl ?? process.env.EXPO_PUBLIC_API_URL ?? "",
 ).replace(/\/+$/, "");
 
+export const API_BASE = baseUrl;
+
 const client = hc<AppType>(baseUrl!, {
   headers: () => {
     const token = getToken();

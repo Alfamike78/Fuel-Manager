@@ -61,10 +61,12 @@ const app = new Hono()
   })
   // POST self-register company (trial)
   .post("/register", async (c) => {
-    const body = await c.req.json();
+    const body = await c.req.json().catch(() => ({} as any));
+    const companyName = String(body?.name ?? body?.companyName ?? "").trim();
+    if (!companyName) return c.json({ error: "Nome azienda obbligatorio" }, 400);
     const row = {
       id: randomUUID(),
-      name: body.name,
+      name: companyName,
       brandName: null as string | null,
       primaryColor: "#1b3a5c",
       bgColor: "#d6c4a0",

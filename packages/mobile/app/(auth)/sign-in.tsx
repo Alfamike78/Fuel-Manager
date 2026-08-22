@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { authClient, captureToken } from "../../lib/auth";
-import { post } from "../../lib/api";
+import { post, API_BASE } from "../../lib/api";
 import { theme } from "../../lib/theme";
 import { useLang } from "../../lib/lang";
 import { LanguageSelector } from "../../components/LanguageSelector";
@@ -34,11 +34,17 @@ export default function SignIn() {
         if (res.error) throw new Error(res.error.message ?? t("error"));
       } else {
         // 1) Create company (trial)
-        const coRes = await fetch(
-          `${(authClient as any).options?.baseURL ?? ""}/api/companies/register`,
-          { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: companyName }) }
-        );
-        const company = coRes.ok ? await coRes.json() : null;
+        if (!companyName.trim()) throw new Error(t("companyName") + " *");
+        const coRes = await fetch(`${API_BASE}/api/companies/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: companyName.trim() }),
+        });
+        const coBody = await coRes.json().catch(() => null);
+        if (!coRes.ok || !coBody?.id) {
+          throw new Error((coBody as any)?.error ?? `Errore creazione azienda (HTTP ${coRes.status})`);
+        }
+        const company = coBody;
 
         // 2) Sign up
         const res = await authClient.signUp.email(
@@ -48,8 +54,10 @@ export default function SignIn() {
         if (res.error) throw new Error(res.error.message ?? t("error"));
 
         // 3) Link user to company
-        if (company) {
-          await post("/api/companies/link", { companyId: company.id });
+        const linkRes = await post("/api/companies/link", { companyId: company.id });
+        if (!linkRes.ok) {
+          const lb = await linkRes.json().catch(() => null);
+          throw new Error((lb as any)?.error ?? `Errore collegamento azienda (HTTP ${linkRes.status})`);
         }
       }
       router.replace("/(tabs)");
