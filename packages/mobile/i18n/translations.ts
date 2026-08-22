@@ -142,6 +142,19 @@ export const translations = {
     fuelTypeLocked: "Solo il super admin può cambiare il carburante di una cisterna esistente",
     noneF: "— nessuna —",
     required: "obbligatorio",
+    // Export report (Fase 6)
+    downloadReport: "SCARICA REPORT",
+    period: "Periodo",
+    last7: "7 giorni",
+    last30: "30 giorni",
+    last90: "90 giorni",
+    allTime: "Tutto",
+    customRange: "Intervallo personalizzato",
+    fromDate: "Da (AAAA-MM-GG)",
+    toDate: "A (AAAA-MM-GG)",
+    downloading: "Genero il file...",
+    savedFile: "File pronto",
+    noRowsInPeriod: "Nessun dato nel periodo selezionato",
   },
 
   en: {
@@ -206,6 +219,19 @@ export const translations = {
     fuelTypeLocked: "Only the super admin can change the fuel type of an existing tank",
     noneF: "— none —",
     required: "required",
+    // Export report (Fase 6)
+    downloadReport: "DOWNLOAD REPORT",
+    period: "Period",
+    last7: "7 days",
+    last30: "30 days",
+    last90: "90 days",
+    allTime: "All",
+    customRange: "Custom range",
+    fromDate: "From (YYYY-MM-DD)",
+    toDate: "To (YYYY-MM-DD)",
+    downloading: "Generating file...",
+    savedFile: "File ready",
+    noRowsInPeriod: "No data in the selected period",
   },
 
   fr: {
@@ -270,6 +296,19 @@ export const translations = {
     fuelTypeLocked: "Seul le super admin peut changer le carburant d'une citerne existante",
     noneF: "— aucune —",
     required: "obligatoire",
+    // Export report (Fase 6)
+    downloadReport: "TÉLÉCHARGER LE RAPPORT",
+    period: "Période",
+    last7: "7 jours",
+    last30: "30 jours",
+    last90: "90 jours",
+    allTime: "Tout",
+    customRange: "Plage personnalisée",
+    fromDate: "Du (AAAA-MM-JJ)",
+    toDate: "Au (AAAA-MM-JJ)",
+    downloading: "Génération du fichier...",
+    savedFile: "Fichier prêt",
+    noRowsInPeriod: "Aucune donnée sur la période",
   },
 
   de: {
@@ -334,6 +373,19 @@ export const translations = {
     fuelTypeLocked: "Nur der Super-Admin kann den Kraftstoff eines bestehenden Tanks ändern",
     noneF: "— keine —",
     required: "erforderlich",
+    // Export report (Fase 6)
+    downloadReport: "BERICHT HERUNTERLADEN",
+    period: "Zeitraum",
+    last7: "7 Tage",
+    last30: "30 Tage",
+    last90: "90 Tage",
+    allTime: "Alles",
+    customRange: "Eigener Zeitraum",
+    fromDate: "Von (JJJJ-MM-TT)",
+    toDate: "Bis (JJJJ-MM-TT)",
+    downloading: "Datei wird erstellt...",
+    savedFile: "Datei bereit",
+    noRowsInPeriod: "Keine Daten im Zeitraum",
   },
 
   es: {
@@ -398,6 +450,19 @@ export const translations = {
     fuelTypeLocked: "Solo el super admin puede cambiar el combustible de una cisterna existente",
     noneF: "— ninguna —",
     required: "obligatorio",
+    // Export report (Fase 6)
+    downloadReport: "DESCARGAR INFORME",
+    period: "Periodo",
+    last7: "7 días",
+    last30: "30 días",
+    last90: "90 días",
+    allTime: "Todo",
+    customRange: "Rango personalizado",
+    fromDate: "Desde (AAAA-MM-DD)",
+    toDate: "Hasta (AAAA-MM-DD)",
+    downloading: "Generando archivo...",
+    savedFile: "Archivo listo",
+    noRowsInPeriod: "Sin datos en el periodo",
   },
 
   tr: {
@@ -462,6 +527,19 @@ export const translations = {
     fuelTypeLocked: "Mevcut bir tankın yakıt tipini sadece süper admin değiştirebilir",
     noneF: "— yok —",
     required: "zorunlu",
+    // Export report (Fase 6)
+    downloadReport: "RAPOR İNDİR",
+    period: "Dönem",
+    last7: "7 gün",
+    last30: "30 gün",
+    last90: "90 gün",
+    allTime: "Tümü",
+    customRange: "Özel aralık",
+    fromDate: "Başlangıç (YYYY-AA-GG)",
+    toDate: "Bitiş (YYYY-AA-GG)",
+    downloading: "Dosya oluşturuluyor...",
+    savedFile: "Dosya hazır",
+    noRowsInPeriod: "Seçilen dönemde veri yok",
   },
 } as const;
 

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { get } from "../../lib/api";
 import { theme } from "../../lib/theme";
 import { useLang } from "../../lib/lang";
+import { ExportBox } from "../../components/ExportBox";
 
 const QUALITY_KEY = { ok: "qualityOk", water: "qualityWater", impurities: "qualityImpurities" } as const;
 const QUALITY_COLOR: Record<string, string> = { ok: theme.green, water: theme.blue, impurities: theme.red };
@@ -30,6 +31,7 @@ export default function DrainLog() {
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       <Text style={styles.title}>🔍 {t("drainCheckLog")}</Text>
+      <ExportBox kind="drain-checks" />
       <FlatList
         data={drainChecks as any[]}
         keyExtractor={(d) => d.id}

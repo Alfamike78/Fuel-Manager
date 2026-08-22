@@ -132,3 +132,51 @@ storico movimenti, drain check log, profilo/logout. Riusa lo stesso backend Hono
 - Modifica/elimina movimenti dallo storico (admin) — presente solo sul web
 - Onboarding wizard 4 step — presente solo sul web
 - Upload foto sul drain check — non presente da nessuna parte (colonna DB esiste)
+
+---
+
+# Fase 6 (1/6 della parità totale) — Export PDF/Excel su mobile [date: 2026-08-22]
+
+## Stato: COMPLETATO
+### Backend (nuovo)
+- [x] packages/web/src/api/routes/reports.ts — generazione server-side, registrato in index.ts come /api/reports
+      - POST /api/reports/movements  body {format:"pdf"|"xlsx", from?, to?, ids?[]} -> {filename, mime, base64, count}
+      - POST /api/reports/drain-checks — stesso contratto
+      - PDF con jsPDF + autotable: header navy/sabbia, nome azienda (brandName), periodo, totali
+        (rifornimenti/consumi/spurghi/n. movimenti), tabella con operatore risolto da user.name
+      - Drain check PDF: esiti diversi da "Regolare" evidenziati in rosso grassetto
+      - XLSX con SheetIO: foglio dati + foglio "Riepilogo", larghezze colonne impostate
+      - 404 con messaggio chiaro se non ci sono righe nel periodo
+      - Multi-tenant: filtra sempre per company_id via getCompanyId (impersonation superadmin inclusa)
+- [x] SCELTA: POST e non GET. Le selezioni lunghe in query-string rompono su iOS
+      ("string did not match the expected pattern") — stesso bug già visto su Helijet.
+
+### Mobile
+- [x] Dipendenze aggiunte: expo-file-system@19.0.24, expo-sharing@14.0.8
+- [x] packages/mobile/lib/download.ts — downloadReport(kind, body): chiama il backend, decodifica
+      base64, scrive il file e apre il foglio di condivisione (Sharing.shareAsync).
+      Su web fa fallback a download via Blob + <a download>. Helper lastDays(n).
+      Import da "expo-file-system/legacy" (l'API nuova SDK 54 non serve qui).
+- [x] packages/mobile/components/ExportBox.tsx — accordion "📄 SCARICA REPORT":
+      periodi rapidi 7/30/90/Tutto + intervallo custom (da/a), pulsanti 📄 PDF e 📊 Excel
+      con spinner, alert di conferma con nome file.
+- [x] Montato in (tabs)/history.tsx (movimenti) e (tabs)/drainlog.tsx (drain check)
+- [x] i18n: 12 nuove chiavi x 6 lingue (downloadReport, period, last7/30/90, allTime,
+      customRange, fromDate, toDate, downloading, savedFile, noRowsInPeriod)
+
+## Verifiche
+- [x] Endpoint testati con token reale (testadmin@test.com): movements pdf/xlsx e
+      drain-checks pdf/xlsx tutti 200 con base64 valido (PDF "JVBERi", XLSX "UEsDBBQ")
+- [x] Build web ok + pm2 restart, web 200
+- [x] tsc mobile pulito, bundle Metro iOS 200 (7.13 MB), nessun errore runtime
+
+## Nota per il test sul telefono
+Su iOS il file passa dal foglio di condivisione: "Salva su File" per metterlo in Files,
+oppure invialo direttamente via Mail/WhatsApp. Su Android si apre il selettore app/cartella.
+
+## Restano 5 punti per la parità totale
+2. Modifica/elimina movimenti dallo storico mobile (admin)
+3. Branding (nome brand + colori) da mobile
+4. Import movimenti da Excel da mobile
+5. Onboarding wizard 4 step su mobile
+6. Upload foto sul drain check (manca anche sul web; colonna photoUrl già in DB)

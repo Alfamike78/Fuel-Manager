@@ -5,6 +5,7 @@ import { useState } from "react";
 import { get } from "../../lib/api";
 import { theme } from "../../lib/theme";
 import { useLang } from "../../lib/lang";
+import { ExportBox } from "../../components/ExportBox";
 
 const MOV_ICON: Record<string, string> = { refuel: "⬆️", consumption: "⬇️", transfer: "↔️", drain_check: "🔍" };
 const MOV_COLOR: Record<string, string> = { refuel: theme.green, consumption: theme.orange, transfer: theme.blue, drain_check: theme.purple };
@@ -47,6 +48,7 @@ export default function History() {
           <Text style={styles.statLabel}>{t("total")}</Text>
         </View>
       </View>
+      <ExportBox kind="movements" />
       <FlatList
         data={movements as any[]}
         keyExtractor={(m) => m.id}
