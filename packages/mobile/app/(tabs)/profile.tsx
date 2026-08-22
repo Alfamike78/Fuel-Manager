@@ -5,18 +5,21 @@ import { useRouter } from "expo-router";
 import { get } from "../../lib/api";
 import { authClient, clearToken, clearImpersonation } from "../../lib/auth";
 import { theme } from "../../lib/theme";
+import { useLang } from "../../lib/lang";
+import { LanguageSelector } from "../../components/LanguageSelector";
 
 export default function Profile() {
   const qc = useQueryClient();
+  const { t } = useLang();
   const router = useRouter();
   const { data: me } = useQuery({ queryKey: ["me"], queryFn: () => get("/api/admin/me/role") });
   const { data: company } = useQuery({ queryKey: ["company"], queryFn: () => get("/api/companies/me"), enabled: !!me });
 
   const handleLogout = async () => {
-    Alert.alert("Esci", "Confermi il logout?", [
-      { text: "Annulla", style: "cancel" },
+    Alert.alert(t("logout"), t("confirmLogout"), [
+      { text: t("cancel"), style: "cancel" },
       {
-        text: "Esci", style: "destructive", onPress: async () => {
+        text: t("logout"), style: "destructive", onPress: async () => {
           await authClient.signOut();
           await clearToken();
           clearImpersonation();
@@ -27,7 +30,8 @@ export default function Profile() {
     ]);
   };
 
-  const roleLabel = (me as any)?.role === "superadmin" ? "Super Admin" : (me as any)?.role === "admin" ? "Admin" : "Operatore";
+  const roleLabel =
+    (me as any)?.role === "superadmin" ? t("superAdminRole") : (me as any)?.role === "admin" ? t("adminRole") : t("operatorRole");
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
@@ -39,13 +43,18 @@ export default function Profile() {
         <Text style={styles.email}>{(me as any)?.email ?? "—"}</Text>
 
         <View style={styles.card}>
-          <Row label="Ruolo" value={roleLabel} />
-          <Row label="Azienda" value={company?.brandName ?? company?.name ?? "—"} />
-          <Row label="Piano" value={company?.plan ?? "—"} />
+          <Row label={t("role")} value={roleLabel} />
+          <Row label={t("company")} value={company?.brandName ?? company?.name ?? "—"} />
+          <Row label={t("plan")} value={company?.plan ?? "—"} />
+        </View>
+
+        <Text style={styles.sectionLabel}>🌐 {t("language")}</Text>
+        <View style={[styles.card, { padding: 12 }]}>
+          <LanguageSelector />
         </View>
 
         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-          <Text style={styles.logoutText}>🚪 Esci</Text>
+          <Text style={styles.logoutText}>🚪 {t("logout")}</Text>
         </TouchableOpacity>
 
         <Text style={styles.footer}>PilotCraft Solutions · Fuel Manager</Text>
@@ -77,5 +86,6 @@ const styles = StyleSheet.create({
   rowValue: { color: theme.text, fontSize: 13, fontWeight: "600" },
   logoutBtn: { backgroundColor: "rgba(239,68,68,0.12)", borderWidth: 1, borderColor: "rgba(239,68,68,0.3)", borderRadius: 10, padding: 14, alignItems: "center" },
   logoutText: { color: theme.red, fontWeight: "700" },
+  sectionLabel: { color: theme.muted, fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 },
   footer: { color: theme.muted, fontSize: 11, textAlign: "center", marginTop: 30 },
 });

@@ -9,15 +9,17 @@ import { get, post } from "../../lib/api";
 import { getImpersonatedCompanyId, getImpersonatedCompanyName, clearImpersonation } from "../../lib/auth";
 import { useRouter } from "expo-router";
 import { theme } from "../../lib/theme";
+import { useLang, tr } from "../../lib/lang";
+import { LanguageSelector } from "../../components/LanguageSelector";
 import { FuelBar } from "../../components/FuelBar";
 import { AppModal } from "../../components/Modal";
 
 const MOV_TYPES = ["refuel", "consumption", "transfer", "drain_check"] as const;
-const MOV_LABEL: Record<string, string> = { refuel: "Rifornimento", consumption: "Consumo", transfer: "Trasferimento", drain_check: "Drain Check" };
 const MOV_ICON: Record<string, string> = { refuel: "⬆️", consumption: "⬇️", transfer: "↔️", drain_check: "🔍" };
 
 export default function Dashboard() {
   const qc = useQueryClient();
+  const { t } = useLang();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
   const [movModal, setMovModal] = useState(false);
@@ -58,31 +60,36 @@ export default function Dashboard() {
         {/* Impersonation banner */}
         {impCompanyId && (
           <View style={[styles.banner, { backgroundColor: "rgba(245,158,11,0.15)", borderColor: theme.orange }]}>
-            <Text style={{ color: theme.orange, fontSize: 12, flex: 1 }}>🔐 Operi come {impCompanyName}</Text>
+            <Text style={{ color: theme.orange, fontSize: 12, flex: 1 }}>🔐 {t("impersonating")} {impCompanyName}</Text>
             <TouchableOpacity onPress={() => { clearImpersonation(); qc.clear(); router.replace("/(superadmin)"); }}>
-              <Text style={{ color: theme.orange, fontWeight: "700", fontSize: 12 }}>ESCI</Text>
+              <Text style={{ color: theme.orange, fontWeight: "700", fontSize: 12 }}>{t("exit")}</Text>
             </TouchableOpacity>
           </View>
         )}
 
         {/* Header */}
         <View style={styles.headerRow}>
-          <Text style={styles.brandName}>{company?.brandName ?? company?.name ?? "PilotCraft"}</Text>
-          <Text style={styles.brandSub}>Fuel Manager</Text>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.brandName}>{company?.brandName ?? company?.name ?? "PilotCraft"}</Text>
+              <Text style={styles.brandSub}>Fuel Manager</Text>
+            </View>
+            <LanguageSelector compact />
+          </View>
         </View>
 
         {/* Alerts */}
         {lowTanks.length > 0 && (
           <View style={[styles.banner, { backgroundColor: "rgba(245,158,11,0.12)", borderColor: theme.orange }]}>
             <Text style={{ color: theme.orange, fontSize: 12 }}>
-              ⚠️ Livello basso: {lowTanks.map((t) => `${t.name} (${t.currentLevel}L)`).join(", ")}
+              {t("lowFuelAlert")}: {lowTanks.map((t) => `${t.name} (${t.currentLevel}L)`).join(", ")}
             </Text>
           </View>
         )}
         {alertTanks.length > 0 && (
           <View style={[styles.banner, { backgroundColor: "rgba(239,68,68,0.12)", borderColor: theme.red }]}>
             <Text style={{ color: theme.red, fontSize: 12 }}>
-              🔴 Anomalia: {alertTanks.map((t) => `${t.name} (${t.lastDrainCheckQuality})`).join(", ")}
+              {t("impuritiesAlert")}: {alertTanks.map((t) => `${t.name} (${t.lastDrainCheckQuality})`).join(", ")}
             </Text>
           </View>
         )}
@@ -91,12 +98,12 @@ export default function Dashboard() {
         <View style={styles.actionsRow}>
           <TouchableOpacity style={styles.actionBtn} onPress={() => setMovModal(true)}>
             <Text style={styles.actionIcon}>⛽</Text>
-            <Text style={styles.actionLabel}>Nuovo Movimento</Text>
+            <Text style={styles.actionLabel}>{t("newMovement")}</Text>
           </TouchableOpacity>
         </View>
 
         {/* Tanks */}
-        <Text style={styles.sectionTitle}>Cisterne ({(tanks as any[]).length})</Text>
+        <Text style={styles.sectionTitle}>{t("tanks")} ({(tanks as any[]).length})</Text>
         {(tanks as any[]).map((tank) => {
           const pct = Math.round((tank.currentLevel / tank.capacity) * 100);
           const hasAlert = tank.lastDrainCheckQuality && tank.lastDrainCheckQuality !== "ok";
@@ -108,7 +115,7 @@ export default function Dashboard() {
                   <Text style={styles.cardSub}>{tank.fuelType}</Text>
                 </View>
                 <TouchableOpacity style={styles.drainBtn} onPress={() => setDrainModal(tank)}>
-                  <Text style={{ fontSize: 12, color: theme.sand }}>🔍 Drain Check</Text>
+                  <Text style={{ fontSize: 12, color: theme.sand }}>🔍 {t("drainCheck")}</Text>
                 </TouchableOpacity>
               </View>
               <View style={[styles.rowBetween, { marginTop: 8 }]}>
@@ -117,7 +124,7 @@ export default function Dashboard() {
               </View>
               <FuelBar level={tank.currentLevel ?? 0} capacity={tank.capacity} alert={tank.alertThreshold ?? 1500} />
               <Text style={styles.cardMeta}>
-                Cap: {tank.capacity?.toLocaleString()} L | Soglia: {tank.alertThreshold?.toLocaleString()} L
+                {t("capacity")}: {tank.capacity?.toLocaleString()} L | {t("alerts")}: {tank.alertThreshold?.toLocaleString()} L
               </Text>
               {hasAlert && (
                 <Text style={{ color: theme.red, fontSize: 12, marginTop: 6 }}>
@@ -134,11 +141,11 @@ export default function Dashboard() {
         })}
 
         {/* Fleet */}
-        <Text style={styles.sectionTitle}>Flotta ({(helicopters as any[]).length})</Text>
+        <Text style={styles.sectionTitle}>{t("fleet")} ({(helicopters as any[]).length})</Text>
         {(helicopters as any[]).map((h) => (
           <View key={h.id} style={styles.card}>
             <Text style={styles.cardTitle}>
-              {h.category === "aviation" ? "✈️" : "🚜"} {h.vehicleType ?? (h.category === "aviation" ? "Elicottero" : "Mezzo")}
+              {h.category === "aviation" ? "✈️" : "🚜"} {h.vehicleType ?? (h.category === "aviation" ? t("aircraft") : t("vehicle"))}
             </Text>
             {h.identifier && <Text style={{ color: theme.sand, fontWeight: "700" }}>{h.identifier}</Text>}
             <Text style={styles.cardSub}>{h.name}</Text>
@@ -147,15 +154,15 @@ export default function Dashboard() {
         ))}
 
         {/* Recent movements */}
-        <Text style={styles.sectionTitle}>Ultimi Movimenti</Text>
+        <Text style={styles.sectionTitle}>{t("movements")}</Text>
         {recentMovements.length === 0 ? (
-          <Text style={{ color: theme.muted, textAlign: "center", padding: 20 }}>Nessun movimento</Text>
+          <Text style={{ color: theme.muted, textAlign: "center", padding: 20 }}>{t("noMovements")}</Text>
         ) : (
           recentMovements.map((m: any) => (
             <View key={m.id} style={[styles.card, { flexDirection: "row", alignItems: "center", gap: 12 }]}>
               <Text style={{ fontSize: 20 }}>{MOV_ICON[m.type]}</Text>
               <View style={{ flex: 1 }}>
-                <Text style={{ color: theme.text, fontWeight: "600" }}>{MOV_LABEL[m.type]}</Text>
+                <Text style={{ color: theme.text, fontWeight: "600" }}>{t(m.type)}</Text>
                 <Text style={styles.cardMeta}>
                   {m.tankId ? tankMap[m.tankId] : ""} {m.helicopterId ? `✈️ ${heliMap[m.helicopterId]}` : ""}
                 </Text>
@@ -199,26 +206,26 @@ function NewMovementModal({ visible, tanks, helicopters, onClose, onSaved }: any
   const reset = () => { setType("consumption"); setTankId(""); setToTankId(""); setHelicopterId(""); setLiters(""); setNotes(""); };
 
   const handleSave = async () => {
-    if (!tankId || !liters) { Alert.alert("Errore", "Cisterna e litri sono obbligatori"); return; }
+    if (!tankId || !liters) { Alert.alert(tr("error"), `${tr("tank")} + ${tr("liters")}`); return; }
     setSaving(true);
     try {
       const res = await post("/api/movements", {
         type, tankId, toTankId: toTankId || undefined, helicopterId: helicopterId || undefined,
         liters: Number(liters), date: now.toISOString().split("T")[0], time: now.toTimeString().slice(0, 5), notes,
       });
-      if (!res.ok) { const e = await res.json(); throw new Error(e.error ?? "Errore"); }
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error ?? tr("error")); }
       reset();
       onClose();
       onSaved();
     } catch (e: any) {
-      Alert.alert("Errore", e.message ?? "Errore salvataggio");
+      Alert.alert(tr("error"), e.message ?? tr("error"));
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <AppModal visible={visible} title={`${MOV_ICON[type]} Nuovo Movimento`} onClose={onClose}>
+    <AppModal visible={visible} title={`${MOV_ICON[type]} ${tr("newMovement")}`} onClose={onClose}>
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
         {MOV_TYPES.map((tp) => (
           <TouchableOpacity
@@ -226,12 +233,12 @@ function NewMovementModal({ visible, tanks, helicopters, onClose, onSaved }: any
             onPress={() => setType(tp)}
             style={[mstyles.chip, type === tp && mstyles.chipActive]}
           >
-            <Text style={{ color: type === tp ? theme.sand : theme.muted, fontSize: 12 }}>{MOV_ICON[tp]} {MOV_LABEL[tp]}</Text>
+            <Text style={{ color: type === tp ? theme.sand : theme.muted, fontSize: 12 }}>{MOV_ICON[tp]} {tr(tp)}</Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <Text style={mstyles.label}>Cisterna</Text>
+      <Text style={mstyles.label}>{tr("tank")}</Text>
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
         {tanks.map((tk: any) => (
           <TouchableOpacity key={tk.id} onPress={() => setTankId(tk.id)} style={[mstyles.chip, tankId === tk.id && mstyles.chipActive]}>
@@ -242,7 +249,7 @@ function NewMovementModal({ visible, tanks, helicopters, onClose, onSaved }: any
 
       {type === "transfer" && (
         <>
-          <Text style={mstyles.label}>Cisterna Destinazione</Text>
+          <Text style={mstyles.label}>{tr("toTank")}</Text>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
             {tanks.filter((tk: any) => tk.id !== tankId).map((tk: any) => (
               <TouchableOpacity key={tk.id} onPress={() => setToTankId(tk.id)} style={[mstyles.chip, toTankId === tk.id && mstyles.chipActive]}>
@@ -255,7 +262,7 @@ function NewMovementModal({ visible, tanks, helicopters, onClose, onSaved }: any
 
       {type === "consumption" && (
         <>
-          <Text style={mstyles.label}>Mezzo (opzionale)</Text>
+          <Text style={mstyles.label}>{tr("vehicle")}</Text>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
             {helicopters.map((h: any) => (
               <TouchableOpacity key={h.id} onPress={() => setHelicopterId(h.id)} style={[mstyles.chip, helicopterId === h.id && mstyles.chipActive]}>
@@ -266,14 +273,14 @@ function NewMovementModal({ visible, tanks, helicopters, onClose, onSaved }: any
         </>
       )}
 
-      <Text style={mstyles.label}>Litri</Text>
+      <Text style={mstyles.label}>{tr("liters")}</Text>
       <TextInput style={mstyles.input} value={liters} onChangeText={setLiters} keyboardType="numeric" placeholder="es. 500" placeholderTextColor={theme.muted} />
 
-      <Text style={mstyles.label}>Note</Text>
-      <TextInput style={mstyles.input} value={notes} onChangeText={setNotes} placeholder="Opzionale" placeholderTextColor={theme.muted} />
+      <Text style={mstyles.label}>{tr("notes")}</Text>
+      <TextInput style={mstyles.input} value={notes} onChangeText={setNotes} placeholder="" placeholderTextColor={theme.muted} />
 
       <TouchableOpacity style={mstyles.saveBtn} onPress={handleSave} disabled={saving}>
-        {saving ? <ActivityIndicator color={theme.sand} /> : <Text style={mstyles.saveBtnText}>Salva Movimento</Text>}
+        {saving ? <ActivityIndicator color={theme.sand} /> : <Text style={mstyles.saveBtnText}>{tr("save")}</Text>}
       </TouchableOpacity>
     </AppModal>
   );
@@ -293,12 +300,12 @@ function DrainCheckModal({ visible, tank, onClose, onSaved }: any) {
         tankId: tank.id, liters: Number(liters || 0), quality, notes,
         date: now.toISOString().split("T")[0], time: now.toTimeString().slice(0, 5),
       });
-      if (!res.ok) { const e = await res.json(); throw new Error(e.error ?? "Errore"); }
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error ?? tr("error")); }
       setLiters(""); setQuality("ok"); setNotes("");
       onClose();
       onSaved();
     } catch (e: any) {
-      Alert.alert("Errore", e.message ?? "Errore salvataggio");
+      Alert.alert(tr("error"), e.message ?? tr("error"));
     } finally {
       setSaving(false);
     }
@@ -307,16 +314,16 @@ function DrainCheckModal({ visible, tank, onClose, onSaved }: any) {
   if (!tank) return null;
 
   return (
-    <AppModal visible={visible} title={`🔍 Drain Check — ${tank.name}`} onClose={onClose}>
-      <Text style={mstyles.label}>Litri Erogati</Text>
+    <AppModal visible={visible} title={`🔍 ${tr("drainCheck")} — ${tank.name}`} onClose={onClose}>
+      <Text style={mstyles.label}>{tr("liters")}</Text>
       <TextInput style={mstyles.input} value={liters} onChangeText={setLiters} keyboardType="numeric" placeholder="0" placeholderTextColor={theme.muted} />
 
-      <Text style={mstyles.label}>Esito</Text>
+      <Text style={mstyles.label}>{tr("quality")}</Text>
       <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
         {[
-          { v: "ok", l: "✅ Regolare" },
-          { v: "water", l: "💧 Acqua" },
-          { v: "impurities", l: "🔴 Impurità" },
+          { v: "ok", l: tr("qualityOk") },
+          { v: "water", l: tr("qualityWater") },
+          { v: "impurities", l: tr("qualityImpurities") },
         ].map((opt) => (
           <TouchableOpacity key={opt.v} onPress={() => setQuality(opt.v as any)} style={[mstyles.chip, quality === opt.v && mstyles.chipActive, { flex: 1, alignItems: "center" }]}>
             <Text style={{ color: quality === opt.v ? theme.sand : theme.muted, fontSize: 12 }}>{opt.l}</Text>
@@ -324,11 +331,11 @@ function DrainCheckModal({ visible, tank, onClose, onSaved }: any) {
         ))}
       </View>
 
-      <Text style={mstyles.label}>Note</Text>
-      <TextInput style={mstyles.input} value={notes} onChangeText={setNotes} placeholder="Opzionale" placeholderTextColor={theme.muted} />
+      <Text style={mstyles.label}>{tr("notes")}</Text>
+      <TextInput style={mstyles.input} value={notes} onChangeText={setNotes} placeholder="" placeholderTextColor={theme.muted} />
 
       <TouchableOpacity style={mstyles.saveBtn} onPress={handleSave} disabled={saving}>
-        {saving ? <ActivityIndicator color={theme.sand} /> : <Text style={mstyles.saveBtnText}>Salva Drain Check</Text>}
+        {saving ? <ActivityIndicator color={theme.sand} /> : <Text style={mstyles.saveBtnText}>{tr("save")}</Text>}
       </TouchableOpacity>
     </AppModal>
   );

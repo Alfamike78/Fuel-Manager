@@ -4,13 +4,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { get } from "../../lib/api";
 import { theme } from "../../lib/theme";
+import { useLang } from "../../lib/lang";
 
-const MOV_LABEL: Record<string, string> = { refuel: "Rifornimento", consumption: "Consumo", transfer: "Trasferimento", drain_check: "Drain Check" };
 const MOV_ICON: Record<string, string> = { refuel: "⬆️", consumption: "⬇️", transfer: "↔️", drain_check: "🔍" };
 const MOV_COLOR: Record<string, string> = { refuel: theme.green, consumption: theme.orange, transfer: theme.blue, drain_check: theme.purple };
 
 export default function History() {
   const qc = useQueryClient();
+  const { t } = useLang();
   const [refreshing, setRefreshing] = useState(false);
   const { data: me } = useQuery({ queryKey: ["me"], queryFn: () => get("/api/admin/me/role") });
   const { data: movements = [] } = useQuery({ queryKey: ["movements"], queryFn: () => get("/api/movements"), enabled: !!me });
@@ -31,19 +32,19 @@ export default function History() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-      <Text style={styles.title}>Storico Movimenti</Text>
+      <Text style={styles.title}>{t("movementsHistory")}</Text>
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
           <Text style={[styles.statValue, { color: theme.green }]}>{totalRefuel.toLocaleString()} L</Text>
-          <Text style={styles.statLabel}>Rifornimenti</Text>
+          <Text style={styles.statLabel}>{t("refuels")}</Text>
         </View>
         <View style={styles.statBox}>
           <Text style={[styles.statValue, { color: theme.orange }]}>{totalConsumption.toLocaleString()} L</Text>
-          <Text style={styles.statLabel}>Consumi</Text>
+          <Text style={styles.statLabel}>{t("consumptions")}</Text>
         </View>
         <View style={styles.statBox}>
           <Text style={[styles.statValue, { color: theme.sand }]}>{(movements as any[]).length}</Text>
-          <Text style={styles.statLabel}>Totale</Text>
+          <Text style={styles.statLabel}>{t("total")}</Text>
         </View>
       </View>
       <FlatList
@@ -51,12 +52,12 @@ export default function History() {
         keyExtractor={(m) => m.id}
         contentContainerStyle={{ padding: 16, paddingTop: 0 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.sand} />}
-        ListEmptyComponent={<Text style={{ color: theme.muted, textAlign: "center", padding: 30 }}>Nessun movimento</Text>}
+        ListEmptyComponent={<Text style={{ color: theme.muted, textAlign: "center", padding: 30 }}>{t("noMovements")}</Text>}
         renderItem={({ item: m }) => (
           <View style={styles.card}>
             <Text style={{ fontSize: 20 }}>{MOV_ICON[m.type]}</Text>
             <View style={{ flex: 1, marginLeft: 12 }}>
-              <Text style={{ color: MOV_COLOR[m.type], fontWeight: "700", fontSize: 13 }}>{MOV_LABEL[m.type]}</Text>
+              <Text style={{ color: MOV_COLOR[m.type], fontWeight: "700", fontSize: 13 }}>{t(m.type)}</Text>
               <Text style={styles.cardMeta}>
                 {m.tankId ? `📦 ${tankMap[m.tankId] ?? ""}` : ""} {m.helicopterId ? `✈️ ${heliMap[m.helicopterId] ?? ""}` : ""} {m.toTankId ? `→ ${tankMap[m.toTankId] ?? ""}` : ""}
               </Text>

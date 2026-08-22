@@ -4,12 +4,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { get } from "../../lib/api";
 import { theme } from "../../lib/theme";
+import { useLang } from "../../lib/lang";
 
-const QUALITY_LABEL: Record<string, string> = { ok: "✅ Regolare", water: "💧 Acqua", impurities: "🔴 Impurità" };
+const QUALITY_KEY = { ok: "qualityOk", water: "qualityWater", impurities: "qualityImpurities" } as const;
 const QUALITY_COLOR: Record<string, string> = { ok: theme.green, water: theme.blue, impurities: theme.red };
 
 export default function DrainLog() {
   const qc = useQueryClient();
+  const { t } = useLang();
   const [refreshing, setRefreshing] = useState(false);
   const { data: me } = useQuery({ queryKey: ["me"], queryFn: () => get("/api/admin/me/role") });
   const { data: drainChecks = [] } = useQuery({ queryKey: ["drainChecks"], queryFn: () => get("/api/drain-checks"), enabled: !!me });
@@ -27,13 +29,13 @@ export default function DrainLog() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-      <Text style={styles.title}>🔍 Drain Check Log</Text>
+      <Text style={styles.title}>🔍 {t("drainCheckLog")}</Text>
       <FlatList
         data={drainChecks as any[]}
         keyExtractor={(d) => d.id}
         contentContainerStyle={{ padding: 16, paddingTop: 0 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.sand} />}
-        ListEmptyComponent={<Text style={{ color: theme.muted, textAlign: "center", padding: 30 }}>Nessun drain check registrato</Text>}
+        ListEmptyComponent={<Text style={{ color: theme.muted, textAlign: "center", padding: 30 }}>{t("noDrainChecks")}</Text>}
         renderItem={({ item: dc }) => (
           <View style={styles.card}>
             <View style={{ flex: 1 }}>
@@ -46,7 +48,7 @@ export default function DrainLog() {
             <View style={{ alignItems: "flex-end" }}>
               <Text style={{ color: theme.text, fontWeight: "700" }}>{dc.liters} L</Text>
               <Text style={{ color: QUALITY_COLOR[dc.quality], fontSize: 12, fontWeight: "700", marginTop: 4 }}>
-                {QUALITY_LABEL[dc.quality]}
+                {t(QUALITY_KEY[dc.quality as keyof typeof QUALITY_KEY] ?? "quality")}
               </Text>
             </View>
           </View>

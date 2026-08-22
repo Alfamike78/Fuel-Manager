@@ -8,9 +8,12 @@ import { useRouter } from "expo-router";
 import { authClient, captureToken } from "../../lib/auth";
 import { post } from "../../lib/api";
 import { theme } from "../../lib/theme";
+import { useLang } from "../../lib/lang";
+import { LanguageSelector } from "../../components/LanguageSelector";
 
 export default function SignIn() {
   const router = useRouter();
+  const { t } = useLang();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [name, setName] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -28,7 +31,7 @@ export default function SignIn() {
           { email, password },
           { onSuccess: captureToken }
         );
-        if (res.error) throw new Error(res.error.message ?? "Errore login");
+        if (res.error) throw new Error(res.error.message ?? t("error"));
       } else {
         // 1) Create company (trial)
         const coRes = await fetch(
@@ -42,7 +45,7 @@ export default function SignIn() {
           { name, email, password },
           { onSuccess: captureToken }
         );
-        if (res.error) throw new Error(res.error.message ?? "Errore registrazione");
+        if (res.error) throw new Error(res.error.message ?? t("error"));
 
         // 3) Link user to company
         if (company) {
@@ -51,7 +54,7 @@ export default function SignIn() {
       }
       router.replace("/(tabs)");
     } catch (e: any) {
-      setError(e.message ?? "Errore");
+      setError(e.message ?? t("error"));
     } finally {
       setLoading(false);
     }
@@ -61,6 +64,9 @@ export default function SignIn() {
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+          <View style={{ alignItems: "flex-end", marginBottom: 12 }}>
+            <LanguageSelector compact />
+          </View>
           <View style={styles.logoRow}>
             <View style={styles.logoBox}><Text style={{ fontSize: 28 }}>🚁</Text></View>
             <View>
@@ -68,25 +74,25 @@ export default function SignIn() {
               <Text style={styles.brandSub}>SOLUTIONS</Text>
             </View>
           </View>
-          <Text style={styles.tagline}>Forest Expertise in Air Response</Text>
+          <Text style={styles.tagline}>{t("tagline")}</Text>
 
-          <Text style={styles.title}>{mode === "login" ? "Accedi" : "Registrati"}</Text>
+          <Text style={styles.title}>{mode === "login" ? t("login") : t("register")}</Text>
 
           {mode === "register" && (
             <>
-              <Text style={styles.label}>Nome</Text>
+              <Text style={styles.label}>{t("name")}</Text>
               <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Mario Rossi" placeholderTextColor={theme.muted} />
-              <Text style={styles.label}>Nome Azienda</Text>
+              <Text style={styles.label}>{t("companyName")}</Text>
               <TextInput style={styles.input} value={companyName} onChangeText={setCompanyName} placeholder="Elicotteri Nord Italia SRL" placeholderTextColor={theme.muted} />
             </>
           )}
 
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>{t("email")}</Text>
           <TextInput
             style={styles.input} value={email} onChangeText={setEmail} placeholder="nome@azienda.com"
             placeholderTextColor={theme.muted} autoCapitalize="none" keyboardType="email-address"
           />
-          <Text style={styles.label}>Password</Text>
+          <Text style={styles.label}>{t("password")}</Text>
           <TextInput
             style={styles.input} value={password} onChangeText={setPassword} placeholder="••••••••"
             placeholderTextColor={theme.muted} secureTextEntry
@@ -96,15 +102,14 @@ export default function SignIn() {
 
           <TouchableOpacity style={styles.btn} onPress={handleSubmit} disabled={loading}>
             {loading ? <ActivityIndicator color={theme.sand} /> : (
-              <Text style={styles.btnText}>{mode === "login" ? "Accedi" : "Registrati"}</Text>
+              <Text style={styles.btnText}>{mode === "login" ? t("login") : t("register")}</Text>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => { setMode(mode === "login" ? "register" : "login"); setError(""); }}>
             <Text style={styles.switchText}>
-              {mode === "login" ? "Non hai un account? " : "Hai già un account? "}
               <Text style={{ color: theme.sand, fontWeight: "700" }}>
-                {mode === "login" ? "Registrati" : "Accedi"}
+                {mode === "login" ? t("noAccount") : t("haveAccount")}
               </Text>
             </Text>
           </TouchableOpacity>

@@ -1,12 +1,14 @@
 import { Tabs } from "expo-router";
 import { Text } from "react-native";
 import { theme } from "../../lib/theme";
+import { useLang } from "../../lib/lang";
 
 function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
   return <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>;
 }
 
 export default function TabsLayout() {
+  const { t } = useLang();
   return (
     <Tabs
       screenOptions={{
@@ -14,24 +16,28 @@ export default function TabsLayout() {
         tabBarStyle: { backgroundColor: theme.card, borderTopColor: theme.border },
         tabBarActiveTintColor: theme.sand,
         tabBarInactiveTintColor: theme.muted,
-        tabBarLabelStyle: { fontSize: 11 },
+        tabBarLabelStyle: { fontSize: 10 },
       }}
     >
       <Tabs.Screen
         name="index"
-        options={{ title: "Dashboard", tabBarIcon: ({ focused }) => <TabIcon emoji="📊" focused={focused} /> }}
+        options={{ title: t("dashboard"), tabBarIcon: ({ focused }) => <TabIcon emoji="📊" focused={focused} /> }}
       />
       <Tabs.Screen
         name="history"
-        options={{ title: "Storico", tabBarIcon: ({ focused }) => <TabIcon emoji="📋" focused={focused} /> }}
+        options={{ title: t("history"), tabBarIcon: ({ focused }) => <TabIcon emoji="📋" focused={focused} /> }}
+      />
+      <Tabs.Screen
+        name="analytics"
+        options={{ title: t("analytics"), tabBarIcon: ({ focused }) => <TabIcon emoji="📈" focused={focused} /> }}
       />
       <Tabs.Screen
         name="drainlog"
-        options={{ title: "Drain Check", tabBarIcon: ({ focused }) => <TabIcon emoji="🔍" focused={focused} /> }}
+        options={{ title: t("drainCheck"), tabBarIcon: ({ focused }) => <TabIcon emoji="🔍" focused={focused} /> }}
       />
       <Tabs.Screen
         name="profile"
-        options={{ title: "Profilo", tabBarIcon: ({ focused }) => <TabIcon emoji="👤" focused={focused} /> }}
+        options={{ title: t("profile"), tabBarIcon: ({ focused }) => <TabIcon emoji="👤" focused={focused} /> }}
       />
     </Tabs>
   );
