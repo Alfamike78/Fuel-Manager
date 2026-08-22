@@ -30,7 +30,14 @@ function authHeaders(): Record<string, string> {
   return headers;
 }
 
-export const get = (path: string) => fetch(`${baseUrl}${path}`, { headers: authHeaders() }).then((r) => r.json());
+export const get = async (path: string) => {
+  const r = await fetch(`${baseUrl}${path}`, { headers: authHeaders() });
+  const body = await r.json().catch(() => null);
+  if (!r.ok) {
+    throw new Error((body as any)?.error ?? `HTTP ${r.status} su ${path}`);
+  }
+  return body;
+};
 export const post = (path: string, body: any) =>
   fetch(`${baseUrl}${path}`, { method: "POST", headers: authHeaders(), body: JSON.stringify(body) });
 export const patch = (path: string, body: any) =>

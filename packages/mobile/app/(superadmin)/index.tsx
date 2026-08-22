@@ -61,8 +61,10 @@ export default function SuperAdminScreen() {
     setRefreshing(false);
   };
 
-  const filtered = companies.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
+  const companyList: Company[] = Array.isArray(companies) ? companies : [];
+
+  const filtered = companyList.filter((c) =>
+    (c.name ?? "").toLowerCase().includes(search.toLowerCase()) ||
     (c.email ?? "").toLowerCase().includes(search.toLowerCase())
   );
 
