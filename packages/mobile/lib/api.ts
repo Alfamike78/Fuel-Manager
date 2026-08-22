@@ -3,9 +3,9 @@ import Constants from "expo-constants";
 import type { AppType } from "@template/web";
 import { getToken, getImpersonatedCompanyId } from "./auth";
 
-const baseUrl =
-  Constants.expoConfig?.extra?.apiUrl ??
-  process.env.EXPO_PUBLIC_API_URL;
+const baseUrl = String(
+  Constants.expoConfig?.extra?.apiUrl ?? process.env.EXPO_PUBLIC_API_URL ?? "",
+).replace(/\/+$/, "");
 
 const client = hc<AppType>(baseUrl!, {
   headers: () => {

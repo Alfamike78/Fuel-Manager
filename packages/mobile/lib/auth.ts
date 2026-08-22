@@ -6,9 +6,9 @@ import Constants from "expo-constants";
 const isWeb = Platform.OS === "web";
 const TOKEN_KEY = "pc_bearer_token";
 
-const baseURL =
-  Constants.expoConfig?.extra?.apiUrl ??
-  process.env.EXPO_PUBLIC_API_URL;
+const baseURL = String(
+  Constants.expoConfig?.extra?.apiUrl ?? process.env.EXPO_PUBLIC_API_URL ?? "",
+).replace(/\/+$/, "");
 
 export function getToken(): string {
   try {

@@ -16,7 +16,7 @@ export const auth = betterAuth({
     },
   }),
   secret: process.env.BETTER_AUTH_SECRET!,
-  baseURL: process.env.WEBSITE_URL || "http://localhost:4200",
+  baseURL: (process.env.WEBSITE_URL || "http://localhost:4200").replace(/\/+$/, ""),
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
@@ -34,7 +34,10 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24,
     cookieCache: { enabled: true, maxAge: 5 * 60 },
   },
-  trustedOrigins: ["*"],
+  trustedOrigins: (request: Request) => {
+    const origin = request?.headers.get("origin");
+    return origin ? [origin, "*"] : ["*"];
+  },
   plugins: [bearer(), expo()],
 });
 
