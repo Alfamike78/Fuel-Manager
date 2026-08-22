@@ -67,3 +67,31 @@ storico movimenti, drain check log, profilo/logout. Riusa lo stesso backend Hono
 ## Note
 - Le stringhe del CRM superadmin mobile ((superadmin)/index.tsx) restano in italiano:
   è un pannello interno usato solo dal super admin. Da tradurre solo se richiesto.
+
+---
+
+# Fix bug trovati durante il test sul telefono [date: 2026-08-22]
+
+## 1. Login 403 INVALID_ORIGIN — commit 27108ef
+- Causa: WEBSITE_URL in .env finisce con slash → better-auth lo usava come baseURL e la
+  validazione origin falliva PRIMA del controllo password. Sul mobile anche apiUrl diventava
+  ".../site//api/...".
+- Fix: baseURL normalizzato con .replace(/\/+$/, "") in packages/web/src/api/auth.ts,
+  trustedOrigins in forma dinamica; stessa normalizzazione in mobile/lib/api.ts e mobile/lib/auth.ts.
+- app.json (expo.extra) NON toccato: gestito dalla piattaforma.
+- Verificato: login 200 con token senza Origin, con Origin preview-4300, con expo-origin.
+
+## 2. Crash mobile dopo login superadmin — commit fadf4cc
+- Causa: get() in mobile/lib/api.ts faceva r.json() anche sugli errori → un 401 restituiva
+  un oggetto e companies.filter() crashava in (superadmin)/index.tsx.
+- Fix: get() controlla r.ok e lancia col messaggio del server (protegge tutte le schermate);
+  coercizione difensiva ad array + guardia su c.name.
+
+## 3. Registrazione "Cannot determine default value of object" — commit 376f95a
+- Causa: additionalFields.companyId senza defaultValue né required:false → il client better-auth
+  lo considerava obbligatorio per il sign-up e lanciava prima di inviare la richiesta
+  (per questo i test curl passavano).
+- Fix: role e companyId ora `required: false, input: false` (sono sempre impostati lato server
+  via /api/companies/link o update DB diretto).
+- Verificato: tsc pulito sul vincolo companyId + E2E dei 3 step di registrazione
+  (azienda creata → sign-up → link 200 → ruolo admin con companyId corretto).
