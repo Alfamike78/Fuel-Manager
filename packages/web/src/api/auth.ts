@@ -23,8 +23,8 @@ export const auth = betterAuth({
   },
   user: {
     additionalFields: {
-      role: { type: "string", defaultValue: "operator", fieldName: "role" },
-      companyId: { type: "string", fieldName: "company_id" },
+      role: { type: "string", defaultValue: "operator", required: false, input: false, fieldName: "role" },
+      companyId: { type: "string", required: false, input: false, fieldName: "company_id" },
     },
     changeEmail: { enabled: true },
     changePassword: true,
