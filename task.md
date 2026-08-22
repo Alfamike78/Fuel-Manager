@@ -95,3 +95,40 @@ storico movimenti, drain check log, profilo/logout. Riusa lo stesso backend Hono
   via /api/companies/link o update DB diretto).
 - Verificato: tsc pulito sul vincolo companyId + E2E dei 3 step di registrazione
   (azienda creata → sign-up → link 200 → ruolo admin con companyId corretto).
+
+---
+
+# Fase 5 — Pannello Admin su mobile (parità con tab Config del web) [date: 2026-08-22]
+
+## Stato: COMPLETATO
+- [x] packages/mobile/lib/fuel-types.ts — mirror di web/lib/fuel-types.ts (FUEL_TYPES, getFuelColor,
+      AVIATION_TYPES, GROUND_TYPES). Tenere allineati i due file.
+- [x] packages/mobile/app/(tabs)/admin.tsx — nuova tab ⚙️ Configurazione con 4 accordion:
+      📍 Basi, 🛢️ Cisterne, 🚁 Flotta, 👥 Utenti. CRUD completo (crea/modifica/elimina) con
+      conferma nativa su delete, pull-to-refresh, contatore elementi per sezione.
+- [x] TankModal: nome, capacità, livello attuale, tipo carburante (chip colorati), soglia allarme,
+      base. Il tipo carburante su cisterna ESISTENTE è in sola lettura per admin (🔒 + spiegazione):
+      rispetta la regola backend che lo consente solo al superadmin.
+- [x] VehicleModal: categoria ✈️ Aviazione / 🚜 Terrestre, tipo (chip da AVIATION_TYPES/GROUND_TYPES),
+      campo "Specifica tipo" se Altro, nome, targa/identificativo, modello (solo aviazione), capacità.
+- [x] BaseModal: nome + località.
+- [x] Sezione Utenti: lista con badge ruolo + box invito (email + ruolo operator/admin) che mostra
+      il link di invito selezionabile da copiare.
+- [x] Gating ruoli: tab nascosta agli operatori (href: null in (tabs)/_layout.tsx) + schermata 🔒
+      "solo admin" come doppia sicurezza. Il backend resta la difesa vera (requireAdmin → 403).
+- [x] i18n: ~24 nuove chiavi aggiunte in tutte e 6 le lingue (config, addTank, addVehicle, addBase,
+      alertThreshold, category, aviation, ground, specifyType, invite, adminOnly, fuelTypeLocked, ...)
+- [x] Zero nuove dipendenze. Nessuna modifica al backend: riusa /api/bases, /api/tanks,
+      /api/helicopters, /api/companies/me/users, /api/companies/me/invite.
+
+## Verifiche
+- [x] tsc mobile pulito (filtro grep -v "web/src/api")
+- [x] Bundle Metro iOS: HTTP 200, 7.06 MB, nessun errore runtime nei log tmux
+
+## Gap residui verso la parità totale col web (da fare nelle fasi successive)
+- Branding/Aspetto (nome brand + colori) — presente solo sul web
+- Import movimenti da Excel — presente solo sul web
+- Export PDF/CSV di movimenti e drain check — presente solo sul web
+- Modifica/elimina movimenti dallo storico (admin) — presente solo sul web
+- Onboarding wizard 4 step — presente solo sul web
+- Upload foto sul drain check — non presente da nessuna parte (colonna DB esiste)

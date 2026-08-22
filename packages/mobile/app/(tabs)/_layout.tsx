@@ -1,5 +1,7 @@
 import { Tabs } from "expo-router";
 import { Text } from "react-native";
+import { useQuery } from "@tanstack/react-query";
+import { get } from "../../lib/api";
 import { theme } from "../../lib/theme";
 import { useLang } from "../../lib/lang";
 
@@ -9,6 +11,9 @@ function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
 
 export default function TabsLayout() {
   const { t } = useLang();
+  const { data: me } = useQuery({ queryKey: ["me"], queryFn: () => get("/api/admin/me/role") });
+  const role = (me as any)?.role;
+  const isAdmin = role === "admin" || role === "superadmin";
   return (
     <Tabs
       screenOptions={{
@@ -34,6 +39,15 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="drainlog"
         options={{ title: t("drainCheck"), tabBarIcon: ({ focused }) => <TabIcon emoji="🔍" focused={focused} /> }}
+      />
+      <Tabs.Screen
+        name="admin"
+        options={{
+          title: t("config"),
+          tabBarIcon: ({ focused }) => <TabIcon emoji="⚙️" focused={focused} />,
+          // operatori: tab nascosta (il backend blocca comunque con 403)
+          href: isAdmin ? undefined : null,
+        }}
       />
       <Tabs.Screen
         name="profile"
