@@ -180,3 +180,34 @@ oppure invialo direttamente via Mail/WhatsApp. Su Android si apre il selettore a
 4. Import movimenti da Excel da mobile
 5. Onboarding wizard 4 step su mobile
 6. Upload foto sul drain check (manca anche sul web; colonna photoUrl già in DB)
+
+# FASE 7 — Parità mobile 2/6: modifica/elimina movimenti dallo storico
+Data: 2026-08-22
+
+## Backend
+- [x] `PATCH /api/movements/:id` (requireAdmin) in `packages/web/src/api/routes/movements.ts`
+      Campi editabili: liters, date, time, notes.
+      Ricalcolo livelli cisterna dal delta litri: segno + per refuel, - per consumo,
+      su transfer aggiorna anche toTankId. Clamp 0..capacity.
+      Errori: 404 "Movimento non trovato", 400 "Litri non validi".
+- [x] Testato live: PATCH su movimento reale, litri 5 → 150, livello cisterna ricalcolato ok.
+
+## Mobile
+- [x] `packages/mobile/app/(tabs)/history.tsx` riscritto: admin/superadmin vedono ✏️ e 🗑️
+      su ogni riga movimento.
+- [x] `EditMovementModal`: litri, data YYYY-MM-DD, ora HH:MM, note, con validazione regex.
+- [x] 🗑️ con conferma nativa (testo `deleteMovementWarning`).
+- [x] Invalidazione query ["movements"] + ["tanks"] dopo save/delete.
+- [x] Array.isArray difensivo su movements + tanks incluse nel pull-to-refresh.
+- [x] i18n: `deleteMovementWarning`, `editMovementHint` x 6 lingue.
+
+## Verifiche
+- [x] Build web ok + pm2 restart web-app, web 200
+- [x] tsc mobile pulito (filtro web/src/api)
+- [x] Bundle Metro iOS 200 (7.14 MB), nessun errore runtime nei log
+
+## Restano 4 punti per la parità totale
+3. Branding (nome brand + colori) da mobile
+4. Import movimenti da Excel da mobile
+5. Onboarding wizard 4 step su mobile
+6. Upload foto sul drain check (manca anche sul web; colonna photoUrl già in DB)

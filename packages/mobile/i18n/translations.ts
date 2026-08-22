@@ -155,6 +155,9 @@ export const translations = {
     downloading: "Genero il file...",
     savedFile: "File pronto",
     noRowsInPeriod: "Nessun dato nel periodo selezionato",
+    // Modifica/elimina movimenti (Fase 7)
+    deleteMovementWarning: "Il movimento verrà eliminato e i livelli cisterna NON verranno ripristinati automaticamente.",
+    editMovementHint: "Modificando i litri i livelli della cisterna vengono ricalcolati automaticamente.",
   },
 
   en: {
@@ -232,6 +235,9 @@ export const translations = {
     downloading: "Generating file...",
     savedFile: "File ready",
     noRowsInPeriod: "No data in the selected period",
+    // Modifica/elimina movimenti (Fase 7)
+    deleteMovementWarning: "The movement will be deleted and tank levels will NOT be restored automatically.",
+    editMovementHint: "Changing the litres automatically recalculates the tank levels.",
   },
 
   fr: {
@@ -309,6 +315,9 @@ export const translations = {
     downloading: "Génération du fichier...",
     savedFile: "Fichier prêt",
     noRowsInPeriod: "Aucune donnée sur la période",
+    // Modifica/elimina movimenti (Fase 7)
+    deleteMovementWarning: "Le mouvement sera supprimé et les niveaux des citernes ne seront PAS rétablis automatiquement.",
+    editMovementHint: "Modifier les litres recalcule automatiquement les niveaux des citernes.",
   },
 
   de: {
@@ -386,6 +395,9 @@ export const translations = {
     downloading: "Datei wird erstellt...",
     savedFile: "Datei bereit",
     noRowsInPeriod: "Keine Daten im Zeitraum",
+    // Modifica/elimina movimenti (Fase 7)
+    deleteMovementWarning: "Die Bewegung wird gelöscht, die Tankstände werden NICHT automatisch wiederhergestellt.",
+    editMovementHint: "Beim Ändern der Liter werden die Tankstände automatisch neu berechnet.",
   },
 
   es: {
@@ -463,6 +475,9 @@ export const translations = {
     downloading: "Generando archivo...",
     savedFile: "Archivo listo",
     noRowsInPeriod: "Sin datos en el periodo",
+    // Modifica/elimina movimenti (Fase 7)
+    deleteMovementWarning: "El movimiento se eliminará y los niveles de las cisternas NO se restaurarán automáticamente.",
+    editMovementHint: "Al cambiar los litros se recalculan automáticamente los niveles de las cisternas.",
   },
 
   tr: {
@@ -540,6 +555,9 @@ export const translations = {
     downloading: "Dosya oluşturuluyor...",
     savedFile: "Dosya hazır",
     noRowsInPeriod: "Seçilen dönemde veri yok",
+    // Modifica/elimina movimenti (Fase 7)
+    deleteMovementWarning: "Hareket silinecek ve tank seviyeleri otomatik olarak geri YÜKLENMEYECEK.",
+    editMovementHint: "Litre değiştirildiğinde tank seviyeleri otomatik olarak yeniden hesaplanır.",
   },
 } as const;
 
