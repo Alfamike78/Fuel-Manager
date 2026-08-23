@@ -103,6 +103,8 @@ export const helicopters = sqliteTable("helicopters", {
   category: text("category").default("aviation"), // aviation|ground
   vehicleType: text("vehicle_type"),              // e.g. "Elicottero","Aereo","Furgone"...
   fuelType: text("fuel_type"),                    // carburante ammesso: Jet-A1|AvGas 100LL|Avgas UL91|Diesel|Benzina|Altro
+  lastDrainCheckQuality: text("last_drain_check_quality"),
+  lastDrainCheckDate: text("last_drain_check_date"),
   companyId: text("company_id").notNull(),
   createdAt: integer("created_at").notNull(),
 });
@@ -132,6 +134,24 @@ export const drainChecks = sqliteTable("drain_checks", {
   quality: text("quality").notNull(),  // ok|water|impurities
   notes: text("notes"),
   photoUrl: text("photo_url"),
+  // ── Drain check su mezzo aereo: punto di prelievo + foto certificative ──
+  targetType: text("target_type").default("tank"),   // tank | aircraft
+  samplePoint: text("sample_point"),                 // serbatoio principale, sump ala sx, gascolator...
+  photoCounterKey: text("photo_counter_key"),        // foto contalitri (storage key)
+  photoSampleKey: text("photo_sample_key"),          // foto barattolo campione (storage key)
+  isIncomplete: integer("is_incomplete").default(0), // 1 se manca almeno una foto
+  // ── Firma digitale dell'operatore ──
+  signatureKey: text("signature_key"),               // immagine SVG della firma su storage
+  signaturePath: text("signature_path"),             // tratti vettoriali (per PDF e rendering)
+  signedByName: text("signed_by_name"),
+  signedByEmail: text("signed_by_email"),
+  signedAt: integer("signed_at"),
+  signedDevice: text("signed_device"),
+  integrityHash: text("integrity_hash"),             // SHA-256 del contenuto sigillato
+  // ── Annullamento (un record firmato non si modifica, si annulla) ──
+  voidedAt: integer("voided_at"),
+  voidedBy: text("voided_by"),
+  voidReason: text("void_reason"),
   operatorId: text("operator_id"),
   date: text("date").notNull(),
   time: text("time").notNull(),

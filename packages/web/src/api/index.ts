@@ -12,6 +12,7 @@ import superadminRouter from "./routes/superadmin";
 import adminRouter from "./routes/admin";
 import reportsRouter from "./routes/reports";
 import importsRouter from "./routes/imports";
+import uploadsRouter from "./routes/uploads";
 
 const app = new Hono()
   .basePath("api")
@@ -29,7 +30,8 @@ const app = new Hono()
   .route("/companies", companiesRouter)
   .route("/superadmin", superadminRouter)
   .route("/imports", importsRouter)
-  .route("/reports", reportsRouter);
+  .route("/reports", reportsRouter)
+  .route("/uploads", uploadsRouter);
 
 export type AppType = typeof app;
 export default app;

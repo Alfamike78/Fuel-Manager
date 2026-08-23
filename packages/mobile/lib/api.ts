@@ -23,7 +23,7 @@ const client = hc<AppType>(baseUrl!, {
 export const api = client.api;
 
 // ── Plain fetch helpers (for endpoints not using typed hc paths) ───────────
-function authHeaders(): Record<string, string> {
+export function authHeaders(): Record<string, string> {
   const token = getToken();
   const cid = getImpersonatedCompanyId();
   const headers: Record<string, string> = { "Content-Type": "application/json" };

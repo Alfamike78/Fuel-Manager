@@ -298,3 +298,80 @@ rosso "Errore" vuoto e non eliminava nulla.
 - [x] purge con password errata → 401 "Password super-admin errata"
 - [x] purge senza password → 400 "Password super-admin obbligatoria..."
 - [x] Build web ok, pm2 restart, web 200, tsc mobile pulito, bundle Metro 200
+
+---
+
+# Fase 8 — Drain check su mezzi aerei con foto + firma digitale (2026-08-23)
+
+## Requisiti (da Ago)
+- Il drain check, oggi solo sulle cisterne, deve funzionare anche sui **mezzi aerei**
+  (elicotteri e aerei), con **registro proprio**.
+- Ogni record è **certificato con firma digitale** dell'utente che lo esegue
+  (firma tracciata a dito sullo schermo, salvata come immagine allegata).
+- Due **foto opzionali**: contalitri + barattolo campione. Se manca almeno una,
+  il record è marcato **"incompleto"**.
+- Solo mezzi **aviation** (no mezzi terrestri).
+- Una volta firmato il record è **immutabile**: un admin può solo **annullarlo
+  indicando il motivo**, e resta visibile come annullato (tracciabilità piena).
+- Punti di prelievo: Serbatoio principale, Serbatoio ausiliario, Sump / drenaggio
+  serbatoio, Sump ala sinistra, Sump ala destra, Filtro carburante / gascolator, Altro.
+
+## DB (db:push applicato)
+- `helicopters`: `lastDrainCheckQuality`, `lastDrainCheckDate`.
+- `drain_checks`: `targetType` (tank|aircraft), `samplePoint`, `photoCounterKey`,
+  `photoSampleKey`, `isIncomplete`, `signatureKey`, `signaturePath`, `signedByName`,
+  `signedByEmail`, `signedAt`, `signedDevice`, `integrityHash`, `voidedAt`, `voidedBy`,
+  `voidReason`. `photoUrl` legacy mantenuto ma non usato.
+
+## Backend
+- NEW `api/lib/s3.ts` — client Tigris S3.
+- NEW `api/routes/uploads.ts` — `POST /api/uploads/presign` (upload diretto dal
+  device allo storage, key namespacizzata `${companyId}/${folder}/…`, 15 min) e
+  `GET /api/uploads/view?key=` (URL di sola lettura 1h, 403 se la key non
+  appartiene all'azienda del chiamante).
+- `api/routes/drain-checks.ts` riscritta:
+  - `GET /?target=tank|aircraft`
+  - `POST /` — targetType dedotto dal mezzo; 400 se il mezzo non è aviation;
+    aggiorna `helicopters.lastDrainCheck*`; per le cisterne comportamento invariato
+    (scala il livello + movimento `drain_check`); `isIncomplete` se manca una foto;
+    timbra firmatario/data/device e calcola `integrityHash` (SHA-256 sui campi sigillati)
+  - `GET /:id/verify` — ricalcola l'hash e dice se il record è integro
+  - `POST /:id/void` (admin) — motivo obbligatorio (min 3 char), pulisce l'allarme sul mezzo
+  - `PATCH /:id` e `DELETE /:id` → **403 SIGNED_IMMUTABLE** se il record è firmato
+
+## Mobile
+- NEW `lib/upload.ts`, `components/SignaturePad.tsx` (firma a dito con react-native-svg),
+  `components/AircraftDrainModal.tsx` (data/ora, punto di prelievo, litri, esito,
+  2 foto da fotocamera o galleria, firma obbligatoria, "🔒 Firma e salva").
+- `app/(tabs)/drainlog.tsx` riscritta: sub-tab **Cisterne / Mezzi aerei**, pulsante
+  "＋ nuovo drain check mezzo" con selezione del mezzo aereo, badge per riga
+  (🔒 firmato / ⚠︎ incompleto / ✖ annullato), modale dettaglio con firma renderizzata,
+  foto (URL presigned) e azione **Annulla record** per admin.
+- `lib/api.ts`: `authHeaders` esportata.
+- i18n: 30 chiavi nuove × 6 lingue.
+
+## Web
+- NEW `web/lib/upload.ts` (presign + view + pathsToSvg).
+- NEW `web/components/DrainAircraft.tsx` — firma con mouse/dito (pointer events),
+  `AircraftDrainModal`, `DrainDetailModal`, `DrainPhotos`, `SignatureView`.
+- `pages/dashboard.tsx`: pulsante 🔍 su ogni mezzo aereo in flotta, Drain Log con
+  icona per tipo, punto di prelievo, badge firmato/incompleto/annullato, riga
+  cliccabile → dettaglio con firma + foto + annullamento; il cestino non appare più
+  sui record firmati.
+- i18n web: 27 chiavi nuove × 6 lingue.
+
+## Verifiche live
+- [x] presign 200 + PUT su storage 200 + view 200 (key company-namespaced)
+- [x] POST drain check mezzo aereo firmato con 1 foto su 2 → 201, `isIncomplete=1`,
+      `signedByName` valorizzato, `targetType=aircraft`
+- [x] `GET /:id/verify` → `valid: true`
+- [x] PATCH su record firmato → 403 ; DELETE su record firmato → 403
+- [x] void senza motivo → 400 ; void con motivo → 200, record resta visibile come annullato
+- [x] `bunx tsc --noEmit` pulito su web e mobile, build Vite ok, pm2 restart, web 200,
+      bundle Metro 200 (7.65 MB)
+
+## NOTA DB (2026-08-23)
+Nel DB restano solo 2 aziende: **ELILOMBARDA** e **Heliavia**. `Test Azienda SRL`
+non esiste più e `testadmin@test.com` ha `company_id` NULL (non può più fare login
+operativo). Per i test ho creato **Drain Test SRL** (`drainadmin@test.com` /
+`TestPass123!`) con un elicottero `I-TEST` Jet-A1.

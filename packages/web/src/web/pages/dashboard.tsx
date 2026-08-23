@@ -7,6 +7,7 @@ import { FUEL_TYPES, getFuelColor, AVIATION_TYPES, GROUND_TYPES } from "../lib/f
 import { useLocation } from "wouter";
 import { NotificationBell, NotificationItem } from "../components/NotificationBell";
 import { exportMovementsPDF, exportDrainChecksPDF } from "../lib/pdf";
+import { AircraftDrainModal, DrainDetailModal } from "../components/DrainAircraft";
 import {
   ResponsiveContainer, LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, Legend,
@@ -560,8 +561,9 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
 
   const [tab, setTab] = useState<Tab>("dashboard");
-  const [modal, setModal] = useState<null | "newMovement" | "drainTank" | "drainHeli" | "newTank" | "editTank" | "newVehicle" | "editVehicle" | "profile">(null);
+  const [modal, setModal] = useState<null | "newMovement" | "drainTank" | "drainHeli" | "drainAircraft" | "newTank" | "editTank" | "newVehicle" | "editVehicle" | "profile">(null);
   const [selected, setSelected] = useState<any>(null);
+  const [drainDetail, setDrainDetail] = useState<any>(null);
   const [showProfile, setShowProfile] = useState(false);
 
   const impCompanyId = getImpersonatedCompanyId();
@@ -879,6 +881,15 @@ export default function Dashboard() {
                       <div style={{ fontSize: "0.8rem", color: "var(--pc-muted)" }}>{h.name}</div>
                       {h.model && <div style={{ fontSize: "0.75rem", color: "var(--pc-muted)" }}>{h.model}</div>}
                     </div>
+                    <div style={{ display: "flex", gap: "0.25rem" }}>
+                      {h.category === "aviation" && (
+                        <button onClick={() => { setSelected(h); setModal("drainAircraft"); }}
+                          title={t("aircraftDrainCheck")}
+                          style={{ background: "transparent", border: "1px solid var(--pc-border)", color: "var(--pc-sand)", borderRadius: 6, padding: "0.25rem 0.5rem", cursor: "pointer", fontSize: "0.75rem" }}>
+                          🔍
+                        </button>
+                      )}
+                    </div>
                     {isAdmin && (
                       <div style={{ display: "flex", gap: "0.25rem" }}>
                         <button onClick={() => { setSelected(h); setModal("editVehicle"); }}
@@ -1010,6 +1021,7 @@ export default function Dashboard() {
               </div>
             </div>
             <DrainLogTable drainChecks={drainChecks as any[]} tanks={tanks as any[]} helicopters={helicopters as any[]} t={t} isAdmin={isAdmin}
+              onOpen={(dc: any) => setDrainDetail(dc)}
               onDelete={async (id: string) => {
                 await del(`/api/drain-checks/${id}`);
                 qc.invalidateQueries({ queryKey: ["drainChecks"] });
@@ -1025,6 +1037,24 @@ export default function Dashboard() {
       )}
       {modal === "drainTank" && selected && (
         <DrainCheckModal tank={selected} t={t} onClose={() => setModal(null)} onSave={handleDrainCheck} />
+      )}
+      {modal === "drainAircraft" && selected && (
+        <AircraftDrainModal
+          aircraft={selected} t={t} Modal={Modal}
+          onClose={() => setModal(null)}
+          onSaved={() => { qc.invalidateQueries({ queryKey: ["drainChecks"] }); qc.invalidateQueries({ queryKey: ["helicopters"] }); }}
+        />
+      )}
+      {drainDetail && (
+        <DrainDetailModal
+          record={drainDetail} Modal={Modal} t={t} isAdmin={isAdmin}
+          name={drainDetail.tankId
+            ? ((tanks as any[]).find((tk: any) => tk.id === drainDetail.tankId)?.name ?? "")
+            : ((helicopters as any[]).find((h: any) => h.id === drainDetail.helicopterId)?.identifier
+               ?? (helicopters as any[]).find((h: any) => h.id === drainDetail.helicopterId)?.name ?? "")}
+          onClose={() => setDrainDetail(null)}
+          onVoided={() => { qc.invalidateQueries({ queryKey: ["drainChecks"] }); qc.invalidateQueries({ queryKey: ["helicopters"] }); }}
+        />
       )}
       {(modal === "newTank" || modal === "editTank") && (
         <TankModal
@@ -1082,18 +1112,25 @@ function MovementsList({ movements, tanks, helicopters, t, isAdmin, onDelete }: 
   );
 }
 
-function DrainLogTable({ drainChecks, tanks, helicopters, t, isAdmin, onDelete }: any) {
+function DrainLogTable({ drainChecks, tanks, helicopters, t, isAdmin, onDelete, onOpen }: any) {
   const tankMap = Object.fromEntries(tanks.map((tk: any) => [tk.id, tk.name]));
   const heliMap = Object.fromEntries(helicopters.map((h: any) => [h.id, h.identifier ?? h.name]));
   if (!drainChecks.length) return <div style={{ color: "var(--pc-muted)", textAlign: "center", padding: "2rem" }}>{t("noData")}</div>;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
       {drainChecks.map((dc: any) => (
-        <div key={dc.id} className="card" style={{ padding: "0.75rem 1rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-          <div style={{ fontSize: "1.25rem" }}>🔍</div>
+        <div key={dc.id} className="card" onClick={() => onOpen?.(dc)}
+          style={{ padding: "0.75rem 1rem", display: "flex", alignItems: "center", gap: "1rem", cursor: onOpen ? "pointer" : "default", opacity: dc.voidedAt ? 0.55 : 1 }}>
+          <div style={{ fontSize: "1.25rem" }}>{dc.targetType === "aircraft" ? "✈️" : "🛢"}</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 600 }}>{dc.tankId ? tankMap[dc.tankId] : heliMap[dc.helicopterId]}</div>
+            {dc.samplePoint && <div style={{ fontSize: "0.75rem", color: "var(--pc-muted)" }}>📍 {dc.samplePoint}</div>}
             {dc.notes && <div style={{ fontSize: "0.75rem", color: "var(--pc-muted)" }}>{dc.notes}</div>}
+            <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", marginTop: "0.3rem" }}>
+              {dc.signedAt && <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "#22c55e", border: "1px solid #22c55e", borderRadius: 10, padding: "0.1rem 0.35rem" }}>🔒 {t("signed")}</span>}
+              {dc.isIncomplete ? <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "#f59e0b", border: "1px solid #f59e0b", borderRadius: 10, padding: "0.1rem 0.35rem" }}>⚠︎ {t("incomplete")}</span> : null}
+              {dc.voidedAt && <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "#ef4444", border: "1px solid #ef4444", borderRadius: 10, padding: "0.1rem 0.35rem" }}>✖ {t("voided")}</span>}
+            </div>
           </div>
           <div>
             <span className={`badge badge-${dc.quality === "ok" ? "ok" : dc.quality === "water" ? "water" : "impurities"}`}>
@@ -1104,8 +1141,8 @@ function DrainLogTable({ drainChecks, tanks, helicopters, t, isAdmin, onDelete }
             <div style={{ fontWeight: 600 }}>{dc.liters} L</div>
             <div style={{ fontSize: "0.7rem", color: "var(--pc-muted)" }}>{dc.date} {dc.time}</div>
           </div>
-          {isAdmin && onDelete && (
-            <button onClick={() => onDelete(dc.id)}
+          {isAdmin && onDelete && !dc.signedAt && (
+            <button onClick={(e) => { e.stopPropagation(); onDelete(dc.id); }}
               style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "0.75rem" }}>
               🗑️
             </button>
