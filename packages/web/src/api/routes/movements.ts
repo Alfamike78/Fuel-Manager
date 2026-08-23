@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { db } from "../database";
-import { movements, tanks } from "../database/schema";
+import { movements, tanks, helicopters } from "../database/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { authMiddleware, requireAuth, requireAdmin, getCompanyId } from "../middleware";
 import { randomUUID } from "crypto";
@@ -23,6 +23,34 @@ const app = new Hono()
     if (!cid) return c.json({ error: "No company" }, 400);
     const u = c.get("user") as any;
     const body = await c.req.json();
+
+    // ── COMPATIBILITA' CARBURANTE ────────────────────────────────────────
+    // Un mezzo (aereo o terrestre) puo' essere rifornito SOLO da una cisterna
+    // che contiene lo stesso tipo di carburante assegnato al mezzo.
+    if (body.helicopterId && body.tankId) {
+      const [veh] = await db
+        .select()
+        .from(helicopters)
+        .where(and(eq(helicopters.id, body.helicopterId), eq(helicopters.companyId, cid)));
+      if (!veh) return c.json({ error: "Mezzo non trovato" }, 404);
+      const [srcTank] = await db
+        .select()
+        .from(tanks)
+        .where(and(eq(tanks.id, body.tankId), eq(tanks.companyId, cid)));
+      if (!srcTank) return c.json({ error: "Tank not found" }, 404);
+      if (!veh.fuelType) {
+        return c.json({
+          error: `Il mezzo "${veh.name}" non ha un tipo di carburante assegnato. Impostalo nella sezione Flotta prima di registrare un rifornimento.`,
+          code: "VEHICLE_FUEL_NOT_SET",
+        }, 400);
+      }
+      if (veh.fuelType !== srcTank.fuelType) {
+        return c.json({
+          error: `Carburante incompatibile: il mezzo "${veh.name}" richiede ${veh.fuelType}, la cisterna "${srcTank.name}" contiene ${srcTank.fuelType}. Rifornimento non consentito.`,
+          code: "FUEL_MISMATCH",
+        }, 400);
+      }
+    }
 
     // Validate tank belongs to company
     if (body.tankId) {

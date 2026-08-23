@@ -142,6 +142,7 @@ export default function AdminPanel() {
               key={v.id}
               title={`${v.category === "ground" ? "🚜" : "✈️"} ${v.name ?? "—"}`}
               subtitle={[v.vehicleType, v.identifier, v.model].filter(Boolean).join(" · ") || "—"}
+              badge={v.fuelType ?? "⚠︎ —"} badgeColor={v.fuelType ? getFuelColor(v.fuelType) : "#ef4444"}
               onEdit={() => setModal({ kind: "vehicle", item: v })}
               onDelete={() => confirmDelete(v.name ?? "", `/api/helicopters/${v.id}`, ["helicopters", "movements"])}
               t={t}
@@ -181,7 +182,7 @@ export default function AdminPanel() {
       )}
       {modal?.kind === "vehicle" && (
         <VehicleModal
-          vehicle={modal.item} t={t}
+          vehicle={modal.item} isSuperAdmin={isSuperAdmin} t={t}
           onClose={() => setModal(null)}
           onSaved={() => { qc.invalidateQueries({ queryKey: ["helicopters"] }); setModal(null); }}
         />
@@ -343,7 +344,7 @@ function TankModal({ tank, bases, isSuperAdmin, t, onClose, onSaved }: any) {
   );
 }
 
-function VehicleModal({ vehicle, t, onClose, onSaved }: any) {
+function VehicleModal({ vehicle, isSuperAdmin, t, onClose, onSaved }: any) {
   const [category, setCategory] = useState<"aviation" | "ground">(vehicle?.category ?? "aviation");
   const [form, setForm] = useState({
     name: vehicle?.name ?? "",
@@ -351,9 +352,13 @@ function VehicleModal({ vehicle, t, onClose, onSaved }: any) {
     model: vehicle?.model ?? "",
     capacity: String(vehicle?.capacity ?? ""),
     vehicleType: vehicle?.vehicleType ?? "Elicottero",
+    fuelType: vehicle?.fuelType ?? "Jet-A1",
     customType: "",
   });
   const [saving, setSaving] = useState(false);
+  // Il carburante si imposta liberamente su un mezzo nuovo o non ancora assegnato.
+  // Se e' gia' assegnato, solo il superadmin puo' cambiarlo (come per le cisterne).
+  const canEditFuel = isSuperAdmin || !vehicle?.fuelType;
   const known: string[] = [...AVIATION_TYPES, ...GROUND_TYPES];
   const typeOptions = category === "aviation" ? [...AVIATION_TYPES] : [...GROUND_TYPES];
 
@@ -369,6 +374,7 @@ function VehicleModal({ vehicle, t, onClose, onSaved }: any) {
         capacity: form.capacity ? Number(form.capacity) : null,
         category,
         vehicleType: vt,
+        ...(canEditFuel ? { fuelType: form.fuelType } : {}),
       };
       const r = vehicle ? await patch(`/api/helicopters/${vehicle.id}`, body) : await post("/api/helicopters", body);
       if (!r.ok) {
@@ -419,6 +425,19 @@ function VehicleModal({ vehicle, t, onClose, onSaved }: any) {
           <TextInput style={styles.input} value={form.model} onChangeText={(v) => setForm({ ...form, model: v })} />
         </Field>
       )}
+      <Field label={`${t("fuelType")} *`}>
+        {canEditFuel ? (
+          <>
+            <Chips options={FUEL_TYPES} value={form.fuelType} onChange={(v: string) => setForm({ ...form, fuelType: v })} colorOf={getFuelColor} />
+            <Text style={styles.hint}>{t("vehicleFuelHint")}</Text>
+          </>
+        ) : (
+          <>
+            <Text style={{ color: theme.text, fontWeight: "700" }}>🔒 {form.fuelType}</Text>
+            <Text style={styles.hint}>{t("vehicleFuelLocked")}</Text>
+          </>
+        )}
+      </Field>
       <Field label={t("capacityOpt")}>
         <TextInput style={styles.input} keyboardType="numeric" value={form.capacity} onChangeText={(v) => setForm({ ...form, capacity: v })} />
       </Field>

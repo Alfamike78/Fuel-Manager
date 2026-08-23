@@ -25,6 +25,7 @@ const app = new Hono()
       capacity: body.capacity ? Number(body.capacity) : null,
       category: body.category ?? "aviation",
       vehicleType: body.vehicleType ?? null,
+      fuelType: body.fuelType ?? null,
       companyId: cid,
       createdAt: Date.now(),
     };
@@ -43,6 +44,17 @@ const app = new Hono()
     if (body.capacity !== undefined) updates.capacity = Number(body.capacity);
     if (body.category !== undefined) updates.category = body.category;
     if (body.vehicleType !== undefined) updates.vehicleType = body.vehicleType;
+    // Il carburante di un mezzo puo' essere impostato liberamente se non ancora assegnato.
+    // Se e' gia' assegnato, solo il superadmin puo' cambiarlo (stessa regola delle cisterne).
+    if (body.fuelType !== undefined) {
+      const [existing] = await db.select().from(helicopters).where(and(eq(helicopters.id, id), eq(helicopters.companyId, cid)));
+      if (!existing) return c.json({ error: "Mezzo non trovato" }, 404);
+      const u = c.get("user") as any;
+      if (existing.fuelType && existing.fuelType !== body.fuelType && u?.role !== "superadmin") {
+        return c.json({ error: "Il tipo di carburante di un mezzo esistente puo' essere modificato solo dal superadmin" }, 403);
+      }
+      updates.fuelType = body.fuelType;
+    }
     await db.update(helicopters).set(updates).where(and(eq(helicopters.id, id), eq(helicopters.companyId, cid)));
     const [updated] = await db.select().from(helicopters).where(and(eq(helicopters.id, id), eq(helicopters.companyId, cid)));
     return c.json(updated, 200);

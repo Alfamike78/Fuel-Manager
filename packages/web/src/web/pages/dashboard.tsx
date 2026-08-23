@@ -108,8 +108,28 @@ function NewMovementModal({ tanks, helicopters, onClose, onSave, t }: any) {
 
   const selectedTank = tanks.find((t: any) => t.id === form.tankId);
 
+  // Solo i mezzi il cui carburante assegnato coincide con quello della cisterna scelta.
+  const compatibleVehicles = selectedTank
+    ? (helicopters as any[]).filter((h: any) => h.fuelType === selectedTank.fuelType)
+    : [];
+  const incompatibleCount = selectedTank ? (helicopters as any[]).length - compatibleVehicles.length : 0;
+
+  // Se cambio cisterna e il mezzo selezionato non e' piu' compatibile, lo azzero.
+  useEffect(() => {
+    if (form.helicopterId && !compatibleVehicles.some((h: any) => h.id === form.helicopterId)) {
+      setForm((f) => ({ ...f, helicopterId: "" }));
+    }
+  }, [form.tankId]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (form.type === "consumption" && form.helicopterId) {
+      const veh = (helicopters as any[]).find((h: any) => h.id === form.helicopterId);
+      if (veh && selectedTank && veh.fuelType !== selectedTank.fuelType) {
+        alert(`${t("fuelMismatch")}: ${veh.name} → ${veh.fuelType ?? "?"} / ${selectedTank.name} → ${selectedTank.fuelType}`);
+        return;
+      }
+    }
     setSaving(true);
     try {
       await onSave(form);
@@ -175,12 +195,21 @@ function NewMovementModal({ tanks, helicopters, onClose, onSave, t }: any) {
             <label>Mezzo</label>
             <select value={form.helicopterId} onChange={(e) => setForm({ ...form, helicopterId: e.target.value })}>
               <option value="">— seleziona (opzionale) —</option>
-              {helicopters.map((h: any) => (
+              {compatibleVehicles.map((h: any) => (
                 <option key={h.id} value={h.id}>
-                  {h.category === "aviation" ? "🚁" : "🚜"} {h.vehicleType ?? "Mezzo"} {h.identifier ?? h.name} — {h.name}
+                  {h.category === "aviation" ? "🚁" : "🚜"} {h.vehicleType ?? "Mezzo"} {h.identifier ?? h.name} — {h.name} [{h.fuelType ?? "?"}]
                 </option>
               ))}
             </select>
+            {selectedTank && (
+              <div style={{ color: "var(--pc-muted)", fontSize: "0.75rem", marginTop: "0.35rem" }}>
+                ⛽ {t("onlyCompatibleVehicles")}: <strong style={{ color: getFuelColor(selectedTank.fuelType) }}>{selectedTank.fuelType}</strong>
+                {incompatibleCount > 0 && ` — ${incompatibleCount} ${t("vehiclesHidden")}`}
+              </div>
+            )}
+            {!selectedTank && (
+              <div style={{ color: "var(--pc-muted)", fontSize: "0.75rem", marginTop: "0.35rem" }}>{t("selectTankFirst")}</div>
+            )}
           </div>
         )}
         <div>
@@ -368,6 +397,7 @@ function VehicleModal({ vehicle, onClose, onSave, t }: any) {
     model: vehicle?.model ?? "",
     capacity: vehicle?.capacity ?? "",
     vehicleType: vehicle?.vehicleType ?? "Elicottero",
+    fuelType: vehicle?.fuelType ?? "Jet-A1",
     customType: "",
   });
   const [saving, setSaving] = useState(false);
@@ -430,6 +460,30 @@ function VehicleModal({ vehicle, onClose, onSave, t }: any) {
             <input value={form.model} onChange={(e) => setForm({ ...form, model: e.target.value })} />
           </div>
         )}
+        <div>
+          <label>
+            {t("fuelType")} *
+            {vehicle?.fuelType && <span style={{ color: "var(--pc-muted)", fontSize: "0.75rem" }}> 🔒 ({t("onlySuperadmin")})</span>}
+          </label>
+          <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", marginTop: "0.25rem" }}>
+            {FUEL_TYPES.filter((f) => (category === "aviation" ? f.value.toLowerCase().includes("jet") || f.value.toLowerCase().includes("gas") || f.value === "Altro" : !f.value.toLowerCase().includes("jet") && !f.value.toLowerCase().includes("gas") || f.value === "Altro")).map((f) => (
+              <button key={f.value} type="button"
+                onClick={() => setForm({ ...form, fuelType: f.value })}
+                style={{
+                  padding: "0.35rem 0.7rem", borderRadius: 6, fontSize: "0.8rem", cursor: "pointer",
+                  border: "1px solid", borderColor: form.fuelType === f.value ? f.color : "var(--pc-border)",
+                  background: form.fuelType === f.value ? `${f.color}33` : "transparent",
+                  color: form.fuelType === f.value ? f.color : "var(--pc-muted)",
+                }}
+              >
+                ⛽ {f.label}
+              </button>
+            ))}
+          </div>
+          <div style={{ color: "var(--pc-muted)", fontSize: "0.75rem", marginTop: "0.35rem" }}>
+            {t("vehicleFuelHint")}
+          </div>
+        </div>
         <div>
           <label>Capacità serbatoio (L, opzionale)</label>
           <input type="number" value={form.capacity} onChange={(e) => setForm({ ...form, capacity: e.target.value })} />

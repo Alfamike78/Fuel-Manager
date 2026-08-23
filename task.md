@@ -211,3 +211,53 @@ Data: 2026-08-22
 4. Import movimenti da Excel da mobile
 5. Onboarding wizard 4 step su mobile
 6. Upload foto sul drain check (manca anche sul web; colonna photoUrl già in DB)
+
+# FIX CRITICO — Compatibilità carburante mezzo ↔ cisterna
+Data: 2026-08-23
+
+## Problema segnalato
+Era possibile registrare un rifornimento da una cisterna Diesel verso un elicottero
+Jet-A1: il movimento veniva accettato. Causa radice: la tabella `helicopters` NON
+aveva alcun campo `fuel_type`, quindi nessun controllo era possibile.
+
+## Schema
+- [x] `helicopters.fuelType` (text, nullable) aggiunto in `schema.ts` + `db:push` applicato.
+
+## Backend
+- [x] `routes/helicopters.ts`: POST accetta `fuelType`; PATCH lo accetta ma se il mezzo
+      ha GIÀ un carburante assegnato solo il superadmin può cambiarlo (403), stessa
+      regola già attiva sulle cisterne.
+- [x] `routes/movements.ts` POST: se il movimento ha `helicopterId` + `tankId`
+      - mezzo senza carburante assegnato → 400 `VEHICLE_FUEL_NOT_SET`
+      - carburante mezzo ≠ carburante cisterna → 400 `FUEL_MISMATCH` con messaggio
+        esplicito (mezzo, carburante richiesto, cisterna, carburante contenuto)
+- [x] Resta attivo il blocco già esistente sui transfer tra cisterne di carburante diverso.
+
+## Web (dashboard.tsx)
+- [x] `VehicleModal`: selettore Tipo Carburante obbligatorio (chips colorate),
+      lucchetto 🔒 se già assegnato e utente non superadmin.
+- [x] `NewMovementModal`: la tendina Mezzo mostra SOLO i mezzi compatibili col
+      carburante della cisterna scelta, con contatore dei mezzi nascosti; il mezzo
+      selezionato si azzera se cambio cisterna; guardia client-side prima del submit.
+- [x] i18n: 6 nuove chiavi x 6 lingue.
+
+## Mobile
+- [x] `(tabs)/admin.tsx` VehicleModal: selettore carburante + lucchetto superadmin;
+      badge carburante nella lista Flotta (rosso ⚠︎ se non assegnato).
+- [x] `(tabs)/index.tsx` NewMovementModal: chip cisterna con carburante, mezzi
+      filtrati per compatibilità, transfer limitato a cisterne dello stesso carburante,
+      guardia prima del salvataggio.
+- [x] i18n mobile: 6 nuove chiavi x 6 lingue.
+
+## Verifiche live (testadmin@test.com)
+- [x] A) mezzo senza carburante → 400 VEHICLE_FUEL_NOT_SET
+- [x] B) PATCH assegna Jet-A1 al mezzo → 200
+- [x] C/D) elicottero Jet-A1 da cisterna Diesel → 400 FUEL_MISMATCH
+- [x] E) Jet-A1 → Jet-A1 → 201 OK
+- [x] F) admin che cambia carburante di mezzo esistente → 403
+- [x] Build web ok, pm2 restart, web 200, tsc mobile pulito, bundle Metro 200 (7.15 MB)
+
+## ATTENZIONE dati esistenti
+I mezzi creati prima di questo fix hanno `fuelType` NULL: vanno aperti una volta in
+Flotta e salvati col carburante corretto, altrimenti il rifornimento viene rifiutato
+con messaggio esplicito.

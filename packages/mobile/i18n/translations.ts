@@ -3,6 +3,12 @@
 
 export const translations = {
   it: {
+    vehicleFuelHint: "Il mezzo potrà essere rifornito SOLO da cisterne con questo carburante.",
+    vehicleFuelLocked: "Solo il super admin può cambiare il carburante di un mezzo esistente",
+    onlyCompatibleVehicles: "Solo mezzi compatibili con il carburante della cisterna",
+    vehiclesHidden: "mezzo/i nascosto/i (carburante diverso)",
+    selectTankFirst: "Seleziona prima la cisterna per vedere i mezzi compatibili.",
+    fuelMismatch: "Carburante incompatibile",
     // Meta
     langName: "Italiano",
     flag: "🇮🇹",
@@ -161,6 +167,12 @@ export const translations = {
   },
 
   en: {
+    vehicleFuelHint: "This vehicle can ONLY be refuelled from tanks with this fuel type.",
+    vehicleFuelLocked: "Only the super admin can change the fuel type of an existing vehicle",
+    onlyCompatibleVehicles: "Only vehicles compatible with the tank fuel",
+    vehiclesHidden: "vehicle(s) hidden (different fuel)",
+    selectTankFirst: "Select the tank first to see compatible vehicles.",
+    fuelMismatch: "Incompatible fuel",
     langName: "English", flag: "🇬🇧",
     appName: "PilotCraft Fuel Manager", tagline: "Forest Expertise in Air Response",
     login: "Sign In", register: "Sign Up", email: "Email", password: "Password",
@@ -241,6 +253,12 @@ export const translations = {
   },
 
   fr: {
+    vehicleFuelHint: "Ce véhicule ne pourra être ravitaillé QUE depuis des citernes de ce carburant.",
+    vehicleFuelLocked: "Seul le super admin peut changer le carburant d'un véhicule existant",
+    onlyCompatibleVehicles: "Seuls les véhicules compatibles avec le carburant de la citerne",
+    vehiclesHidden: "véhicule(s) masqué(s) (carburant différent)",
+    selectTankFirst: "Sélectionnez d'abord la citerne pour voir les véhicules compatibles.",
+    fuelMismatch: "Carburant incompatible",
     langName: "Français", flag: "🇫🇷",
     appName: "PilotCraft Fuel Manager", tagline: "Forest Expertise in Air Response",
     login: "Connexion", register: "S'inscrire", email: "Email", password: "Mot de passe",
@@ -321,6 +339,12 @@ export const translations = {
   },
 
   de: {
+    vehicleFuelHint: "Dieses Fahrzeug kann NUR aus Tanks mit diesem Kraftstoff betankt werden.",
+    vehicleFuelLocked: "Nur der Super-Admin kann den Kraftstoff eines bestehenden Fahrzeugs ändern",
+    onlyCompatibleVehicles: "Nur Fahrzeuge passend zum Kraftstoff des Tanks",
+    vehiclesHidden: "Fahrzeug(e) ausgeblendet (anderer Kraftstoff)",
+    selectTankFirst: "Wählen Sie zuerst den Tank, um passende Fahrzeuge zu sehen.",
+    fuelMismatch: "Unpassender Kraftstoff",
     langName: "Deutsch", flag: "🇩🇪",
     appName: "PilotCraft Fuel Manager", tagline: "Forest Expertise in Air Response",
     login: "Anmelden", register: "Registrieren", email: "E-Mail", password: "Passwort",
@@ -401,6 +425,12 @@ export const translations = {
   },
 
   es: {
+    vehicleFuelHint: "Este vehículo solo podrá repostarse desde cisternas con este combustible.",
+    vehicleFuelLocked: "Solo el super admin puede cambiar el combustible de un vehículo existente",
+    onlyCompatibleVehicles: "Solo vehículos compatibles con el combustible de la cisterna",
+    vehiclesHidden: "vehículo(s) oculto(s) (combustible distinto)",
+    selectTankFirst: "Selecciona primero la cisterna para ver los vehículos compatibles.",
+    fuelMismatch: "Combustible incompatible",
     langName: "Español", flag: "🇪🇸",
     appName: "PilotCraft Fuel Manager", tagline: "Forest Expertise in Air Response",
     login: "Iniciar Sesión", register: "Registrarse", email: "Correo", password: "Contraseña",
@@ -481,6 +511,12 @@ export const translations = {
   },
 
   tr: {
+    vehicleFuelHint: "Bu araç SADECE bu yakıt tipine sahip tanklardan yakıt alabilir.",
+    vehicleFuelLocked: "Mevcut bir aracın yakıt tipini sadece süper admin değiştirebilir",
+    onlyCompatibleVehicles: "Sadece tankın yakıtıyla uyumlu araçlar",
+    vehiclesHidden: "araç gizlendi (farklı yakıt)",
+    selectTankFirst: "Uyumlu araçları görmek için önce tankı seçin.",
+    fuelMismatch: "Uyumsuz yakıt",
     langName: "Türkçe", flag: "🇹🇷",
     appName: "PilotCraft Fuel Manager", tagline: "Forest Expertise in Air Response",
     login: "Giriş Yap", register: "Kayıt Ol", email: "E-posta", password: "Şifre",

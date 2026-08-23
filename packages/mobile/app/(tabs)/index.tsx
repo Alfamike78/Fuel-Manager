@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl,
   TextInput, ActivityIndicator, Alert,
@@ -205,8 +205,28 @@ function NewMovementModal({ visible, tanks, helicopters, onClose, onSaved }: any
 
   const reset = () => { setType("consumption"); setTankId(""); setToTankId(""); setHelicopterId(""); setLiters(""); setNotes(""); };
 
+  // ── Compatibilita' carburante: un mezzo puo' essere rifornito SOLO da una
+  // cisterna che contiene lo stesso carburante assegnato al mezzo.
+  const selectedTank = (tanks as any[]).find((tk: any) => tk.id === tankId);
+  const compatibleVehicles = selectedTank
+    ? (helicopters as any[]).filter((h: any) => h.fuelType === selectedTank.fuelType)
+    : [];
+  const hiddenVehicles = selectedTank ? (helicopters as any[]).length - compatibleVehicles.length : 0;
+
+  // Se cambio cisterna e il mezzo scelto non e' piu' compatibile, lo azzero.
+  useEffect(() => {
+    if (helicopterId && !compatibleVehicles.some((h: any) => h.id === helicopterId)) setHelicopterId("");
+  }, [tankId]);
+
   const handleSave = async () => {
     if (!tankId || !liters) { Alert.alert(tr("error"), `${tr("tank")} + ${tr("liters")}`); return; }
+    if (type === "consumption" && helicopterId) {
+      const veh = (helicopters as any[]).find((h: any) => h.id === helicopterId);
+      if (veh && selectedTank && veh.fuelType !== selectedTank.fuelType) {
+        Alert.alert(tr("fuelMismatch"), `${veh.name}: ${veh.fuelType ?? "—"} / ${selectedTank.name}: ${selectedTank.fuelType}`);
+        return;
+      }
+    }
     setSaving(true);
     try {
       const res = await post("/api/movements", {
@@ -242,7 +262,7 @@ function NewMovementModal({ visible, tanks, helicopters, onClose, onSaved }: any
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
         {tanks.map((tk: any) => (
           <TouchableOpacity key={tk.id} onPress={() => setTankId(tk.id)} style={[mstyles.chip, tankId === tk.id && mstyles.chipActive]}>
-            <Text style={{ color: tankId === tk.id ? theme.sand : theme.muted, fontSize: 12 }}>{tk.name}</Text>
+            <Text style={{ color: tankId === tk.id ? theme.sand : theme.muted, fontSize: 12 }}>{tk.name} · {tk.fuelType}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -251,7 +271,7 @@ function NewMovementModal({ visible, tanks, helicopters, onClose, onSaved }: any
         <>
           <Text style={mstyles.label}>{tr("toTank")}</Text>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
-            {tanks.filter((tk: any) => tk.id !== tankId).map((tk: any) => (
+            {tanks.filter((tk: any) => tk.id !== tankId && (!selectedTank || tk.fuelType === selectedTank.fuelType)).map((tk: any) => (
               <TouchableOpacity key={tk.id} onPress={() => setToTankId(tk.id)} style={[mstyles.chip, toTankId === tk.id && mstyles.chipActive]}>
                 <Text style={{ color: toTankId === tk.id ? theme.sand : theme.muted, fontSize: 12 }}>{tk.name}</Text>
               </TouchableOpacity>
@@ -263,13 +283,23 @@ function NewMovementModal({ visible, tanks, helicopters, onClose, onSaved }: any
       {type === "consumption" && (
         <>
           <Text style={mstyles.label}>{tr("vehicle")}</Text>
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
-            {helicopters.map((h: any) => (
-              <TouchableOpacity key={h.id} onPress={() => setHelicopterId(h.id)} style={[mstyles.chip, helicopterId === h.id && mstyles.chipActive]}>
-                <Text style={{ color: helicopterId === h.id ? theme.sand : theme.muted, fontSize: 12 }}>{h.identifier ?? h.name}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          {!selectedTank ? (
+            <Text style={{ color: theme.muted, fontSize: 11, marginBottom: 8 }}>{tr("selectTankFirst")}</Text>
+          ) : (
+            <>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 6 }}>
+                {compatibleVehicles.map((h: any) => (
+                  <TouchableOpacity key={h.id} onPress={() => setHelicopterId(h.id)} style={[mstyles.chip, helicopterId === h.id && mstyles.chipActive]}>
+                    <Text style={{ color: helicopterId === h.id ? theme.sand : theme.muted, fontSize: 12 }}>{h.identifier ?? h.name}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <Text style={{ color: theme.muted, fontSize: 11, marginBottom: 8 }}>
+                ⛽ {tr("onlyCompatibleVehicles")}: {selectedTank.fuelType}
+                {hiddenVehicles > 0 ? ` — ${hiddenVehicles} ${tr("vehiclesHidden")}` : ""}
+              </Text>
+            </>
+          )}
         </>
       )}
 

@@ -102,6 +102,7 @@ export const helicopters = sqliteTable("helicopters", {
   capacity: real("capacity"),
   category: text("category").default("aviation"), // aviation|ground
   vehicleType: text("vehicle_type"),              // e.g. "Elicottero","Aereo","Furgone"...
+  fuelType: text("fuel_type"),                    // carburante ammesso: Jet-A1|AvGas 100LL|Avgas UL91|Diesel|Benzina|Altro
   companyId: text("company_id").notNull(),
   createdAt: integer("created_at").notNull(),
 });
