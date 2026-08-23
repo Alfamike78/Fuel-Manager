@@ -132,12 +132,28 @@ const app = new Hono()
   })
   // Delete company (soft or hard)
   .delete("/companies/:id", async (c) => {
+   try {
     const id = c.req.param("id");
-    const body = await c.req.json();
-    const mode = body.mode ?? "archive"; // archive | purge
+    // Corpo opzionale: un DELETE senza body non deve piu' far crashare la route.
+    const body = (await c.req.json().catch(() => ({}))) as any;
+    const mode = body.mode === "purge" ? "purge" : "archive"; // archive | purge
+
+    const [co] = await db.select().from(companies).where(eq(companies.id, id));
+    if (!co) return c.json({ error: "Azienda non trovata" }, 404);
+
+    // Eliminazione definitiva: richiede la password del super-admin che sta agendo.
+    if (mode === "purge") {
+      const me = c.get("user") as any;
+      const pwd = typeof body.password === "string" ? body.password : "";
+      if (!pwd) return c.json({ error: "Password super-admin obbligatoria per l'eliminazione definitiva" }, 400);
+      try {
+        await auth.api.signInEmail({ body: { email: me.email, password: pwd } });
+      } catch {
+        return c.json({ error: "Password super-admin errata" }, 401);
+      }
+    }
 
     // Build snapshot
-    const [co] = await db.select().from(companies).where(eq(companies.id, id));
     const snapshot = {
       company: co,
       tanks: await db.select().from(tanks).where(eq(tanks.companyId, id)),
@@ -166,7 +182,10 @@ const app = new Hono()
       await db.update(companies).set({ archivedAt: Date.now(), status: "cancelled" }).where(eq(companies.id, id));
     }
 
-    return c.json({ ok: true }, 200);
+    return c.json({ ok: true, mode, company: co.name }, 200);
+   } catch (e: any) {
+    return c.json({ error: `Eliminazione non riuscita: ${e?.message ?? "errore interno"}` }, 500);
+   }
   })
   // List archived companies
   .get("/companies/archived", async (c) => {

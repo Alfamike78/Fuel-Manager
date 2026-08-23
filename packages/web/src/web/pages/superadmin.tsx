@@ -58,7 +58,7 @@ function DeleteModal({ company, onClose, onDeleted }: DeleteModalProps) {
       body: JSON.stringify({ password, mode }),
     });
     setLoading(false);
-    if (!res.ok) { const e = await res.json(); setError(e.message ?? "Errore"); return; }
+    if (!res.ok) { const e = await res.json(); setError(e.error ?? e.message ?? "Errore"); return; }
     onDeleted();
   }
 
@@ -131,7 +131,7 @@ function SubModal({ company, onClose, onSaved }: SubModalProps) {
       body: JSON.stringify(body),
     });
     setLoading(false);
-    if (!res.ok) { const e = await res.json(); setError(e.message ?? "Errore"); return; }
+    if (!res.ok) { const e = await res.json(); setError(e.error ?? e.message ?? "Errore"); return; }
     onSaved();
   }
 
@@ -204,7 +204,7 @@ function EditCompanyModal({ company, onClose, onSaved }: EditCompanyModalProps) 
       body: JSON.stringify({ name, email }),
     });
     setLoading(false);
-    if (!res.ok) { const e = await res.json(); setError(e.message ?? "Errore"); return; }
+    if (!res.ok) { const e = await res.json(); setError(e.error ?? e.message ?? "Errore"); return; }
     onSaved();
   }
 
@@ -263,7 +263,7 @@ function CreateCompanyModal({ onClose, onCreated }: CreateCompanyModalProps) {
       body: JSON.stringify({ name: companyName, adminEmail, adminName: adminName || adminEmail, adminPassword }),
     });
     setLoading(false);
-    if (!res.ok) { const e = await res.json(); setError(e.message ?? "Errore"); return; }
+    if (!res.ok) { const e = await res.json(); setError(e.error ?? e.message ?? "Errore"); return; }
     onCreated();
   }
 

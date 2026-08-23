@@ -261,3 +261,40 @@ aveva alcun campo `fuel_type`, quindi nessun controllo era possibile.
 I mezzi creati prima di questo fix hanno `fuelType` NULL: vanno aperti una volta in
 Flotta e salvati col carburante corretto, altrimenti il rifornimento viene rifiutato
 con messaggio esplicito.
+
+# FIX — Eliminazione azienda dal CRM mobile non funzionante
+Data: 2026-08-23
+
+## Problema segnalato
+Dal CRM super-admin su mobile, il modale "Elimina Azienda" mostrava un riquadro
+rosso "Errore" vuoto e non eliminava nulla.
+
+## Causa radice (tre difetti sommati)
+1. `packages/mobile/lib/api.ts` → `del()` inviava la richiesta DELETE **senza corpo**.
+2. `routes/superadmin.ts` → il DELETE faceva `await c.req.json()` senza catch: con il
+   corpo vuoto la route lanciava un'eccezione e rispondeva con un errore non JSON.
+3. Il modale mobile leggeva `e.message`, mentre il backend restituisce `{ error }`
+   → messaggio vuoto ("Errore" senza testo).
+   Inoltre `mode` e `password` non venivano mai inviati: "Elimina definitivamente"
+   si comportava comunque come archiviazione.
+
+## Fix
+- [x] `lib/api.ts`: `del(path, body?)` con Content-Type JSON e corpo opzionale.
+- [x] `(superadmin)/index.tsx`: invia `{ mode, password }`, valida la password prima
+      dell'invio in modalità purge, mostra `e.error ?? e.message ?? HTTP <code>`,
+      try/catch/finally sul loading, label password dinamica.
+- [x] `routes/superadmin.ts` DELETE `/companies/:id`:
+      - parse del corpo con `.catch(() => ({}))` (nessun crash su corpo vuoto)
+      - 404 "Azienda non trovata" se l'id non esiste
+      - purge: password super-admin obbligatoria, verificata con
+        `auth.api.signInEmail` → 400 se assente, 401 se errata
+      - try/catch globale che restituisce sempre JSON
+      - risposta 200 con `{ ok, mode, company }`
+- [x] `web/pages/superadmin.tsx`: tutti i messaggi d'errore ora leggono `e.error` prima
+      di `e.message` (4 punti).
+
+## Verifiche live (super-admin)
+- [x] DELETE senza corpo → 200, archiviazione (prima: errore illeggibile)
+- [x] purge con password errata → 401 "Password super-admin errata"
+- [x] purge senza password → 400 "Password super-admin obbligatoria..."
+- [x] Build web ok, pm2 restart, web 200, tsc mobile pulito, bundle Metro 200

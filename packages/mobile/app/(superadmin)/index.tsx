@@ -348,11 +348,23 @@ function DeleteModal({ visible, company, onClose, onDeleted }: any) {
   const handleDelete = async () => {
     setError("");
     if (confirmName !== company.name) { setError("Nome azienda non corrisponde"); return; }
+    if (mode === "purge" && !password) { setError("Inserisci la tua password super-admin"); return; }
     setLoading(true);
-    const res = await del(`/api/superadmin/companies/${company.id}`);
-    setLoading(false);
-    if (!res.ok) { const e = await res.json().catch(() => ({})); setError(e.message ?? "Errore"); return; }
-    onDeleted();
+    try {
+      // Mode e password DEVONO essere inviati: prima il DELETE partiva senza corpo
+      // e il server rispondeva con un errore non leggibile ("Errore" vuoto).
+      const res = await del(`/api/superadmin/companies/${company.id}`, { mode, password });
+      if (!res.ok) {
+        const e: any = await res.json().catch(() => ({}));
+        setError(e.error ?? e.message ?? `Errore HTTP ${res.status}`);
+        return;
+      }
+      onDeleted();
+    } catch (e: any) {
+      setError(e?.message ?? "Errore di rete");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -374,7 +386,9 @@ function DeleteModal({ visible, company, onClose, onDeleted }: any) {
       <Text style={mstyles.label}>Conferma nome azienda</Text>
       <TextInput style={mstyles.input} value={confirmName} onChangeText={setConfirmName} placeholder={company.name} placeholderTextColor={theme.muted} />
 
-      <Text style={mstyles.label}>La tua password super-admin</Text>
+      <Text style={mstyles.label}>
+        {mode === "purge" ? "La tua password super-admin (obbligatoria)" : "La tua password super-admin (non richiesta per l'archiviazione)"}
+      </Text>
       <TextInput style={mstyles.input} value={password} onChangeText={setPassword} secureTextEntry placeholderTextColor={theme.muted} />
 
       {error ? <Text style={mstyles.error}>{error}</Text> : null}

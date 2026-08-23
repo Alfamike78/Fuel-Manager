@@ -44,5 +44,9 @@ export const post = (path: string, body: any) =>
   fetch(`${baseUrl}${path}`, { method: "POST", headers: authHeaders(), body: JSON.stringify(body) });
 export const patch = (path: string, body: any) =>
   fetch(`${baseUrl}${path}`, { method: "PATCH", headers: authHeaders(), body: JSON.stringify(body) });
-export const del = (path: string) =>
-  fetch(`${baseUrl}${path}`, { method: "DELETE", headers: authHeaders() });
+export const del = (path: string, body?: any) =>
+  fetch(`${baseUrl}${path}`, {
+    method: "DELETE",
+    headers: { ...authHeaders(), "Content-Type": "application/json" },
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+  });
