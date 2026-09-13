@@ -375,3 +375,50 @@ Nel DB restano solo 2 aziende: **ELILOMBARDA** e **Heliavia**. `Test Azienda SRL
 non esiste più e `testadmin@test.com` ha `company_id` NULL (non può più fare login
 operativo). Per i test ho creato **Drain Test SRL** (`drainadmin@test.com` /
 `TestPass123!`) con un elicottero `I-TEST` Jet-A1.
+
+---
+
+# Fase 9 — Fix allarme "acqua" nel drain check (parità con "impurità")
+
+## Segnalazione di Ago
+"Quando segnalo la presenza di acqua non mi mette l'allarme, lo mette solo con
+le impurità — vorrei che anche se si registra l'acqua nel drain check faccia
+la stessa cosa che con le impurità."
+
+## Causa
+- Le **cisterne** trattavano già acqua e impurità in modo identico
+  (`hasAlert = quality && quality !== "ok"`) su web e mobile: nessun bug qui.
+- I **mezzi aerei** (introdotti in Fase 8) scrivevano `lastDrainCheckQuality`
+  a DB ma **nessuna UI lo leggeva**: zero banner, zero indicatore in flotta,
+  per acqua E impurità. Questo è il buco reale.
+- In più, nel Drain Check Log lo stato "Acqua" usava un badge blu (colore
+  non-allarmante) invece del rosso usato per "Impurità" — contribuiva
+  all'impressione che l'acqua non fosse trattata come anomalia.
+
+## Fix
+- **Web** (`pages/dashboard.tsx`): aggiunto `alertAircraft`, esteso il banner
+  rosso in cima e le notifiche a campanella per includere i mezzi aerei,
+  aggiunta la scritta rossa "🔴 Drain check: ..." (o verde ✅ se OK) sotto
+  ogni card della flotta — stesso pattern già usato per le cisterne.
+  Badge nel Drain Check Log: "Acqua" ora usa la stessa classe rossa
+  `badge-impurities` di "Impurità".
+- **Mobile** (`app/(tabs)/index.tsx`): stesso fix — banner rosso e riga
+  rossa/verde sotto ogni card della flotta. (`app/(tabs)/drainlog.tsx`):
+  `QUALITY_COLOR.water` passato da blu a rosso.
+- Lasciati intenzionalmente blu i **pulsanti di selezione esito** nei modali
+  di creazione drain check (sono un input, non un allarme) — da rivedere se
+  Ago segnala ancora percezione di disparità dopo questo fix.
+
+## Verifiche live
+- [x] `bunx tsc --noEmit` pulito su web e mobile
+- [x] build Vite ok, pm2 restart, web 200
+- [x] Creata azienda di test temporanea, mezzo aereo `I-TEST` e cisterna
+      `Test Tank`: POST drain check `quality: "water"` su entrambi →
+      `lastDrainCheckQuality: "water"` a DB
+- [x] Screenshot dashboard: banner rosso "Anomalia carburante: Test Tank
+      (water), I-TEST (water)" + card cisterna e card flotta entrambe con
+      riga rossa "🔴 Drain check: water"
+- [x] Screenshot Drain Check Log: badge "Acqua" rosso (stesso stile di
+      "Impurità")
+- [x] Bundle Metro mobile 200, nessun errore runtime in console
+- [x] Dati di test rimossi dal DB dopo la verifica

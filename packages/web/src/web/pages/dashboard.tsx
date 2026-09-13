@@ -600,9 +600,11 @@ export default function Dashboard() {
   const trialExpired = company?.plan === "trial" && trialDaysLeft !== null && trialDaysLeft <= 0;
   const trialSoon = company?.plan === "trial" && trialDaysLeft !== null && trialDaysLeft <= 7 && trialDaysLeft > 0;
 
-  // Alerts
+  // Alerts — acqua e impurità sono trattate allo stesso modo: qualsiasi esito
+  // diverso da "ok" è un'anomalia e fa scattare lo stesso allarme.
   const lowTanks = (tanks as any[]).filter((tk: any) => (tk.currentLevel ?? 0) <= (tk.alertThreshold ?? 1500));
   const alertTanks = (tanks as any[]).filter((tk: any) => tk.lastDrainCheckQuality && tk.lastDrainCheckQuality !== "ok");
+  const alertAircraft = (helicopters as any[]).filter((h: any) => h.lastDrainCheckQuality && h.lastDrainCheckQuality !== "ok");
 
   // Notification bell items
   const notifItems: NotificationItem[] = useMemo(() => {
@@ -615,8 +617,12 @@ export default function Dashboard() {
       id: `drain-${tk.id}-${tk.lastDrainCheckDate}`, severity: "danger",
       message: `Anomalia carburante: ${tk.name} — ${tk.lastDrainCheckQuality === "water" ? "acqua presente" : "impurità"}`,
     }));
+    alertAircraft.forEach((h: any) => items.push({
+      id: `drain-heli-${h.id}-${h.lastDrainCheckDate}`, severity: "danger",
+      message: `Anomalia carburante: ${h.identifier ?? h.name} — ${h.lastDrainCheckQuality === "water" ? "acqua presente" : "impurità"}`,
+    }));
     return items;
-  }, [lowTanks, alertTanks]);
+  }, [lowTanks, alertTanks, alertAircraft]);
 
   if (meLoading) {
     return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", color: "var(--pc-muted)" }}>Caricamento...</div>;
@@ -772,9 +778,10 @@ export default function Dashboard() {
             ⚠️ Livello basso: {lowTanks.map((t: any) => `${t.name} (${t.currentLevel}L)`).join(", ")}
           </div>
         )}
-        {alertTanks.length > 0 && (
+        {(alertTanks.length > 0 || alertAircraft.length > 0) && (
           <div className="alert-banner alert-banner-danger">
-            🔴 Anomalia carburante: {alertTanks.map((t: any) => `${t.name} (${t.lastDrainCheckQuality})`).join(", ")}
+            🔴 Anomalia carburante: {[...alertTanks, ...alertAircraft.map((h: any) => ({ ...h, name: h.identifier ?? h.name }))]
+              .map((t: any) => `${t.name} (${t.lastDrainCheckQuality})`).join(", ")}
           </div>
         )}
 
@@ -869,8 +876,10 @@ export default function Dashboard() {
               {t("fleet")} ({(helicopters as any[]).length})
             </h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "0.75rem", marginBottom: "2rem" }}>
-              {(helicopters as any[]).map((h: any) => (
-                <div key={h.id} className="card">
+              {(helicopters as any[]).map((h: any) => {
+                const heliAlert = h.lastDrainCheckQuality && h.lastDrainCheckQuality !== "ok";
+                return (
+                <div key={h.id} className="card" style={{ borderColor: heliAlert ? "rgba(239,68,68,0.3)" : "var(--pc-border)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                     <div>
                       <div style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -903,8 +912,19 @@ export default function Dashboard() {
                       </div>
                     )}
                   </div>
+                  {heliAlert && (
+                    <div style={{ marginTop: "0.5rem", fontSize: "0.75rem", color: "#ef4444" }}>
+                      🔴 Drain check: {h.lastDrainCheckQuality} — {h.lastDrainCheckDate}
+                    </div>
+                  )}
+                  {h.lastDrainCheckQuality === "ok" && (
+                    <div style={{ marginTop: "0.5rem", fontSize: "0.75rem", color: "#22c55e" }}>
+                      ✅ Drain check OK — {h.lastDrainCheckDate}
+                    </div>
+                  )}
                 </div>
-              ))}
+                );
+              })}
               {isAdmin && (
                 <button onClick={() => { setSelected(null); setModal("newVehicle"); }}
                   style={{
@@ -1133,8 +1153,8 @@ function DrainLogTable({ drainChecks, tanks, helicopters, t, isAdmin, onDelete, 
             </div>
           </div>
           <div>
-            <span className={`badge badge-${dc.quality === "ok" ? "ok" : dc.quality === "water" ? "water" : "impurities"}`}>
-              {dc.quality === "ok" ? "✅ OK" : dc.quality === "water" ? "💧 Acqua" : "🔴 Impurità"}
+            <span className={`badge badge-${dc.quality === "ok" ? "ok" : "impurities"}`}>
+              {dc.quality === "ok" ? "✅ OK" : dc.quality === "water" ? "🔴 Acqua" : "🔴 Impurità"}
             </span>
           </div>
           <div style={{ textAlign: "right", flexShrink: 0 }}>

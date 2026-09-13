@@ -12,7 +12,8 @@ import { AppModal } from "../../components/Modal";
 import { AircraftDrainModal } from "../../components/AircraftDrainModal";
 
 const QUALITY_KEY = { ok: "qualityOk", water: "qualityWater", impurities: "qualityImpurities" } as const;
-const QUALITY_COLOR: Record<string, string> = { ok: theme.green, water: theme.blue, impurities: theme.red };
+// Acqua e impurità sono la stessa anomalia agli occhi dell'allarme: stesso colore rosso.
+const QUALITY_COLOR: Record<string, string> = { ok: theme.green, water: theme.red, impurities: theme.red };
 
 export default function DrainLog() {
   const qc = useQueryClient();

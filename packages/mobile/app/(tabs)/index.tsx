@@ -46,7 +46,9 @@ export default function Dashboard() {
   };
 
   const lowTanks = (tanks as any[]).filter((t) => (t.currentLevel ?? 0) <= (t.alertThreshold ?? 1500));
+  // Acqua e impurità sono trattate allo stesso modo: qualsiasi esito diverso da "ok" è un'anomalia.
   const alertTanks = (tanks as any[]).filter((t) => t.lastDrainCheckQuality && t.lastDrainCheckQuality !== "ok");
+  const alertAircraft = (helicopters as any[]).filter((h) => h.lastDrainCheckQuality && h.lastDrainCheckQuality !== "ok");
   const recentMovements = (movements as any[]).slice(0, 10);
   const tankMap = Object.fromEntries((tanks as any[]).map((t) => [t.id, t.name]));
   const heliMap = Object.fromEntries((helicopters as any[]).map((h) => [h.id, h.identifier ?? h.name]));
@@ -142,16 +144,29 @@ export default function Dashboard() {
 
         {/* Fleet */}
         <Text style={styles.sectionTitle}>{t("fleet")} ({(helicopters as any[]).length})</Text>
-        {(helicopters as any[]).map((h) => (
-          <View key={h.id} style={styles.card}>
-            <Text style={styles.cardTitle}>
-              {h.category === "aviation" ? "✈️" : "🚜"} {h.vehicleType ?? (h.category === "aviation" ? t("aircraft") : t("vehicle"))}
-            </Text>
-            {h.identifier && <Text style={{ color: theme.sand, fontWeight: "700" }}>{h.identifier}</Text>}
-            <Text style={styles.cardSub}>{h.name}</Text>
-            {h.model && <Text style={styles.cardMeta}>{h.model}</Text>}
-          </View>
-        ))}
+        {(helicopters as any[]).map((h) => {
+          const heliAlert = h.lastDrainCheckQuality && h.lastDrainCheckQuality !== "ok";
+          return (
+            <View key={h.id} style={styles.card}>
+              <Text style={styles.cardTitle}>
+                {h.category === "aviation" ? "✈️" : "🚜"} {h.vehicleType ?? (h.category === "aviation" ? t("aircraft") : t("vehicle"))}
+              </Text>
+              {h.identifier && <Text style={{ color: theme.sand, fontWeight: "700" }}>{h.identifier}</Text>}
+              <Text style={styles.cardSub}>{h.name}</Text>
+              {h.model && <Text style={styles.cardMeta}>{h.model}</Text>}
+              {heliAlert && (
+                <Text style={{ color: theme.red, fontSize: 12, marginTop: 6 }}>
+                  🔴 Drain check: {h.lastDrainCheckQuality} — {h.lastDrainCheckDate}
+                </Text>
+              )}
+              {h.lastDrainCheckQuality === "ok" && (
+                <Text style={{ color: theme.green, fontSize: 12, marginTop: 6 }}>
+                  ✅ Drain check OK — {h.lastDrainCheckDate}
+                </Text>
+              )}
+            </View>
+          );
+        })}
 
         {/* Recent movements */}
         <Text style={styles.sectionTitle}>{t("movements")}</Text>
