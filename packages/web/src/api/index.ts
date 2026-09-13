@@ -6,6 +6,7 @@ import tanksRouter from "./routes/tanks";
 import helicoptersRouter from "./routes/helicopters";
 import movementsRouter from "./routes/movements";
 import drainChecksRouter from "./routes/drain-checks";
+import filterChangesRouter from "./routes/filter-changes";
 import basesRouter from "./routes/bases";
 import companiesRouter from "./routes/companies";
 import superadminRouter from "./routes/superadmin";
@@ -26,6 +27,7 @@ const app = new Hono()
   .route("/helicopters", helicoptersRouter)
   .route("/movements", movementsRouter)
   .route("/drain-checks", drainChecksRouter)
+  .route("/filter-changes", filterChangesRouter)
   .route("/bases", basesRouter)
   .route("/companies", companiesRouter)
   .route("/superadmin", superadminRouter)

@@ -202,6 +202,25 @@ export const translations = {
     // Modifica/elimina movimenti (Fase 7)
     deleteMovementWarning: "Il movimento verrà eliminato e i livelli cisterna NON verranno ripristinati automaticamente.",
     editMovementHint: "Modificando i litri i livelli della cisterna vengono ricalcolati automaticamente.",
+    // Filtri carburante (registro filtri per cisterna)
+    filters: "Filtri",
+    filterModel: "Modello filtro",
+    installedDate: "Data installazione",
+    validity: "Validità",
+    months12: "1 anno (12 mesi)",
+    months24: "2 anni (24 mesi)",
+    expiresDate: "Data scadenza",
+    newFilterChange: "Registra cambio filtro",
+    filterRegistry: "Registro Filtri",
+    noFilterRegistered: "Nessun filtro registrato",
+    filterExpired: "🔴 Filtro scaduto",
+    filterExpiringSoon: "🟠 Filtro in scadenza",
+    drainCheckOverdue: "🟠 Drain check in ritardo (oltre 15 giorni)",
+    lastDrainCheck: "Ultimo drain check",
+    never: "Mai",
+    changeFilter: "🧰 Cambia filtro",
+    filterHistory: "Storico cambi filtro",
+    currentFilter: "Filtro attuale",
   },
 
   en: {
@@ -326,6 +345,13 @@ export const translations = {
     // Modifica/elimina movimenti (Fase 7)
     deleteMovementWarning: "The movement will be deleted and tank levels will NOT be restored automatically.",
     editMovementHint: "Changing the litres automatically recalculates the tank levels.",
+    filters: "Filters", filterModel: "Filter model", installedDate: "Installed date",
+    validity: "Validity", months12: "1 year (12 months)", months24: "2 years (24 months)",
+    expiresDate: "Expiry date", newFilterChange: "Log filter change", filterRegistry: "Filter Registry",
+    noFilterRegistered: "No filter registered", filterExpired: "🔴 Filter expired",
+    filterExpiringSoon: "🟠 Filter expiring soon", drainCheckOverdue: "🟠 Drain check overdue (over 15 days)",
+    lastDrainCheck: "Last drain check", never: "Never", changeFilter: "🧰 Change filter",
+    filterHistory: "Filter change history", currentFilter: "Current filter",
   },
 
   fr: {

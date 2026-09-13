@@ -519,3 +519,78 @@ mentre tutto il resto per i mezzi aerei?"
 - [x] Bundle Metro mobile 200, nessun errore runtime nei log (solo
       verifica bundle/log, non testato a tocco su dispositivo)
 - [x] Dati di test rimossi dal DB dopo la verifica
+
+---
+
+# Fase 12 — Registro filtri carburante per cisterna + promemoria scadenza/drain check
+
+## Richiesta di Ago (verbatim)
+"ora vorrei aggiungere qualcosa di importante, ogni cisterna deve avere
+un filtro che ha una scadenza di un anno ogni anno va cambiato quindi
+vorrei aggiungere un registro dei filtri per ogni cisterna con il
+modello e la data di istallazione e un reminder quando arriva la data di
+scadenza. anche un remainder di fare lo spurgo o drain check se è piu di
+15 giorni che non viene effetuato un drain check è possibile tutto
+questo, chiaramente con un registro di operazini di sostituzione del
+filtro"
+
+## Chiarimenti raccolti prima di iniziare
+- Promemoria "drain check in ritardo >15gg": **solo cisterne**, non mezzi
+  aerei.
+- Entrambi i promemoria (scadenza filtro + drain check in ritardo)
+  visibili a **tutti gli operatori**, non solo admin.
+- Modello filtro: **testo libero**, nessun menu a tendina di modelli.
+- Validità filtro **scelta per ogni registrazione**: tendina 1 anno (12
+  mesi) o 2 anni (24 mesi), decisa al momento della registrazione.
+
+## Scelte di design fatte autonomamente (da segnalare ad Ago)
+- **Pre-avviso di 30 giorni** ("in scadenza", arancione) prima della
+  scadenza effettiva del filtro — non richiesto esplicitamente, aggiunto
+  per analogia con il banner di scadenza prova esistente.
+- Cisterna **senza filtro mai registrato** → mostrato solo come riga
+  discreta sulla card della cisterna, NON come banner in alto (per non
+  riempire di allarmi le cisterne già esistenti al primo rollout).
+- Base di calcolo per "drain check in ritardo": data dell'ultimo drain
+  check, o data di creazione della cisterna se non è mai stato fatto un
+  drain check (non segnalata come "in ritardo" fin da subito).
+
+## Implementazione
+- **Backend**: nuova tabella `filterChanges` (id, tankId, companyId,
+  model, installedDate, validityMonths, expiresDate, notes, operatorId,
+  operatorName, createdAt) — log append-only, cancellabile solo da admin.
+  Nuove route `GET/POST /api/filter-changes`, `DELETE /:id` (admin). La
+  data di scadenza è **sempre calcolata dal server** (mai fidarsi del
+  client).
+- **Web** (`dashboard.tsx`): 3 nuovi banner in alto (filtro scaduto/rosso,
+  filtro in scadenza/arancione, drain check in ritardo/arancione), nuova
+  tab "🧰 Filtri" (visibile a tutti), pulsante 🧰 sulla card cisterna per
+  registrare un cambio filtro, righe di stato su ogni card cisterna,
+  tabella storico cambi filtro.
+- **Mobile**: stessa logica — banner, pulsante 🧰 sulla card, nuova tab
+  "Filtri" (`filters.tsx`) con stato per cisterna + storico, modale
+  `FilterChangeModal.tsx` condiviso tra dashboard e tab Filtri.
+- Traduzioni IT (principali) + EN aggiunte su web e mobile; le altre
+  lingue (FR/DE/ES/TR) ricadono automaticamente sull'italiano tramite il
+  meccanismo di fallback già esistente.
+
+## Verifiche live
+- [x] `bunx tsc --noEmit` pulito su web (exit 0)
+- [x] `bunx vite build` ok, pm2 restart, web 200
+- [x] Test live via browser su azienda di test temporanea (4 cisterne):
+      banner rosso "filtro scaduto", banner arancione "filtro in
+      scadenza", banner arancione "drain check in ritardo" — tutti
+      corretti con nomi/date giuste
+- [x] Card cisterna: verificati tutti gli stati (scaduto/rosso, in
+      scadenza/arancione, OK con modello/verde discreto, drain in
+      ritardo/arancione, nessun filtro registrato/discreto)
+- [x] Tab "Filtri": griglia stato per cisterna + tabella storico
+      corrette
+- [x] Salvataggio end-to-end testato: nuovo cambio filtro registrato,
+      scadenza calcolata correttamente dal server (12 mesi da data
+      installazione), operatore corretto in storico
+- [x] Mobile: `bunx tsc --noEmit` pulito sui file toccati (nessun nuovo
+      errore rispetto al rumore preesistente nel monorepo); bundle Metro
+      200 con i nuovi file inclusi senza errori di risoluzione — **non
+      testato a tocco su dispositivo/simulatore**
+- [x] Dati di test rimossi dal DB dopo la verifica
+- [ ] Riscontro di Ago non ancora arrivato

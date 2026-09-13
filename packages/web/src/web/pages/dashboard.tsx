@@ -18,7 +18,22 @@ const LANGS: { code: Lang; flag: string }[] = [
   { code: "de", flag: "🇩🇪" }, { code: "es", flag: "🇪🇸" }, { code: "tr", flag: "🇹🇷" },
 ];
 
-type Tab = "dashboard" | "history" | "config" | "drainlog" | "analytics";
+type Tab = "dashboard" | "history" | "config" | "drainlog" | "analytics" | "filters";
+
+// Giorni interi trascorsi da una data "YYYY-MM-DD" a oggi (positivo = nel passato).
+function daysSince(dateStr: string | null | undefined): number | null {
+  if (!dateStr) return null;
+  const then = new Date(dateStr + "T00:00:00");
+  if (isNaN(then.getTime())) return null;
+  const now = new Date();
+  return Math.floor((now.getTime() - then.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+// Data "YYYY-MM-DD" da un timestamp epoch (ms).
+function dateFromTs(ts: number | null | undefined): string | null {
+  if (!ts) return null;
+  return new Date(ts).toISOString().split("T")[0];
+}
 
 // ── API helpers ────────────────────────────────────────────────────────────
 const ah = () => authHeaders();
@@ -479,7 +494,7 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
 
   const [tab, setTab] = useState<Tab>("dashboard");
-  const [modal, setModal] = useState<null | "newMovement" | "drainTank" | "drainHeli" | "drainAircraft" | "newTank" | "editTank" | "newVehicle" | "editVehicle" | "profile">(null);
+  const [modal, setModal] = useState<null | "newMovement" | "drainTank" | "drainHeli" | "drainAircraft" | "newTank" | "editTank" | "newVehicle" | "editVehicle" | "profile" | "filterChange">(null);
   const [selected, setSelected] = useState<any>(null);
   const [drainDetail, setDrainDetail] = useState<any>(null);
   const [showProfile, setShowProfile] = useState(false);
@@ -504,6 +519,7 @@ export default function Dashboard() {
   const { data: movements = [] } = useQuery({ queryKey: ["movements"], queryFn: () => get("/api/movements"), enabled: !!me });
   const { data: drainChecks = [] } = useQuery({ queryKey: ["drainChecks"], queryFn: () => get("/api/drain-checks"), enabled: !!me });
   const { data: bases = [] } = useQuery({ queryKey: ["bases"], queryFn: () => get("/api/bases"), enabled: !!me });
+  const { data: filterChanges = [] } = useQuery({ queryKey: ["filterChanges"], queryFn: () => get("/api/filter-changes"), enabled: !!me });
 
   const refetchAll = () => {
     qc.invalidateQueries({ queryKey: ["tanks"] });
@@ -524,6 +540,38 @@ export default function Dashboard() {
   const alertTanks = (tanks as any[]).filter((tk: any) => tk.lastDrainCheckQuality && tk.lastDrainCheckQuality !== "ok");
   const alertAircraft = (helicopters as any[]).filter((h: any) => h.lastDrainCheckQuality && h.lastDrainCheckQuality !== "ok");
 
+  // ── Filtri carburante: ultimo filtro registrato per ogni cisterna ────────
+  const latestFilterByTank: Record<string, any> = useMemo(() => {
+    const map: Record<string, any> = {};
+    (filterChanges as any[]).forEach((fc: any) => {
+      const cur = map[fc.tankId];
+      if (!cur || (fc.installedDate ?? "") > (cur.installedDate ?? "") ||
+        ((fc.installedDate ?? "") === (cur.installedDate ?? "") && (fc.createdAt ?? 0) > (cur.createdAt ?? 0))) {
+        map[fc.tankId] = fc;
+      }
+    });
+    return map;
+  }, [filterChanges]);
+
+  const filterExpiredTanks = (tanks as any[]).filter((tk: any) => {
+    const f = latestFilterByTank[tk.id];
+    if (!f) return false;
+    const d = daysSince(f.expiresDate);
+    return d !== null && d > 0;
+  });
+  const filterExpiringSoonTanks = (tanks as any[]).filter((tk: any) => {
+    const f = latestFilterByTank[tk.id];
+    if (!f) return false;
+    const d = daysSince(f.expiresDate);
+    return d !== null && d <= 0 && d >= -30;
+  });
+  // ── Drain check cisterne: promemoria se sono passati più di 15 giorni ────
+  const drainOverdueTanks = (tanks as any[]).filter((tk: any) => {
+    const base = tk.lastDrainCheckDate ?? dateFromTs(tk.createdAt);
+    const d = daysSince(base);
+    return d !== null && d > 15;
+  });
+
   // Notification bell items
   const notifItems: NotificationItem[] = useMemo(() => {
     const items: NotificationItem[] = [];
@@ -539,8 +587,20 @@ export default function Dashboard() {
       id: `drain-heli-${h.id}-${h.lastDrainCheckDate}`, severity: "danger",
       message: `Anomalia carburante: ${h.identifier ?? h.name} — ${h.lastDrainCheckQuality === "water" ? "acqua presente" : "impurità"}`,
     }));
+    filterExpiredTanks.forEach((tk: any) => items.push({
+      id: `filter-expired-${tk.id}`, severity: "danger",
+      message: `Filtro scaduto: ${tk.name} (${latestFilterByTank[tk.id]?.expiresDate})`,
+    }));
+    filterExpiringSoonTanks.forEach((tk: any) => items.push({
+      id: `filter-soon-${tk.id}`, severity: "warning",
+      message: `Filtro in scadenza: ${tk.name} (${latestFilterByTank[tk.id]?.expiresDate})`,
+    }));
+    drainOverdueTanks.forEach((tk: any) => items.push({
+      id: `drain-overdue-${tk.id}`, severity: "warning",
+      message: `Drain check in ritardo: ${tk.name}`,
+    }));
     return items;
-  }, [lowTanks, alertTanks, alertAircraft]);
+  }, [lowTanks, alertTanks, alertAircraft, filterExpiredTanks, filterExpiringSoonTanks, drainOverdueTanks, latestFilterByTank]);
 
   if (meLoading) {
     return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", color: "var(--pc-muted)" }}>Caricamento...</div>;
@@ -642,7 +702,7 @@ export default function Dashboard() {
 
         {/* Tabs */}
         <nav style={{ display: "flex", gap: "0.25rem" }}>
-          {(["dashboard", "history", "analytics", "config", "drainlog"] as Tab[]).map((tb) => {
+          {(["dashboard", "history", "analytics", "filters", "config", "drainlog"] as Tab[]).map((tb) => {
             if (tb === "config" && !isAdmin) return null;
             return (
             <button key={tb} onClick={() => setTab(tb)}
@@ -657,6 +717,7 @@ export default function Dashboard() {
               {tb === "dashboard" ? "📊 " + t("dashboard") :
                tb === "history" ? "📋 " + t("history") :
                tb === "analytics" ? "📈 Analytics" :
+               tb === "filters" ? "🧰 " + t("filters") :
                tb === "config" ? "⚙️ " + t("config") : "🔍 Drain Log"}
             </button>
             );
@@ -696,6 +757,21 @@ export default function Dashboard() {
               .map((t: any) => `${t.name} (${t.lastDrainCheckQuality})`).join(", ")}
           </div>
         )}
+        {filterExpiredTanks.length > 0 && (
+          <div className="alert-banner alert-banner-danger">
+            {t("filterExpired")}: {filterExpiredTanks.map((tk: any) => `${tk.name} (${latestFilterByTank[tk.id]?.expiresDate})`).join(", ")}
+          </div>
+        )}
+        {filterExpiringSoonTanks.length > 0 && (
+          <div className="alert-banner alert-banner-warning">
+            {t("filterExpiringSoon")}: {filterExpiringSoonTanks.map((tk: any) => `${tk.name} (${latestFilterByTank[tk.id]?.expiresDate})`).join(", ")}
+          </div>
+        )}
+        {drainOverdueTanks.length > 0 && (
+          <div className="alert-banner alert-banner-warning">
+            {t("drainCheckOverdue")}: {drainOverdueTanks.map((tk: any) => tk.name).join(", ")}
+          </div>
+        )}
 
         {/* ── DASHBOARD TAB ── */}
         {tab === "dashboard" && (
@@ -720,6 +796,13 @@ export default function Dashboard() {
                 const isLow = tank.currentLevel <= (tank.alertThreshold ?? 1500);
                 const hasAlert = tank.lastDrainCheckQuality && tank.lastDrainCheckQuality !== "ok";
                 const fc = getFuelColor(tank.fuelType);
+                const drainBase = tank.lastDrainCheckDate ?? dateFromTs(tank.createdAt);
+                const drainDaysSince = daysSince(drainBase);
+                const drainOverdue = !hasAlert && drainDaysSince !== null && drainDaysSince > 15;
+                const tankFilter = latestFilterByTank[tank.id];
+                const filterDaysUntil = tankFilter ? -1 * (daysSince(tankFilter.expiresDate) ?? 0) : null;
+                const filterExpired = tankFilter && filterDaysUntil !== null && filterDaysUntil < 0;
+                const filterSoon = tankFilter && filterDaysUntil !== null && filterDaysUntil >= 0 && filterDaysUntil <= 30;
                 return (
                   <div key={tank.id} className="card" style={{ borderColor: isLow ? "rgba(239,68,68,0.3)" : "var(--pc-border)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
@@ -733,6 +816,11 @@ export default function Dashboard() {
                         <button onClick={() => { setSelected(tank); setModal("drainTank"); }}
                           style={{ background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.3)", color: "#8b5cf6", borderRadius: 6, padding: "0.25rem 0.5rem", cursor: "pointer", fontSize: "0.75rem" }}>
                           🔍
+                        </button>
+                        <button onClick={() => { setSelected(tank); setModal("filterChange"); }}
+                          title={t("changeFilter")}
+                          style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.3)", color: "#f59e0b", borderRadius: 6, padding: "0.25rem 0.5rem", cursor: "pointer", fontSize: "0.75rem" }}>
+                          🧰
                         </button>
                         {isAdmin && (
                           <>
@@ -761,9 +849,34 @@ export default function Dashboard() {
                         🔴 Drain check: {tank.lastDrainCheckQuality} — {tank.lastDrainCheckDate}
                       </div>
                     )}
-                    {tank.lastDrainCheckQuality === "ok" && (
+                    {tank.lastDrainCheckQuality === "ok" && !drainOverdue && (
                       <div style={{ marginTop: "0.5rem", fontSize: "0.75rem", color: "#22c55e" }}>
                         ✅ Drain check OK — {tank.lastDrainCheckDate}
+                      </div>
+                    )}
+                    {drainOverdue && (
+                      <div style={{ marginTop: "0.5rem", fontSize: "0.75rem", color: "#f59e0b" }}>
+                        {t("drainCheckOverdue")} ({t("lastDrainCheck")}: {drainBase ?? t("never")})
+                      </div>
+                    )}
+                    {!tankFilter && (
+                      <div style={{ marginTop: "0.25rem", fontSize: "0.75rem", color: "var(--pc-muted)" }}>
+                        🧰 {t("noFilterRegistered")}
+                      </div>
+                    )}
+                    {tankFilter && filterExpired && (
+                      <div style={{ marginTop: "0.25rem", fontSize: "0.75rem", color: "#ef4444" }}>
+                        {t("filterExpired")} — {tankFilter.expiresDate}
+                      </div>
+                    )}
+                    {tankFilter && filterSoon && !filterExpired && (
+                      <div style={{ marginTop: "0.25rem", fontSize: "0.75rem", color: "#f59e0b" }}>
+                        {t("filterExpiringSoon")} — {tankFilter.expiresDate}
+                      </div>
+                    )}
+                    {tankFilter && !filterExpired && !filterSoon && (
+                      <div style={{ marginTop: "0.25rem", fontSize: "0.75rem", color: "var(--pc-muted)" }}>
+                        🧰 {tankFilter.model} — {t("expiresDate")}: {tankFilter.expiresDate}
                       </div>
                     )}
                   </div>
@@ -904,6 +1017,61 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* ── FILTERS TAB ── */}
+        {tab === "filters" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+              <h1 style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--pc-sand)" }}>🧰 {t("filterRegistry")}</h1>
+              <button onClick={() => { setSelected(null); setModal("filterChange"); }} className="btn btn-primary">
+                🧰 {t("newFilterChange")}
+              </button>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
+              {(tanks as any[]).map((tank: any) => {
+                const f = latestFilterByTank[tank.id];
+                const daysUntil = f ? -1 * (daysSince(f.expiresDate) ?? 0) : null;
+                const expired = f && daysUntil !== null && daysUntil < 0;
+                const soon = f && daysUntil !== null && daysUntil >= 0 && daysUntil <= 30;
+                const color = !f ? "var(--pc-muted)" : expired ? "#ef4444" : soon ? "#f59e0b" : "#22c55e";
+                return (
+                  <div key={tank.id} className="card" style={{ borderColor: expired ? "rgba(239,68,68,0.3)" : soon ? "rgba(245,158,11,0.3)" : "var(--pc-border)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
+                      <div style={{ fontWeight: 700, color: "var(--pc-text)" }}>{tank.name}</div>
+                      <button onClick={() => { setSelected(tank); setModal("filterChange"); }}
+                        style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.3)", color: "#f59e0b", borderRadius: 6, padding: "0.25rem 0.5rem", cursor: "pointer", fontSize: "0.75rem" }}>
+                        🧰 {t("changeFilter")}
+                      </button>
+                    </div>
+                    {!f ? (
+                      <div style={{ fontSize: "0.8rem", color: "var(--pc-muted)" }}>{t("noFilterRegistered")}</div>
+                    ) : (
+                      <div style={{ fontSize: "0.8rem", color: "var(--pc-text)" }}>
+                        <div>{t("filterModel")}: <strong>{f.model}</strong></div>
+                        <div style={{ color: "var(--pc-muted)" }}>{t("installedDate")}: {f.installedDate}</div>
+                        <div style={{ color, fontWeight: 600, marginTop: "0.25rem" }}>
+                          {expired ? t("filterExpired") : soon ? t("filterExpiringSoon") : "✅"} — {t("expiresDate")}: {f.expiresDate}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            <h2 style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--pc-muted)", marginBottom: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              {t("filterHistory")}
+            </h2>
+            <FilterHistoryTable
+              filterChanges={filterChanges as any[]} tanks={tanks as any[]} t={t} isAdmin={isAdmin}
+              onDelete={async (id: string) => {
+                await del(`/api/filter-changes/${id}`);
+                qc.invalidateQueries({ queryKey: ["filterChanges"] });
+              }}
+            />
+          </div>
+        )}
+
         {/* ── CONFIG TAB ── */}
         {tab === "config" && isAdmin && (
           <div>
@@ -1008,6 +1176,13 @@ export default function Dashboard() {
       {showProfile && me && (
         <ProfileModal me={me} t={t} onClose={() => setShowProfile(false)} />
       )}
+      {modal === "filterChange" && (
+        <FilterChangeModal
+          tank={selected} tanks={tanks as any[]} t={t} Modal={Modal}
+          onClose={() => setModal(null)}
+          onSaved={() => { qc.invalidateQueries({ queryKey: ["filterChanges"] }); setModal(null); }}
+        />
+      )}
     </div>
   );
 }
@@ -1038,6 +1213,108 @@ function MovementsList({ movements, tanks, helicopters, t, isAdmin, onDelete }: 
           </div>
           {isAdmin && onDelete && (
             <button onClick={() => onDelete(m.id)}
+              style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "0.75rem" }}>
+              🗑️
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FilterChangeModal({ tank, tanks, t, Modal, onClose, onSaved }: any) {
+  const [tankId, setTankId] = useState<string>(tank?.id ?? "");
+  const [model, setModel] = useState("");
+  const [installedDate, setInstalledDate] = useState(new Date().toISOString().split("T")[0]);
+  const [validityMonths, setValidityMonths] = useState<12 | 24>(12);
+  const [notes, setNotes] = useState("");
+  const [err, setErr] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setErr("");
+    if (!tankId) { setErr(t("tank") + " ?"); return; }
+    if (!model.trim()) { setErr(t("filterModel") + " ?"); return; }
+    setSaving(true);
+    try {
+      const res = await post("/api/filter-changes", { tankId, model: model.trim(), installedDate, validityMonths, notes: notes || undefined });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error ?? t("error")); }
+      onSaved();
+    } catch (e: any) {
+      setErr(e.message ?? t("error"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Modal title={`🧰 ${t("newFilterChange")}`} onClose={onClose}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        {tank ? (
+          <div>
+            <label style={{ fontSize: "0.75rem", color: "var(--pc-muted)" }}>{t("tank")}</label>
+            <div style={{ fontWeight: 600, color: "var(--pc-sand)" }}>{tank.name}</div>
+          </div>
+        ) : (
+          <div>
+            <label style={{ fontSize: "0.75rem", color: "var(--pc-muted)" }}>{t("tank")}</label>
+            <select value={tankId} onChange={(e) => setTankId(e.target.value)}>
+              <option value="">—</option>
+              {(tanks as any[]).map((tk: any) => <option key={tk.id} value={tk.id}>{tk.name}</option>)}
+            </select>
+          </div>
+        )}
+        <div>
+          <label style={{ fontSize: "0.75rem", color: "var(--pc-muted)" }}>{t("filterModel")}</label>
+          <input type="text" value={model} onChange={(e) => setModel(e.target.value)} placeholder={t("filterModel")} />
+        </div>
+        <div>
+          <label style={{ fontSize: "0.75rem", color: "var(--pc-muted)" }}>{t("installedDate")}</label>
+          <input type="date" value={installedDate} onChange={(e) => setInstalledDate(e.target.value)} />
+        </div>
+        <div>
+          <label style={{ fontSize: "0.75rem", color: "var(--pc-muted)" }}>{t("validity")}</label>
+          <select value={validityMonths} onChange={(e) => setValidityMonths(Number(e.target.value) as 12 | 24)}>
+            <option value={12}>{t("months12")}</option>
+            <option value={24}>{t("months24")}</option>
+          </select>
+        </div>
+        <div>
+          <label style={{ fontSize: "0.75rem", color: "var(--pc-muted)" }}>{t("notes")}</label>
+          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
+        </div>
+        {err && <div style={{ color: "#ef4444", fontSize: "0.8rem" }}>{err}</div>}
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.5rem" }}>
+          <button onClick={onClose} className="btn btn-ghost">{t("cancel")}</button>
+          <button onClick={handleSave} disabled={saving} className="btn btn-primary">{saving ? t("loading") : t("save")}</button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function FilterHistoryTable({ filterChanges, tanks, t, isAdmin, onDelete }: any) {
+  const tankMap = Object.fromEntries(tanks.map((tk: any) => [tk.id, tk.name]));
+  if (!filterChanges.length) return <div style={{ color: "var(--pc-muted)", textAlign: "center", padding: "2rem" }}>{t("noData")}</div>;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+      {filterChanges.map((fc: any) => (
+        <div key={fc.id} className="card"
+          style={{ padding: "0.75rem 1rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div style={{ fontSize: "1.25rem" }}>🧰</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 600 }}>{tankMap[fc.tankId] ?? "—"}</div>
+            <div style={{ fontSize: "0.75rem", color: "var(--pc-muted)" }}>{t("filterModel")}: {fc.model}</div>
+            {fc.notes && <div style={{ fontSize: "0.75rem", color: "var(--pc-muted)" }}>{fc.notes}</div>}
+          </div>
+          <div style={{ textAlign: "right", flexShrink: 0 }}>
+            <div style={{ fontSize: "0.75rem", color: "var(--pc-text)" }}>{t("installedDate")}: {fc.installedDate}</div>
+            <div style={{ fontSize: "0.75rem", color: "var(--pc-text)" }}>{t("expiresDate")}: {fc.expiresDate}</div>
+            <div style={{ fontSize: "0.7rem", color: "var(--pc-muted)" }}>{fc.validityMonths === 24 ? t("months24") : t("months12")} · {fc.operatorName ?? ""}</div>
+          </div>
+          {isAdmin && onDelete && (
+            <button onClick={() => onDelete(fc.id)}
               style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "0.75rem" }}>
               🗑️
             </button>

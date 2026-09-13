@@ -159,6 +159,21 @@ export const drainChecks = sqliteTable("drain_checks", {
   createdAt: integer("created_at").notNull(),
 });
 
+// ── FILTER CHANGES (registro filtri carburante per cisterna) ──────────────
+export const filterChanges = sqliteTable("filter_changes", {
+  id: text("id").primaryKey(),
+  tankId: text("tank_id").notNull(),
+  companyId: text("company_id").notNull(),
+  model: text("model").notNull(),
+  installedDate: text("installed_date").notNull(), // YYYY-MM-DD
+  validityMonths: integer("validity_months").notNull().default(12), // 12 | 24
+  expiresDate: text("expires_date").notNull(),      // calcolata: installedDate + validityMonths
+  notes: text("notes"),
+  operatorId: text("operator_id"),
+  operatorName: text("operator_name"),
+  createdAt: integer("created_at").notNull(),
+});
+
 // ── INVITE TOKENS ─────────────────────────────────────────────────────────
 export const inviteTokens = sqliteTable("invite_tokens", {
   id: text("id").primaryKey(),

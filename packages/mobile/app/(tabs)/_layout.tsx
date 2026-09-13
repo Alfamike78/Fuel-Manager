@@ -41,6 +41,10 @@ export default function TabsLayout() {
         options={{ title: t("drainCheck"), tabBarIcon: ({ focused }) => <TabIcon emoji="🔍" focused={focused} /> }}
       />
       <Tabs.Screen
+        name="filters"
+        options={{ title: t("filters"), tabBarIcon: ({ focused }) => <TabIcon emoji="🧰" focused={focused} /> }}
+      />
+      <Tabs.Screen
         name="admin"
         options={{
           title: t("config"),

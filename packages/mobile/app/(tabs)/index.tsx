@@ -14,6 +14,8 @@ import { LanguageSelector } from "../../components/LanguageSelector";
 import { FuelBar } from "../../components/FuelBar";
 import { AppModal } from "../../components/Modal";
 import { AircraftDrainModal } from "../../components/AircraftDrainModal";
+import { FilterChangeModal } from "../../components/FilterChangeModal";
+import { daysSince, dateFromTs, latestFilterByTank } from "../../lib/dates";
 
 const MOV_TYPES = ["refuel", "consumption", "transfer", "drain_check"] as const;
 const MOV_ICON: Record<string, string> = { refuel: "⬆️", consumption: "⬇️", transfer: "↔️", drain_check: "🔍" };
@@ -25,6 +27,7 @@ export default function Dashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [movModal, setMovModal] = useState(false);
   const [drainModal, setDrainModal] = useState<any>(null); // tank object or null
+  const [filterModal, setFilterModal] = useState<any>(null); // tank object or null
 
   const impCompanyId = getImpersonatedCompanyId();
   const impCompanyName = getImpersonatedCompanyName();
@@ -34,6 +37,7 @@ export default function Dashboard() {
   const { data: tanks = [] } = useQuery({ queryKey: ["tanks"], queryFn: () => get("/api/tanks"), enabled: !!me, refetchInterval: 30000 });
   const { data: helicopters = [] } = useQuery({ queryKey: ["helicopters"], queryFn: () => get("/api/helicopters"), enabled: !!me });
   const { data: movements = [] } = useQuery({ queryKey: ["movements"], queryFn: () => get("/api/movements"), enabled: !!me });
+  const { data: filterChanges = [] } = useQuery({ queryKey: ["filterChanges"], queryFn: () => get("/api/filter-changes"), enabled: !!me });
 
   const isAdmin = (me as any)?.role === "admin" || (me as any)?.role === "superadmin";
 
@@ -43,6 +47,7 @@ export default function Dashboard() {
     await qc.invalidateQueries({ queryKey: ["helicopters"] });
     await qc.invalidateQueries({ queryKey: ["movements"] });
     await qc.invalidateQueries({ queryKey: ["company"] });
+    await qc.invalidateQueries({ queryKey: ["filterChanges"] });
     setRefreshing(false);
   };
 
@@ -50,6 +55,21 @@ export default function Dashboard() {
   // Acqua e impurità sono trattate allo stesso modo: qualsiasi esito diverso da "ok" è un'anomalia.
   const alertTanks = (tanks as any[]).filter((t) => t.lastDrainCheckQuality && t.lastDrainCheckQuality !== "ok");
   const alertAircraft = (helicopters as any[]).filter((h) => h.lastDrainCheckQuality && h.lastDrainCheckQuality !== "ok");
+
+  // ── Filtri carburante: ultimo filtro registrato per cisterna + promemoria ──
+  const filterMap = latestFilterByTank(filterChanges as any[]);
+  const filterExpiredTanks = (tanks as any[]).filter((tk) => {
+    const f = filterMap[tk.id]; if (!f) return false;
+    const d = daysSince(f.expiresDate); return d !== null && d > 0;
+  });
+  const filterExpiringSoonTanks = (tanks as any[]).filter((tk) => {
+    const f = filterMap[tk.id]; if (!f) return false;
+    const d = daysSince(f.expiresDate); return d !== null && d <= 0 && d >= -30;
+  });
+  const drainOverdueTanks = (tanks as any[]).filter((tk) => {
+    const base = tk.lastDrainCheckDate ?? dateFromTs(tk.createdAt);
+    const d = daysSince(base); return d !== null && d > 15;
+  });
   const recentMovements = (movements as any[]).slice(0, 10);
   const tankMap = Object.fromEntries((tanks as any[]).map((t) => [t.id, t.name]));
   const heliMap = Object.fromEntries((helicopters as any[]).map((h) => [h.id, h.identifier ?? h.name]));
@@ -96,6 +116,27 @@ export default function Dashboard() {
             </Text>
           </View>
         )}
+        {filterExpiredTanks.length > 0 && (
+          <View style={[styles.banner, { backgroundColor: "rgba(239,68,68,0.12)", borderColor: theme.red }]}>
+            <Text style={{ color: theme.red, fontSize: 12 }}>
+              {t("filterExpired")}: {filterExpiredTanks.map((tk: any) => tk.name).join(", ")}
+            </Text>
+          </View>
+        )}
+        {filterExpiringSoonTanks.length > 0 && (
+          <View style={[styles.banner, { backgroundColor: "rgba(245,158,11,0.12)", borderColor: theme.orange }]}>
+            <Text style={{ color: theme.orange, fontSize: 12 }}>
+              {t("filterExpiringSoon")}: {filterExpiringSoonTanks.map((tk: any) => tk.name).join(", ")}
+            </Text>
+          </View>
+        )}
+        {drainOverdueTanks.length > 0 && (
+          <View style={[styles.banner, { backgroundColor: "rgba(245,158,11,0.12)", borderColor: theme.orange }]}>
+            <Text style={{ color: theme.orange, fontSize: 12 }}>
+              {t("drainCheckOverdue")}: {drainOverdueTanks.map((tk: any) => tk.name).join(", ")}
+            </Text>
+          </View>
+        )}
 
         {/* Quick actions */}
         <View style={styles.actionsRow}>
@@ -110,6 +151,13 @@ export default function Dashboard() {
         {(tanks as any[]).map((tank) => {
           const pct = Math.round((tank.currentLevel / tank.capacity) * 100);
           const hasAlert = tank.lastDrainCheckQuality && tank.lastDrainCheckQuality !== "ok";
+          const drainBase = tank.lastDrainCheckDate ?? dateFromTs(tank.createdAt);
+          const drainDays = daysSince(drainBase);
+          const drainOverdue = drainDays !== null && drainDays > 15;
+          const filt = filterMap[tank.id];
+          const filtDays = filt ? daysSince(filt.expiresDate) : null;
+          const filtExpired = filtDays !== null && filtDays > 0;
+          const filtExpiringSoon = filtDays !== null && filtDays <= 0 && filtDays >= -30;
           return (
             <View key={tank.id} style={styles.card}>
               <View style={styles.rowBetween}>
@@ -117,9 +165,14 @@ export default function Dashboard() {
                   <Text style={styles.cardTitle}>{tank.name}</Text>
                   <Text style={styles.cardSub}>{tank.fuelType}</Text>
                 </View>
-                <TouchableOpacity style={styles.drainBtn} onPress={() => setDrainModal(tank)}>
-                  <Text style={{ fontSize: 12, color: theme.sand }}>🔍 {t("drainCheck")}</Text>
-                </TouchableOpacity>
+                <View style={{ flexDirection: "row", gap: 8 }}>
+                  <TouchableOpacity style={styles.drainBtn} onPress={() => setFilterModal(tank)}>
+                    <Text style={{ fontSize: 12, color: theme.sand }}>🧰</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.drainBtn} onPress={() => setDrainModal(tank)}>
+                    <Text style={{ fontSize: 12, color: theme.sand }}>🔍 {t("drainCheck")}</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
               <View style={[styles.rowBetween, { marginTop: 8 }]}>
                 <Text style={{ color: theme.text, fontWeight: "700" }}>{tank.currentLevel?.toLocaleString()} L</Text>
@@ -134,10 +187,32 @@ export default function Dashboard() {
                   🔴 Drain check: {tank.lastDrainCheckQuality} — {tank.lastDrainCheckDate}
                 </Text>
               )}
-              {tank.lastDrainCheckQuality === "ok" && (
+              {!hasAlert && drainOverdue && (
+                <Text style={{ color: theme.orange, fontSize: 12, marginTop: 6 }}>
+                  {t("drainCheckOverdue")}{tank.lastDrainCheckDate ? ` — ${tank.lastDrainCheckDate}` : ""}
+                </Text>
+              )}
+              {!hasAlert && !drainOverdue && tank.lastDrainCheckQuality === "ok" && (
                 <Text style={{ color: theme.green, fontSize: 12, marginTop: 6 }}>
                   ✅ Drain check OK — {tank.lastDrainCheckDate}
                 </Text>
+              )}
+              {filt ? (
+                filtExpired ? (
+                  <Text style={{ color: theme.red, fontSize: 12, marginTop: 4 }}>
+                    {t("filterExpired")}: {filt.model} — {filt.expiresDate}
+                  </Text>
+                ) : filtExpiringSoon ? (
+                  <Text style={{ color: theme.orange, fontSize: 12, marginTop: 4 }}>
+                    {t("filterExpiringSoon")}: {filt.model} — {filt.expiresDate}
+                  </Text>
+                ) : (
+                  <Text style={{ color: theme.muted, fontSize: 12, marginTop: 4 }}>
+                    🧰 {filt.model} — {t("expiresDate")}: {filt.expiresDate}
+                  </Text>
+                )
+              ) : (
+                <Text style={{ color: theme.muted, fontSize: 12, marginTop: 4 }}>🧰 {t("noFilterRegistered")}</Text>
               )}
             </View>
           );
@@ -205,6 +280,14 @@ export default function Dashboard() {
         t={t}
         onClose={() => setDrainModal(null)}
         onSaved={() => { onRefresh(); setDrainModal(null); }}
+      />
+      <FilterChangeModal
+        visible={!!filterModal}
+        tank={filterModal}
+        tanks={tanks as any[]}
+        t={t}
+        onClose={() => setFilterModal(null)}
+        onSaved={() => { onRefresh(); setFilterModal(null); }}
       />
     </SafeAreaView>
   );
