@@ -422,3 +422,100 @@ la stessa cosa che con le impurità."
       "Impurità")
 - [x] Bundle Metro mobile 200, nessun errore runtime in console
 - [x] Dati di test rimossi dal DB dopo la verifica
+
+---
+
+# Fase 10 — Unificazione configurazione drain check cisterna = mezzo aereo
+
+## Richiesta di Ago (verbatim)
+"quando faccio il drain chek alla cisterna non c'è la stessa configurazione
+del mezzo aereo, non posso fare un repor se c'è presenza di acqua o
+impurita avrei bisogno della stessa configurazonie e che facesse lo stesso
+con gli allarmi."
+
+## Causa
+- Il backend (`api/routes/drain-checks.ts`) era **già generico**: accetta
+  `samplePoint`, foto, firma, immutabilità/void identici sia per `tankId`
+  che per `helicopterId`. Nessun bug lato server.
+- Il buco era solo **UI**: le cisterne usavano ancora il vecchio modale
+  semplice (`DrainCheckModal`: solo esito/litri/note), mentre i mezzi aerei
+  usavano il modale ricco (`AircraftDrainModal`: punto di prelievo, 2 foto,
+  firma digitale, record firmato immutabile).
+
+## Fix
+- **Web** (`components/DrainAircraft.tsx`): `AircraftDrainModal` generalizzato
+  per accettare sia `tank` che `aircraft`; invia `tankId` o `helicopterId`
+  a seconda del target; titolo/etichette si adattano.
+- **Web** (`pages/dashboard.tsx`): rimosso il vecchio `DrainCheckModal`
+  semplice e il suo handler; il pulsante 🔍 sulla cisterna ora apre
+  `AircraftDrainModal` con `tank={selected}`.
+- **Mobile** (`components/AircraftDrainModal.tsx`): stessa generalizzazione
+  (`tank`/`aircraft`, `targetLabel`, `tankId`/`helicopterId` nel submit).
+- **Mobile** (`app/(tabs)/index.tsx`): rimosso il vecchio `DrainCheckModal`
+  semplice; il pulsante 🔍 sulla cisterna ora apre `AircraftDrainModal`.
+- Lasciati intenzionalmente blu i pulsanti di selezione esito (input, non
+  allarme) — ora condivisi da cisterne e mezzi aerei nello stesso modale.
+
+## Verifiche live
+- [x] `bunx tsc --noEmit` pulito su web e mobile
+- [x] build Vite ok, pm2 restart, web 200
+- [x] Creata azienda/cisterna di test temporanea: screenshot modale cisterna
+      → punto di prelievo, litri, esito, 2 foto (con avviso "record
+      incompleto" se mancanti), firma digitale — identico al modale mezzi
+      aerei
+- [x] POST drain check via curl con `tankId` + `samplePoint` + firma → 201,
+      stessa forma di risposta (`isIncomplete`, `integrityHash`,
+      `targetType: "tank"`) dei mezzi aerei
+- [x] Screenshot Drain Check Log: riga cisterna con punto di prelievo,
+      badge 🔒 Firmato, ⚠ Incompleto, esito rosso, stessa UI dei mezzi aerei
+- [x] Screenshot dettaglio record: firma SVG, "Firmato da", pulsante
+      "✖ Annulla record" — parità piena col dettaglio mezzo aereo
+- [x] Bundle Metro mobile 200, nessun errore runtime in console (verifica
+      solo su bundle/log, non testato a tocco su dispositivo/simulatore)
+- [x] Dati di test rimossi dal DB dopo la verifica
+- [x] Commit e push su GitHub (`82480f9`)
+- [ ] Riscontro di Ago non ancora arrivato (né su questo fix né sul
+      precedente fix allarme acqua/impurità)
+
+## Nota per il report/export
+`lib/pdf.ts` (`exportDrainChecksPDF`) e `dashboard.tsx`
+(`exportDrainCSV`) erano **già generici** su cisterne e mezzi aerei prima
+di questa modifica — nessuna modifica necessaria lì. Il record firmato
+prodotto ora dalla cisterna è già esportabile come report PDF/CSV dalla
+pagina Drain Check Log, esattamente come per i mezzi aerei.
+
+---
+
+# Fase 11 — Punto di prelievo: menu a tendina, liste distinte cisterna/mezzo aereo
+
+## Richiesta di Ago (verbatim)
+"nel layout del drain chek potresti fare un menu a tendina nel punto di
+prelievo? e lasciare solo filtro, drenaggio, cisterna, per le cisterne
+mentre tutto il resto per i mezzi aerei?"
+
+## Fix
+- Il campo "Punto di prelievo", finora una fila di pulsanti/chip, è ora un
+  vero menu a tendina (`<select>` su web, dropdown custom su mobile).
+- Le opzioni dipendono dal target:
+  - **Cisterna:** Filtro, Drenaggio, Cisterna (3 opzioni, nessuna "Altro").
+  - **Mezzo aereo:** lista invariata di prima (Serbatoio principale,
+    Serbatoio ausiliario, Sump/drenaggio serbatoio, Sump ala sinistra,
+    Sump ala destra, Filtro carburante/gascolator, Altro).
+- **Web** (`components/DrainAircraft.tsx`): `TANK_SAMPLE_POINTS` e
+  `AIRCRAFT_SAMPLE_POINTS` separati, select nativo che sceglie la lista in
+  base a `isTank`.
+- **Mobile** (`components/AircraftDrainModal.tsx`): stesse due liste;
+  dropdown custom (pulsante con valore corrente + freccia, lista a
+  comparsa sotto) al posto delle chip, dato che RN non ha `<select>`
+  nativo.
+
+## Verifiche live
+- [x] `bunx tsc --noEmit` pulito su web e mobile
+- [x] build Vite ok, pm2 restart, web 200
+- [x] Creata azienda di test temporanea con 1 cisterna + 1 mezzo aereo:
+      screenshot modale cisterna → tendina con solo "Filtro / Drenaggio /
+      Cisterna"; screenshot modale mezzo aereo → tendina con le 7 opzioni
+      originali (verificato anche via query DOM sulle `<option>`)
+- [x] Bundle Metro mobile 200, nessun errore runtime nei log (solo
+      verifica bundle/log, non testato a tocco su dispositivo)
+- [x] Dati di test rimossi dal DB dopo la verifica

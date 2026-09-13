@@ -13,7 +13,10 @@ const QUALITIES = [
   { value: "impurities", icon: "🔴", key: "qualityImpurities", color: theme.red },
 ] as const;
 
-export const SAMPLE_POINTS = [
+// Punti di prelievo per cisterne (semplici, deposito a terra) e per mezzi
+// aerei (sistema carburante del velivolo) — liste distinte a seconda del target.
+export const TANK_SAMPLE_POINTS = ["Filtro", "Drenaggio", "Cisterna"];
+export const AIRCRAFT_SAMPLE_POINTS = [
   "Serbatoio principale",
   "Serbatoio ausiliario",
   "Sump / drenaggio serbatoio",
@@ -22,6 +25,9 @@ export const SAMPLE_POINTS = [
   "Filtro carburante / gascolator",
   "Altro",
 ];
+// Retro-compatibilità: alcuni punti dell'app potrebbero ancora importare
+// SAMPLE_POINTS (lista mezzi aerei, storica).
+export const SAMPLE_POINTS = AIRCRAFT_SAMPLE_POINTS;
 
 /**
  * Drain check completo — su cisterna O su mezzo aereo, stessa identica
@@ -35,9 +41,11 @@ export function AircraftDrainModal({ visible, tank, aircraft, t, onClose, onSave
   const isTank = !!tank;
   const target = isTank ? tank : aircraft;
   const targetLabel = isTank ? target?.name : (target?.identifier ?? target?.name);
+  const points = isTank ? TANK_SAMPLE_POINTS : AIRCRAFT_SAMPLE_POINTS;
   const now = new Date();
   const [quality, setQuality] = useState<"ok" | "water" | "impurities">("ok");
-  const [samplePoint, setSamplePoint] = useState(SAMPLE_POINTS[0]);
+  const [samplePoint, setSamplePoint] = useState(points[0]);
+  const [pointOpen, setPointOpen] = useState(false);
   const [customPoint, setCustomPoint] = useState("");
   const [liters, setLiters] = useState("");
   const [notes, setNotes] = useState("");
@@ -67,8 +75,8 @@ export function AircraftDrainModal({ visible, tank, aircraft, t, onClose, onSave
   };
 
   const reset = () => {
-    setQuality("ok"); setSamplePoint(SAMPLE_POINTS[0]); setCustomPoint(""); setLiters("");
-    setNotes(""); setCounterUri(null); setSampleUri(null); setSigPaths([]); setStep("");
+    setQuality("ok"); setSamplePoint(points[0]); setCustomPoint(""); setLiters("");
+    setNotes(""); setCounterUri(null); setSampleUri(null); setSigPaths([]); setStep(""); setPointOpen(false);
   };
 
   const save = async () => {
@@ -137,13 +145,23 @@ export function AircraftDrainModal({ visible, tank, aircraft, t, onClose, onSave
       </View>
 
       <Text style={s.label}>{t("samplePoint")}</Text>
-      <View style={s.chipsWrap}>
-        {SAMPLE_POINTS.map((p) => (
-          <TouchableOpacity key={p} onPress={() => setSamplePoint(p)} style={[s.chip, samplePoint === p && s.chipActive]}>
-            <Text style={{ color: samplePoint === p ? theme.sand : theme.muted, fontSize: 12 }}>{p}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <TouchableOpacity style={s.dropdown} onPress={() => setPointOpen((o) => !o)}>
+        <Text style={{ color: theme.text, fontSize: 14 }}>{samplePoint}</Text>
+        <Text style={{ color: theme.muted, fontSize: 12 }}>{pointOpen ? "▲" : "▼"}</Text>
+      </TouchableOpacity>
+      {pointOpen && (
+        <View style={s.dropdownList}>
+          {points.map((p) => (
+            <TouchableOpacity
+              key={p}
+              onPress={() => { setSamplePoint(p); setPointOpen(false); }}
+              style={[s.dropdownItem, samplePoint === p && s.dropdownItemActive]}
+            >
+              <Text style={{ color: samplePoint === p ? theme.sand : theme.text, fontSize: 13 }}>{p}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
       {samplePoint === "Altro" && (
         <TextInput style={s.input} value={customPoint} onChangeText={setCustomPoint} placeholder={t("specifyPoint")} placeholderTextColor={theme.muted} />
       )}
@@ -227,6 +245,17 @@ const s = StyleSheet.create({
   chipsWrap: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   chip: { borderWidth: 1, borderColor: theme.border, borderRadius: 16, paddingHorizontal: 10, paddingVertical: 6 },
   chipActive: { borderColor: theme.sand, backgroundColor: "rgba(214,196,160,0.12)" },
+  dropdown: {
+    flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+    borderWidth: 1, borderColor: theme.border, borderRadius: 8, backgroundColor: theme.dark,
+    paddingHorizontal: 12, paddingVertical: 10,
+  },
+  dropdownList: {
+    borderWidth: 1, borderColor: theme.border, borderRadius: 8, backgroundColor: theme.dark,
+    marginTop: 4, overflow: "hidden",
+  },
+  dropdownItem: { paddingHorizontal: 12, paddingVertical: 10, borderTopWidth: 1, borderTopColor: theme.border },
+  dropdownItemActive: { backgroundColor: "rgba(214,196,160,0.12)" },
   qBtn: { flex: 1, borderWidth: 1, borderRadius: 8, paddingVertical: 10, alignItems: "center" },
   photoBox: {
     height: 110, borderWidth: 1, borderColor: theme.border, borderRadius: 8,

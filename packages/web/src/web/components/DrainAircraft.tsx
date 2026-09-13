@@ -2,7 +2,10 @@ import { useRef, useState } from "react";
 import { uploadFile, uploadSignatureSvg, viewUrl, pathsToSvg } from "../lib/upload";
 import { authHeaders } from "../hooks/useAuth";
 
-export const SAMPLE_POINTS = [
+// Punti di prelievo per cisterne (semplici, deposito a terra) e per mezzi
+// aerei (sistema carburante del velivolo) — liste distinte a seconda del target.
+export const TANK_SAMPLE_POINTS = ["Filtro", "Drenaggio", "Cisterna"];
+export const AIRCRAFT_SAMPLE_POINTS = [
   "Serbatoio principale",
   "Serbatoio ausiliario",
   "Sump / drenaggio serbatoio",
@@ -11,6 +14,9 @@ export const SAMPLE_POINTS = [
   "Filtro carburante / gascolator",
   "Altro",
 ];
+// Retro-compatibilità: alcuni punti dell'app potrebbero ancora importare
+// SAMPLE_POINTS (lista mezzi aerei, storica).
+export const SAMPLE_POINTS = AIRCRAFT_SAMPLE_POINTS;
 
 const W = 300;
 const H = 140;
@@ -92,10 +98,11 @@ export function AircraftDrainModal({ tank, aircraft, t, onClose, onSaved, Modal 
   const isTank = !!tank;
   const target = isTank ? tank : aircraft;
   const targetLabel = isTank ? target?.name : (target?.identifier ?? target?.name);
+  const points = isTank ? TANK_SAMPLE_POINTS : AIRCRAFT_SAMPLE_POINTS;
   const now = new Date();
   const [date, setDate] = useState(now.toISOString().split("T")[0]);
   const [time, setTime] = useState(now.toTimeString().slice(0, 5));
-  const [samplePoint, setSamplePoint] = useState(SAMPLE_POINTS[0]);
+  const [samplePoint, setSamplePoint] = useState(points[0]);
   const [customPoint, setCustomPoint] = useState("");
   const [liters, setLiters] = useState("");
   const [quality, setQuality] = useState<"ok" | "water" | "impurities">("ok");
@@ -159,19 +166,11 @@ export function AircraftDrainModal({ tank, aircraft, t, onClose, onSaved, Modal 
 
         <div>
           <label>{t("samplePoint")}</label>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginTop: "0.25rem" }}>
-            {SAMPLE_POINTS.map((p) => (
-              <button key={p} type="button" onClick={() => setSamplePoint(p)}
-                style={{
-                  padding: "0.35rem 0.6rem", borderRadius: 16, cursor: "pointer", fontSize: "0.75rem",
-                  border: "1px solid", borderColor: samplePoint === p ? "var(--pc-sand)" : "var(--pc-border)",
-                  background: samplePoint === p ? "rgba(214,196,160,0.12)" : "transparent",
-                  color: samplePoint === p ? "var(--pc-sand)" : "var(--pc-muted)",
-                }}>
-                {p}
-              </button>
+          <select value={samplePoint} onChange={(e) => setSamplePoint(e.target.value)}>
+            {points.map((p) => (
+              <option key={p} value={p}>{p}</option>
             ))}
-          </div>
+          </select>
           {samplePoint === "Altro" && (
             <input value={customPoint} onChange={(e) => setCustomPoint(e.target.value)} placeholder={t("specifyPoint")} style={{ marginTop: "0.5rem" }} />
           )}
