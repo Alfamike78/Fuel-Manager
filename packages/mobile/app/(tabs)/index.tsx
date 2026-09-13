@@ -13,6 +13,7 @@ import { useLang, tr } from "../../lib/lang";
 import { LanguageSelector } from "../../components/LanguageSelector";
 import { FuelBar } from "../../components/FuelBar";
 import { AppModal } from "../../components/Modal";
+import { AircraftDrainModal } from "../../components/AircraftDrainModal";
 
 const MOV_TYPES = ["refuel", "consumption", "transfer", "drain_check"] as const;
 const MOV_ICON: Record<string, string> = { refuel: "⬆️", consumption: "⬇️", transfer: "↔️", drain_check: "🔍" };
@@ -198,11 +199,12 @@ export default function Dashboard() {
         onClose={() => setMovModal(false)}
         onSaved={onRefresh}
       />
-      <DrainCheckModal
+      <AircraftDrainModal
         visible={!!drainModal}
         tank={drainModal}
+        t={t}
         onClose={() => setDrainModal(null)}
-        onSaved={onRefresh}
+        onSaved={() => { onRefresh(); setDrainModal(null); }}
       />
     </SafeAreaView>
   );
@@ -320,61 +322,6 @@ function NewMovementModal({ visible, tanks, helicopters, onClose, onSaved }: any
 
       <Text style={mstyles.label}>{tr("liters")}</Text>
       <TextInput style={mstyles.input} value={liters} onChangeText={setLiters} keyboardType="numeric" placeholder="es. 500" placeholderTextColor={theme.muted} />
-
-      <Text style={mstyles.label}>{tr("notes")}</Text>
-      <TextInput style={mstyles.input} value={notes} onChangeText={setNotes} placeholder="" placeholderTextColor={theme.muted} />
-
-      <TouchableOpacity style={mstyles.saveBtn} onPress={handleSave} disabled={saving}>
-        {saving ? <ActivityIndicator color={theme.sand} /> : <Text style={mstyles.saveBtnText}>{tr("save")}</Text>}
-      </TouchableOpacity>
-    </AppModal>
-  );
-}
-
-function DrainCheckModal({ visible, tank, onClose, onSaved }: any) {
-  const now = new Date();
-  const [liters, setLiters] = useState("");
-  const [quality, setQuality] = useState<"ok" | "water" | "impurities">("ok");
-  const [notes, setNotes] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const res = await post("/api/drain-checks", {
-        tankId: tank.id, liters: Number(liters || 0), quality, notes,
-        date: now.toISOString().split("T")[0], time: now.toTimeString().slice(0, 5),
-      });
-      if (!res.ok) { const e = await res.json(); throw new Error(e.error ?? tr("error")); }
-      setLiters(""); setQuality("ok"); setNotes("");
-      onClose();
-      onSaved();
-    } catch (e: any) {
-      Alert.alert(tr("error"), e.message ?? tr("error"));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  if (!tank) return null;
-
-  return (
-    <AppModal visible={visible} title={`🔍 ${tr("drainCheck")} — ${tank.name}`} onClose={onClose}>
-      <Text style={mstyles.label}>{tr("liters")}</Text>
-      <TextInput style={mstyles.input} value={liters} onChangeText={setLiters} keyboardType="numeric" placeholder="0" placeholderTextColor={theme.muted} />
-
-      <Text style={mstyles.label}>{tr("quality")}</Text>
-      <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
-        {[
-          { v: "ok", l: tr("qualityOk") },
-          { v: "water", l: tr("qualityWater") },
-          { v: "impurities", l: tr("qualityImpurities") },
-        ].map((opt) => (
-          <TouchableOpacity key={opt.v} onPress={() => setQuality(opt.v as any)} style={[mstyles.chip, quality === opt.v && mstyles.chipActive, { flex: 1, alignItems: "center" }]}>
-            <Text style={{ color: quality === opt.v ? theme.sand : theme.muted, fontSize: 12 }}>{opt.l}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
 
       <Text style={mstyles.label}>{tr("notes")}</Text>
       <TextInput style={mstyles.input} value={notes} onChangeText={setNotes} placeholder="" placeholderTextColor={theme.muted} />

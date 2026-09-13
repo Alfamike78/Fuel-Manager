@@ -24,12 +24,17 @@ export const SAMPLE_POINTS = [
 ];
 
 /**
- * Drain check su mezzo aereo (elicottero / aereo).
- * Foto opzionali (contalitri + barattolo campione): se manca una delle due il
- * record viene registrato come "incompleto". Firma a dito obbligatoria: sigilla
- * il record, che diventa immodificabile.
+ * Drain check completo — su cisterna O su mezzo aereo, stessa identica
+ * configurazione per entrambi: punto di prelievo, litri, esito, 2 foto
+ * opzionali (contalitri + barattolo campione, se manca una delle due il
+ * record viene registrato come "incompleto"), firma a dito obbligatoria che
+ * sigilla il record (diventa immodificabile). Passa `tank` per una cisterna
+ * o `aircraft` per un mezzo aereo (uno solo dei due).
  */
-export function AircraftDrainModal({ visible, aircraft, t, onClose, onSaved }: any) {
+export function AircraftDrainModal({ visible, tank, aircraft, t, onClose, onSaved }: any) {
+  const isTank = !!tank;
+  const target = isTank ? tank : aircraft;
+  const targetLabel = isTank ? target?.name : (target?.identifier ?? target?.name);
   const now = new Date();
   const [quality, setQuality] = useState<"ok" | "water" | "impurities">("ok");
   const [samplePoint, setSamplePoint] = useState(SAMPLE_POINTS[0]);
@@ -84,7 +89,8 @@ export function AircraftDrainModal({ visible, aircraft, t, onClose, onSaved }: a
       const signatureKey = await uploadSignatureSvg(pathsToSvg(sigPaths));
 
       const r = await post("/api/drain-checks", {
-        helicopterId: aircraft.id,
+        tankId: isTank ? target.id : undefined,
+        helicopterId: isTank ? undefined : target.id,
         quality,
         liters: Number(liters || 0),
         notes: notes.trim() || null,
@@ -106,7 +112,7 @@ export function AircraftDrainModal({ visible, aircraft, t, onClose, onSaved }: a
       onSaved();
       Alert.alert(
         t("drainCheckSaved"),
-        `${aircraft.identifier ?? aircraft.name} · ${point}\n${saved?.isIncomplete ? t("recordIncomplete") : t("recordComplete")}`,
+        `${targetLabel} · ${point}\n${saved?.isIncomplete ? t("recordIncomplete") : t("recordComplete")}`,
       );
     } catch (e: any) {
       Alert.alert(t("error"), e?.message ?? "Errore");
@@ -116,12 +122,12 @@ export function AircraftDrainModal({ visible, aircraft, t, onClose, onSaved }: a
     }
   };
 
-  if (!aircraft) return null;
+  if (!target) return null;
 
   return (
     <AppModal
       visible={visible}
-      title={`🔍 ${t("drainCheck")} — ${aircraft.identifier ?? aircraft.name}`}
+      title={`🔍 ${t("drainCheck")} — ${targetLabel}`}
       onClose={onClose}
     >
       <Text style={s.label}>{t("date")} / {t("time")}</Text>

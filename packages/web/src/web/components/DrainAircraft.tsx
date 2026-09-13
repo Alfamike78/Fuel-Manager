@@ -83,8 +83,15 @@ export function SignatureView({ signaturePath }: { signaturePath?: string | null
   );
 }
 
-// ── Modale drain check su mezzo aereo ─────────────────────────────────────
-export function AircraftDrainModal({ aircraft, t, onClose, onSaved, Modal }: any) {
+// ── Modale drain check completo — su cisterna O su mezzo aereo ────────────
+// Stessa identica configurazione per entrambi i target: punto di prelievo,
+// litri, esito, 2 foto opzionali (contalitri + campione), firma obbligatoria
+// che sigilla il record. Passa `tank` per una cisterna o `aircraft` per un
+// mezzo aereo (uno solo dei due).
+export function AircraftDrainModal({ tank, aircraft, t, onClose, onSaved, Modal }: any) {
+  const isTank = !!tank;
+  const target = isTank ? tank : aircraft;
+  const targetLabel = isTank ? target?.name : (target?.identifier ?? target?.name);
   const now = new Date();
   const [date, setDate] = useState(now.toISOString().split("T")[0]);
   const [time, setTime] = useState(now.toTimeString().slice(0, 5));
@@ -115,7 +122,9 @@ export function AircraftDrainModal({ aircraft, t, onClose, onSaved, Modal }: any
         method: "POST",
         headers: { ...authHeaders(), "Content-Type": "application/json" },
         body: JSON.stringify({
-          helicopterId: aircraft.id, quality, liters: Number(liters || 0),
+          tankId: isTank ? target.id : undefined,
+          helicopterId: isTank ? undefined : target.id,
+          quality, liters: Number(liters || 0),
           notes: notes.trim() || null, date, time, samplePoint: point,
           photoCounterKey, photoSampleKey, signatureKey,
           signaturePath: JSON.stringify(sig), device: "web",
@@ -135,7 +144,7 @@ export function AircraftDrainModal({ aircraft, t, onClose, onSaved, Modal }: any
   };
 
   return (
-    <Modal title={`🔍 ${t("aircraftDrainCheck")} — ${aircraft.identifier ?? aircraft.name}`} onClose={onClose}>
+    <Modal title={`🔍 ${isTank ? t("drainCheck") : t("aircraftDrainCheck")} — ${targetLabel}`} onClose={onClose}>
       <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <div style={{ flex: 1 }}>

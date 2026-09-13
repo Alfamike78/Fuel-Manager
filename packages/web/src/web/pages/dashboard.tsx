@@ -234,88 +234,6 @@ function NewMovementModal({ tanks, helicopters, onClose, onSave, t }: any) {
 }
 
 // ── Drain Check Modal ──────────────────────────────────────────────────────
-function DrainCheckModal({ tank, helicopter, onClose, onSave, t }: any) {
-  const now = new Date();
-  const [form, setForm] = useState({
-    tankId: tank?.id ?? null,
-    helicopterId: helicopter?.id ?? null,
-    liters: "",
-    quality: "ok" as "ok" | "water" | "impurities",
-    notes: "",
-    date: now.toISOString().split("T")[0],
-    time: now.toTimeString().slice(0, 5),
-  });
-  const [saving, setSaving] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      await onSave(form);
-      onClose();
-    } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <Modal title={`🔍 Drain Check — ${tank?.name ?? helicopter?.name}`} onClose={onClose}>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-        <div>
-          <label>{t("date")}</label>
-          <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} required />
-        </div>
-        <div>
-          <label>{t("time")}</label>
-          <input type="time" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} required />
-        </div>
-        <div>
-          <label>{t("liters")} spurgati (L)</label>
-          <input type="number" min="0" step="0.1" value={form.liters}
-            onChange={(e) => setForm({ ...form, liters: e.target.value })} required />
-        </div>
-        <div>
-          <label>{t("quality")}</label>
-          <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.25rem" }}>
-            {(["ok", "water", "impurities"] as const).map((q) => (
-              <button key={q} type="button"
-                onClick={() => setForm({ ...form, quality: q })}
-                style={{
-                  flex: 1, padding: "0.5rem", borderRadius: 8, cursor: "pointer", fontSize: "0.8rem",
-                  border: "1px solid",
-                  borderColor: form.quality === q
-                    ? (q === "ok" ? "#22c55e" : q === "water" ? "#3b82f6" : "#ef4444")
-                    : "var(--pc-border)",
-                  background: form.quality === q
-                    ? (q === "ok" ? "rgba(34,197,94,0.1)" : q === "water" ? "rgba(59,130,246,0.1)" : "rgba(239,68,68,0.1)")
-                    : "transparent",
-                  color: form.quality === q
-                    ? (q === "ok" ? "#22c55e" : q === "water" ? "#3b82f6" : "#ef4444")
-                    : "var(--pc-muted)",
-                }}
-              >
-                {q === "ok" ? "✅ Regolare" : q === "water" ? "💧 Acqua" : "🔴 Impurità"}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <label>{t("notes")}</label>
-          <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} />
-        </div>
-        <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
-          <button type="button" onClick={onClose} className="btn btn-ghost" style={{ flex: 1 }}>{t("cancel")}</button>
-          <button type="submit" disabled={saving} className="btn btn-primary" style={{ flex: 2 }}>
-            {saving ? t("loading") : "Registra Drain Check"}
-          </button>
-        </div>
-      </form>
-    </Modal>
-  );
-}
-
 // ── Tank Form Modal ────────────────────────────────────────────────────────
 function TankModal({ tank, bases, onClose, onSave, t, isSuperAdmin }: any) {
   const [form, setForm] = useState({
@@ -635,12 +553,6 @@ export default function Dashboard() {
 
   const handleSaveMovement = async (form: any) => {
     const res = await post("/api/movements", form);
-    if (!res.ok) { const e = await res.json(); throw new Error(e.error ?? "Errore"); }
-    refetchAll();
-  };
-
-  const handleDrainCheck = async (form: any) => {
-    const res = await post("/api/drain-checks", form);
     if (!res.ok) { const e = await res.json(); throw new Error(e.error ?? "Errore"); }
     refetchAll();
   };
@@ -1056,7 +968,11 @@ export default function Dashboard() {
         <NewMovementModal tanks={tanks} helicopters={helicopters} t={t} onClose={() => setModal(null)} onSave={handleSaveMovement} />
       )}
       {modal === "drainTank" && selected && (
-        <DrainCheckModal tank={selected} t={t} onClose={() => setModal(null)} onSave={handleDrainCheck} />
+        <AircraftDrainModal
+          tank={selected} t={t} Modal={Modal}
+          onClose={() => setModal(null)}
+          onSaved={() => { qc.invalidateQueries({ queryKey: ["drainChecks"] }); qc.invalidateQueries({ queryKey: ["tanks"] }); qc.invalidateQueries({ queryKey: ["movements"] }); }}
+        />
       )}
       {modal === "drainAircraft" && selected && (
         <AircraftDrainModal
